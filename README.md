@@ -1,6 +1,10 @@
-# Terminal MCP
+<p align="center">
+  <img src="logo.png" alt="Terminal MCP" width="450">
+</p>
 
-A headless terminal emulator exposed via MCP (Model Context Protocol), enabling AI assistants to interact with terminal applications programmatically.
+<p align="center">
+  A headless terminal emulator exposed via MCP (Model Context Protocol), enabling AI assistants to interact with terminal applications programmatically.
+</p>
 
 ## Quick Install
 

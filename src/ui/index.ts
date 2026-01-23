@@ -33,7 +33,6 @@ export interface BannerOptions {
   cols: number;
   rows: number;
   shell: string;
-  execPath: string; // Path to the executable
 }
 
 /**
@@ -81,8 +80,7 @@ export function getInfoOutput(
   cols: number,
   rows: number,
   shell: string,
-  stats: Stats,
-  execPath: string
+  stats: Stats
 ): string {
   const summary = stats.getSummary();
   const toolCallsStr =
@@ -106,18 +104,17 @@ ${WHITE_COLOR}\x1b[1mSession Info:\x1b[0m${WHITE_COLOR}
 ${toolCallsStr}
 
 \x1b[1mMCP Configuration:\x1b[0m${WHITE_COLOR}
-  Add this to ~/.claude/mcp.json (or your project's .mcp.json):
+  Add this to your MCP client configuration:
 
   ${YELLOW_COLOR}{
     "mcpServers": {
       "terminal": {
-        "command": "node",
-        "args": ["${execPath}"]
+        "command": "terminal-mcp"
       }
     }
   }${WHITE_COLOR}
 
-  Then restart Claude Code to load the MCP server.
+  Then restart your MCP client to load the server.
 
 \x1b[1mAvailable Tools:\x1b[0m${WHITE_COLOR}
   • getContent     - Read terminal buffer (visibleOnly=true for current screen)
@@ -137,10 +134,9 @@ export function printInfo(
   cols: number,
   rows: number,
   shell: string,
-  stats: Stats,
-  execPath: string
+  stats: Stats
 ): void {
-  process.stdout.write(getInfoOutput(socketPath, cols, rows, shell, stats, execPath));
+  process.stdout.write(getInfoOutput(socketPath, cols, rows, shell, stats));
 }
 
 /**

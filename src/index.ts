@@ -73,14 +73,13 @@ Interactive Mode (run in your terminal):
   terminal-mcp
 
   This gives you an interactive shell. AI can observe/interact via MCP.
-  Type /info for the MCP configuration to add to Claude Code.
+  Type /info for the MCP configuration to add to your MCP client.
 
-MCP Client Mode (add to ~/.claude/mcp.json):
+MCP Client Mode (add to your MCP client config):
   {
     "mcpServers": {
       "terminal": {
-        "command": "node",
-        "args": ["${process.argv[1]}"]
+        "command": "terminal-mcp"
       }
     }
   }
@@ -111,11 +110,8 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
   const rows = options.rows ?? (process.stdout.rows || 40);
   const shell = options.shell || process.env.SHELL || "/bin/bash";
 
-  // Get path to the executable for MCP config
-  const execPath = process.argv[1];
-
   // Print startup banner
-  printBanner({ socketPath, cols, rows, shell, execPath });
+  printBanner({ socketPath, cols, rows, shell });
 
   // Create terminal manager (prompt customization handled in session.ts)
   const manager = new TerminalManager({
@@ -160,7 +156,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
         if (isInfoCommand(inputBuffer)) {
           // Print info and clear the line
           process.stdout.write("\r\n");
-          printInfo(socketPath, cols, rows, shell, getStats(), execPath);
+          printInfo(socketPath, cols, rows, shell, getStats());
           inputBuffer = "";
           // Write newline to shell to maintain prompt
           session.write("\n");
