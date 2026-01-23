@@ -10,7 +10,13 @@
   Terminal MCP gives LLMs a shared view of your terminal session. Perfect for debugging CLIs and TUI applications in real-time, or letting AI drive terminal-based tools autonomously.
 </p>
 
-## Quick Install
+## Install
+
+```bash
+npm install -g @ellery/terminal-mcp
+```
+
+Or via install script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/elleryfamilia/terminal-mcp/main/install.sh | bash
