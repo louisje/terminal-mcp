@@ -1,5 +1,5 @@
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 // Custom color #31cae1 as 24-bit ANSI escape (RGB: 49, 202, 225)
 const BRAND_COLOR = "\x1b[38;2;49;202;225m";

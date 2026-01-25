@@ -18,7 +18,7 @@ export function createServerWithManager(manager: TerminalManager): Server {
   const server = new Server(
     {
       name: "terminal-mcp",
-      version: "0.1.0",
+      version: "0.2.0",
     },
     {
       capabilities: {
