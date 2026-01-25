@@ -1,4 +1,4 @@
-import * as pty from "node-pty-prebuilt-multiarch";
+import * as pty from "@homebridge/node-pty-prebuilt-multiarch";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -15,6 +15,7 @@ export interface TerminalSessionOptions {
   shell?: string;
   cwd?: string;
   env?: Record<string, string>;
+  startupBanner?: string;
 }
 
 export interface ScreenshotResult {
@@ -49,21 +50,31 @@ export class TerminalSession {
    */
   private setupShellPrompt(
     shellName: string,
-    extraEnv?: Record<string, string>
+    extraEnv?: Record<string, string>,
+    startupBanner?: string
   ): { args: string[]; env: Record<string, string> } {
     const env: Record<string, string> = {
       TERMINAL_MCP: "1",
       ...extraEnv,
     };
 
+    // Escape banner for use in shell scripts
+    const escapeBannerForShell = (banner: string) => {
+      // Escape single quotes and backslashes for shell
+      return banner.replace(/'/g, "'\\''");
+    };
+
     if (shellName === "bash" || shellName === "sh") {
       // Create temp rcfile that sources user's .bashrc then sets our prompt
       const homeDir = os.homedir();
+      const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
       const bashrcContent = `
 # Source user's bashrc if it exists
 [ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"
 # Set terminal-mcp prompt
 PS1="${PROMPT_INDICATOR} \\$ "
+# Print startup banner
+${bannerCmd}
 `;
       this.rcFile = path.join(os.tmpdir(), `terminal-mcp-bashrc-${process.pid}`);
       fs.writeFileSync(this.rcFile, bashrcContent);
@@ -76,6 +87,7 @@ PS1="${PROMPT_INDICATOR} \\$ "
       this.zdotdir = path.join(os.tmpdir(), `terminal-mcp-zsh-${process.pid}`);
       fs.mkdirSync(this.zdotdir, { recursive: true });
 
+      const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
       const zshrcContent = `
 # Reset ZDOTDIR so nested zsh uses normal config
 export ZDOTDIR="${homeDir}"
@@ -83,6 +95,8 @@ export ZDOTDIR="${homeDir}"
 [ -f "${homeDir}/.zshrc" ] && source "${homeDir}/.zshrc"
 # Set terminal-mcp prompt
 PROMPT="${PROMPT_INDICATOR} %# "
+# Print startup banner
+${bannerCmd}
 `;
       fs.writeFileSync(path.join(this.zdotdir, ".zshrc"), zshrcContent);
       env.ZDOTDIR = this.zdotdir;
@@ -126,7 +140,7 @@ PROMPT="${PROMPT_INDICATOR} %# "
 
     // Determine shell type and set up custom prompt
     const shellName = path.basename(shell);
-    const { args, env } = this.setupShellPrompt(shellName, options.env);
+    const { args, env } = this.setupShellPrompt(shellName, options.env, options.startupBanner);
 
     // Spawn PTY process
     this.ptyProcess = pty.spawn(shell, args, {

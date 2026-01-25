@@ -5,8 +5,7 @@ import { startServer } from "./server.js";
 import { startMcpClientMode } from "./client.js";
 import { TerminalManager } from "./terminal/index.js";
 import { createToolProxyServer } from "./transport/index.js";
-import { printBanner, printInfo, isInfoCommand } from "./ui/index.js";
-import { getStats, resetStats } from "./utils/stats.js";
+import { getBanner } from "./ui/index.js";
 import { getDefaultSocketPath, getDefaultShell } from "./utils/platform.js";
 
 // Default socket path
@@ -72,7 +71,6 @@ Interactive Mode (run in your terminal):
   terminal-mcp
 
   This gives you an interactive shell. AI can observe/interact via MCP.
-  Type /info for the MCP configuration to add to your MCP client.
 
 MCP Client Mode (add to your MCP client config):
   {
@@ -101,31 +99,46 @@ async function main() {
 }
 
 async function startInteractiveMode(socketPath: string): Promise<void> {
-  // Initialize stats
-  resetStats();
-
   // Get terminal size from environment or use defaults
   const cols = options.cols ?? (process.stdout.columns || 120);
   const rows = options.rows ?? (process.stdout.rows || 40);
   const shell = options.shell || getDefaultShell();
 
-  // Print startup banner
-  printBanner({ socketPath, cols, rows, shell });
+  // Generate startup banner
+  const startupBanner = getBanner({ socketPath, cols, rows, shell });
 
   // Create terminal manager (prompt customization handled in session.ts)
   const manager = new TerminalManager({
     cols,
     rows,
     shell: options.shell,
+    startupBanner,
   });
 
   // Get the session and set up interactive I/O
   const session = manager.getSession();
 
+  // Track if we've shown the banner (for Windows, show after shell init)
+  let bannerShown = false;
+  const isWindows = process.platform === "win32";
+
   // Pipe PTY output to stdout
   session.onData((data) => {
     process.stdout.write(data);
+
+    // On Windows, show banner after first prompt appears
+    if (isWindows && !bannerShown && data.includes("⚡")) {
+      bannerShown = true;
+      process.stdout.write("\n" + startupBanner + "\n");
+      // Send Enter to get a fresh prompt
+      session.write("\r");
+    }
   });
+
+  // On non-Windows, banner is shown via shell rc file
+  if (!isWindows) {
+    bannerShown = true;
+  }
 
   // Handle PTY exit
   session.onExit((code) => {
@@ -140,38 +153,9 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
   }
   process.stdin.resume();
 
-  // Buffer for detecting /info command
-  let inputBuffer = "";
-
-  // Pipe stdin to PTY, with /info command detection
+  // Pipe stdin directly to PTY
   process.stdin.on("data", (data) => {
-    const str = data.toString();
-
-    // Check for /info command (detect when user types /info and presses enter)
-    // In raw mode, we need to buffer input to detect the command
-    for (const char of str) {
-      if (char === "\r" || char === "\n") {
-        // Check if buffer is /info command
-        if (isInfoCommand(inputBuffer)) {
-          // Print info and clear the line
-          process.stdout.write("\r\n");
-          printInfo(socketPath, cols, rows, shell, getStats());
-          inputBuffer = "";
-          // Write newline to shell to maintain prompt
-          session.write("\n");
-          continue;
-        }
-        inputBuffer = "";
-        session.write(char);
-      } else if (char === "\x7f" || char === "\b") {
-        // Backspace
-        inputBuffer = inputBuffer.slice(0, -1);
-        session.write(char);
-      } else {
-        inputBuffer += char;
-        session.write(char);
-      }
-    }
+    session.write(data.toString());
   });
 
   // Handle terminal resize

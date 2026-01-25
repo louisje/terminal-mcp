@@ -1,4 +1,3 @@
-import { Stats } from "../utils/stats.js";
 
 const VERSION = "0.1.0";
 
@@ -36,9 +35,9 @@ export interface BannerOptions {
 }
 
 /**
- * Print the startup banner to stderr (so it doesn't interfere with shell output)
+ * Generate the startup banner string
  */
-export function printBanner(options: BannerOptions): void {
+export function getBanner(options: BannerOptions): string {
   // Build the logo with box around it
   const logoLines = LOGO.split("\n");
 
@@ -47,7 +46,6 @@ export function printBanner(options: BannerOptions): void {
   const boxWidth = maxLogoWidth + 4; // 2 chars padding on each side
 
   const horizontalLine = "─".repeat(boxWidth);
-  const emptyLine = YELLOW_COLOR + "│" + " ".repeat(boxWidth) + "│";
 
   // Center the logo as a block (same left padding for all lines)
   // First 6 lines are TERMINAL (blue), last 6 lines are MCP (pink)
@@ -57,87 +55,34 @@ export function printBanner(options: BannerOptions): void {
     return YELLOW_COLOR + "│ " + color + line + " ".repeat(rightPad) + " " + YELLOW_COLOR + "│";
   });
 
-  const banner = `
+  const mcpConfig = `{
+  "mcpServers": {
+    "terminal": {
+      "command": "terminal-mcp"
+    }
+  }
+}`;
+
+  return `
 ${YELLOW_COLOR}╭${horizontalLine}╮
 ${centeredLogo.join("\n")}
 ${YELLOW_COLOR}├${horizontalLine}┤
 ${YELLOW_COLOR}│${WHITE_COLOR}  Socket: ${padRight(options.socketPath, boxWidth - 11)}${YELLOW_COLOR}│
 ${YELLOW_COLOR}│${WHITE_COLOR}  Terminal: ${padRight(`${options.cols}x${options.rows}`, 12)}Shell: ${padRight(options.shell, boxWidth - 30)}${YELLOW_COLOR}│
-${emptyLine}
-${YELLOW_COLOR}│${WHITE_COLOR}  AI can now observe this terminal via MCP.${" ".repeat(boxWidth - 44)}${YELLOW_COLOR}│
-${YELLOW_COLOR}│${WHITE_COLOR}  Type /info for configuration help.${" ".repeat(boxWidth - 37)}${YELLOW_COLOR}│
+${YELLOW_COLOR}│${WHITE_COLOR}  Tools: type, sendKey, getContent, takeScreenshot, clear${" ".repeat(boxWidth - 58)}${YELLOW_COLOR}│
 ${YELLOW_COLOR}│${WHITE_COLOR}${" ".repeat(boxWidth - 7)}v${VERSION} ${YELLOW_COLOR}│
 ${YELLOW_COLOR}╰${horizontalLine}╯${RESET}
-`;
-  process.stderr.write(banner);
-}
 
-/**
- * Generate the /info output
- */
-export function getInfoOutput(
-  socketPath: string,
-  cols: number,
-  rows: number,
-  shell: string,
-  stats: Stats
-): string {
-  const summary = stats.getSummary();
-  const toolCallsStr =
-    Object.keys(summary.toolCalls).length > 0
-      ? Object.entries(summary.toolCalls)
-          .map(([tool, count]) => `    ${tool}: ${count}`)
-          .join("\n")
-      : "    (none yet)";
+${WHITE_COLOR}MCP Configuration (add to your MCP client):${RESET}
 
-  return `
-${YELLOW_COLOR}╭─────────────────────────────────────────────────────────────╮
-│${WHITE_COLOR}  📡 TERMINAL-MCP INFO                                       ${YELLOW_COLOR}│
-├─────────────────────────────────────────────────────────────┤${RESET}
+${mcpConfig}
 
-${WHITE_COLOR}\x1b[1mSession Info:\x1b[0m${WHITE_COLOR}
-  Socket: ${socketPath}
-  Terminal: ${cols}x${rows}
-  Shell: ${shell}
-  Uptime: ${summary.uptime}
-  Tool calls: ${summary.totalCalls}
-${toolCallsStr}
-
-\x1b[1mMCP Configuration:\x1b[0m${WHITE_COLOR}
-  Add this to your MCP client configuration:
-
-  ${YELLOW_COLOR}{
-    "mcpServers": {
-      "terminal": {
-        "command": "terminal-mcp"
-      }
-    }
-  }${WHITE_COLOR}
-
-  Then restart your MCP client to load the server.
-
-\x1b[1mAvailable Tools:\x1b[0m${WHITE_COLOR}
-  • getContent     - Read terminal buffer (visibleOnly=true for current screen)
-  • takeScreenshot - Get visible screen + cursor position
-  • type           - Send text input
-  • sendKey        - Send special keys (enter, ctrl+c, etc.)
-
-${YELLOW_COLOR}╰─────────────────────────────────────────────────────────────╯${RESET}
+${YELLOW_COLOR}╭${horizontalLine}╮
+│${WHITE_COLOR}  Restart your MCP client to connect.${" ".repeat(boxWidth - 38)}${YELLOW_COLOR}│
+╰${horizontalLine}╯${RESET}
 `;
 }
 
-/**
- * Print the /info output
- */
-export function printInfo(
-  socketPath: string,
-  cols: number,
-  rows: number,
-  shell: string,
-  stats: Stats
-): void {
-  process.stdout.write(getInfoOutput(socketPath, cols, rows, shell, stats));
-}
 
 /**
  * Pad a string to the right with spaces
@@ -149,9 +94,3 @@ function padRight(str: string, length: number): string {
   return str + " ".repeat(length - str.length);
 }
 
-/**
- * Check if input is the /info command
- */
-export function isInfoCommand(input: string): boolean {
-  return input.trim() === "/info";
-}
