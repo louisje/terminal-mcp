@@ -28,6 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/elleryfamilia/terminal-mcp/main/ins
 - **Cross-Platform PTY**: Native pseudo-terminal support via node-pty (macOS, Linux, Windows)
 - **MCP Protocol**: Implements Model Context Protocol for AI assistant integration
 - **Simple API**: Four intuitive tools for complete terminal control
+- **Sandbox Mode**: Optional security restrictions for filesystem and network access
 
 ## Building from Source
 
@@ -71,10 +72,12 @@ With custom options:
 terminal-mcp [OPTIONS]
 
 Options:
-  --cols <number>   Terminal width in columns (default: 120)
-  --rows <number>   Terminal height in rows (default: 40)
-  --shell <path>    Shell to use (default: $SHELL or bash)
-  --help, -h        Show help message
+  --cols <number>        Terminal width in columns (default: 120)
+  --rows <number>        Terminal height in rows (default: 40)
+  --shell <path>         Shell to use (default: $SHELL or bash)
+  --sandbox              Enable sandbox mode (restricts filesystem/network)
+  --sandbox-config <path> Load sandbox config from JSON file
+  --help, -h             Show help message
 ```
 
 ## MCP Tools
@@ -132,6 +135,45 @@ Capture the terminal state with cursor position and dimensions.
 }
 ```
 
+## Sandbox Mode
+
+Run the terminal with restricted filesystem and network access:
+
+```bash
+# Interactive permission configuration
+terminal-mcp --sandbox
+
+# With a config file
+terminal-mcp --sandbox --sandbox-config ~/.terminal-mcp-sandbox.json
+```
+
+The interactive mode shows a TUI dialog to configure permissions:
+- **Read/Write**: Full access (current directory, /tmp, caches)
+- **Read-Only**: Can read but not modify (home directory)
+- **Blocked**: No access (SSH keys, cloud credentials, auth tokens)
+
+Example config file:
+
+```json
+{
+  "filesystem": {
+    "readWrite": [".", "/tmp", "~/.cache"],
+    "readOnly": ["~"],
+    "blocked": ["~/.ssh", "~/.aws", "~/.gnupg"]
+  },
+  "network": {
+    "mode": "all"
+  }
+}
+```
+
+Platform support:
+- **macOS**: Full support via sandbox-exec (Seatbelt)
+- **Linux**: Full support via bubblewrap (requires `bwrap` installed)
+- **Windows**: Graceful fallback (runs without sandbox)
+
+See [Sandbox Documentation](./docs/sandbox.md) for detailed configuration options.
+
 ## Architecture
 
 ```
@@ -175,6 +217,7 @@ See the [docs](./docs/) folder for detailed documentation:
 - [Installation](./docs/installation.md)
 - [Tools Reference](./docs/tools.md)
 - [Configuration](./docs/configuration.md)
+- [Sandbox Mode](./docs/sandbox.md)
 - [Examples](./docs/examples.md)
 - [Architecture](./docs/architecture.md)
 

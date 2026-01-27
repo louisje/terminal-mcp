@@ -9,7 +9,11 @@ Terminal MCP can be configured via command-line arguments when starting the serv
 | `--cols` | number | 120 | Terminal width in columns |
 | `--rows` | number | 40 | Terminal height in rows |
 | `--shell` | string | `$SHELL` or `bash` | Shell executable to use |
+| `--sandbox` | flag | - | Enable sandbox mode (restricts filesystem/network) |
+| `--sandbox-config` | string | - | Path to sandbox configuration JSON file |
 | `--help`, `-h` | flag | - | Show help message |
+
+See [Sandbox Mode](./sandbox.md) for detailed sandbox configuration.
 
 ## Usage
 

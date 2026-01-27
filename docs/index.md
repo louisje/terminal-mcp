@@ -18,6 +18,7 @@ Terminal MCP bridges the gap between AI assistants and interactive terminal appl
 - **MCP Protocol**: Implements the Model Context Protocol for seamless AI assistant integration
 - **Simple API**: Five intuitive tools for complete terminal control
 - **Configurable**: Customizable terminal dimensions and shell selection
+- **Sandbox Mode**: Optional security restrictions for filesystem and network access
 
 ## Quick Start
 
@@ -50,6 +51,7 @@ Configure in Claude Code's MCP settings:
 - [Installation](./installation.md) - Setup and installation instructions
 - [Tools Reference](./tools.md) - Complete API documentation for all MCP tools
 - [Configuration](./configuration.md) - Configuration options and customization
+- [Sandbox Mode](./sandbox.md) - Security restrictions for filesystem and network
 - [Examples](./examples.md) - Usage examples and common patterns
 - [Architecture](./architecture.md) - Technical architecture and development guide
 
