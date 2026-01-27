@@ -44,12 +44,7 @@ export class SandboxController {
    * Check if sandboxing is supported on this platform
    */
   isSupported(): boolean {
-    // Convert our platform to sandbox-runtime's Platform type
-    const runtimePlatform = this.platform === "darwin" ? "macos"
-      : this.platform === "linux" ? "linux"
-      : this.platform === "win32" ? "windows"
-      : "unknown";
-    return SandboxManager.isSupportedPlatform(runtimePlatform as "macos" | "linux" | "windows" | "unknown");
+    return SandboxManager.isSupportedPlatform();
   }
 
   /**
@@ -59,8 +54,9 @@ export class SandboxController {
     if (this.platform !== "linux") {
       return { supported: true };
     }
-    const supported = SandboxManager.checkDependencies();
-    const message = supported ? undefined : "bubblewrap (bwrap) or socat not installed";
+    const depCheck = SandboxManager.checkDependencies();
+    const supported = depCheck.errors.length === 0;
+    const message = supported ? undefined : depCheck.errors.join("; ");
     return { supported, message };
   }
 
