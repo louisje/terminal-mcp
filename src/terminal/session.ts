@@ -172,6 +172,12 @@ ${bannerCmd}
       const wrapped = await options.sandboxController.wrapShellCommand(shell, args);
       spawnCmd = wrapped.cmd;
       spawnArgs = wrapped.args;
+
+      if (process.env.DEBUG_SANDBOX) {
+        console.error("[sandbox-debug] Spawn command:", spawnCmd);
+        console.error("[sandbox-debug] Spawn args:", spawnArgs.join(" "));
+        console.error("[sandbox-debug] CWD:", options.cwd ?? process.cwd());
+      }
     }
 
     // Spawn PTY process

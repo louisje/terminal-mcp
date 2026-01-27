@@ -178,6 +178,11 @@ export class SandboxController {
       shell
     );
 
+    // Debug: log the generated command
+    if (process.env.DEBUG_SANDBOX) {
+      console.error("[sandbox-debug] Generated command:", sandboxedCommand);
+    }
+
     // The sandboxed command should be executed via shell
     // Return it as a shell -c command
     return {
