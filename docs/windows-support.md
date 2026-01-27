@@ -10,14 +10,16 @@ Terminal-mcp now supports Windows with cmd.exe as the default shell. The followi
 
 ### 1. node-pty Package Compatibility
 
-**Issue:** The original `node-pty-prebuilt-multiarch` package had build/compatibility issues on Windows.
+**Issue:** The original `node-pty-prebuilt-multiarch` package had build/compatibility issues on Windows, and later `@homebridge/node-pty-prebuilt-multiarch` added restrictive Node.js version caps.
 
-**Solution:** Switched to `@homebridge/node-pty-prebuilt-multiarch` which provides better Windows prebuilt binaries.
+**Solution:** Switched to Microsoft's official `node-pty` package which has no engine restrictions and works with newer Node.js versions.
 
 ```json
 // package.json
-"@homebridge/node-pty-prebuilt-multiarch": "^0.13.1"
+"node-pty": "^1.2.0-beta.8"
 ```
+
+This version includes prebuilt binaries for all platforms (Windows, macOS, Linux) on both x64 and arm64 architectures.
 
 ### 2. Socket Path for Windows
 
