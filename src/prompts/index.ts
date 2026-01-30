@@ -9,6 +9,8 @@ const TOOL_USAGE_PROMPT = `# Terminal MCP Tool Usage Guide
 ## Overview
 This MCP server provides tools to interact with a terminal emulator. Use these tools to execute commands and read output.
 
+The terminal session is automatically initialized when the server starts - you can immediately start using tools.
+
 ## Tools
 
 ### type
@@ -52,6 +54,23 @@ Capture terminal state as structured JSON with:
 - dimensions: {cols, rows}
 
 Use when you need cursor position (e.g., for interactive apps, editors) or terminal dimensions. For simple command output, prefer getContent().
+
+### startRecording
+Start recording terminal output to an asciicast v2 file for playback with asciinema.
+
+**Returns:** Recording ID and file path
+
+**Example:**
+- Start recording: startRecording({mode: 'always'})
+- Perform terminal operations
+- Stop recording: stopRecording({recordingId: '...'})
+
+### stopRecording
+Stop a recording and finalize the asciicast file.
+
+**Arguments:** recordingId (returned from startRecording)
+
+**Returns:** Metadata about the saved recording including file path and duration
 `;
 
 const prompts = [

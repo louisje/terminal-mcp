@@ -40,6 +40,7 @@ const options: {
   idleTimeLimit?: number;
   maxDuration?: number;
   inactivityTimeout?: number;
+  useMcp?: boolean;
 } = {};
 
 for (let i = 0; i < args.length; i++) {
@@ -47,6 +48,9 @@ for (let i = 0; i < args.length; i++) {
   const next = args[i + 1];
 
   switch (arg) {
+    case "--mcp":
+      options.useMcp = true;
+      break;
     case "--cols":
       if (next) {
         options.cols = parseInt(next, 10);
@@ -139,6 +143,7 @@ Options:
   --rows <number>        Terminal height in rows (default: auto or 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
   --socket <path>        Unix socket path for MCP (default: ${DEFAULT_SOCKET_PATH})
+  --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
   --version, -v          Show version number
@@ -213,6 +218,34 @@ MCP Client Mode (add to your MCP client config):
 
 async function main() {
   const socketPath = options.socket || DEFAULT_SOCKET_PATH;
+
+  // Check if --mcp flag is set to use direct MCP mode
+  if (options.useMcp) {
+    console.error('[terminal-mcp] Starting in MCP mode...');
+    
+    // Try to connect to existing interactive session first
+    const fs = await import('fs');
+    if (fs.existsSync(socketPath)) {
+      try {
+        console.error('[terminal-mcp] Found existing session, connecting as client...');
+        await startMcpClientMode(socketPath);
+        return;
+      } catch (error) {
+        // If connection fails, fall through to create new PTY
+        console.error('[terminal-mcp] Failed to connect to existing session, creating new PTY...');
+      }
+    } else {
+      console.error('[terminal-mcp] No existing session found, creating new PTY...');
+    }
+    
+    // No existing session, create our own PTY
+    await startServer({
+      cols: options.cols,
+      rows: options.rows,
+      shell: options.shell,
+    });
+    return;
+  }
   const isInteractive = process.stdin.isTTY;
 
   // Prevent recursive invocation
