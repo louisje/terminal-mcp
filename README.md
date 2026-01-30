@@ -40,6 +40,16 @@ npm run build
 
 ## Usage
 
+Terminal MCP can run in two modes:
+
+1. **MCP Mode (Recommended)**: Direct MCP protocol communication via stdio. Use the `--mcp` flag for standard MCP server behavior.
+   - Automatically detects and connects to existing interactive sessions if available
+   - Falls back to creating a new virtual terminal (PTY) if no session exists
+   
+2. **Interactive Mode**: Dual-mode architecture where you run an interactive terminal session and MCP clients connect via Unix socket. See [Architecture Documentation](./docs/architecture.md) for details.
+
+For most MCP integrations, use **MCP mode** with the `--mcp` flag.
+
 ### MCP Configuration
 
 Add to your MCP client settings:
@@ -48,7 +58,21 @@ Add to your MCP client settings:
 {
   "mcpServers": {
     "terminal": {
-      "command": "terminal-mcp"
+      "command": "terminal-mcp",
+      "args": ["--mcp"]
+    }
+  }
+}
+```
+
+Or use directly from GitHub (no installation required):
+
+```json
+{
+  "mcpServers": {
+    "terminal": {
+      "command": "npx",
+      "args": ["--yes", "github:louisje/terminal-mcp", "--mcp"]
     }
   }
 }
@@ -61,7 +85,7 @@ With custom options:
   "mcpServers": {
     "terminal": {
       "command": "terminal-mcp",
-      "args": ["--cols", "100", "--rows", "30", "--shell", "/bin/zsh"]
+      "args": ["--mcp", "--cols", "100", "--rows", "30", "--shell", "/bin/zsh"]
     }
   }
 }
@@ -73,6 +97,7 @@ With custom options:
 terminal-mcp [OPTIONS]
 
 Options:
+  --mcp                  Use MCP mode (connects to existing session or creates new PTY)
   --cols <number>        Terminal width in columns (default: 120)
   --rows <number>        Terminal height in rows (default: 40)
   --shell <path>         Shell to use (default: $SHELL or bash)

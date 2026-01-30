@@ -78,5 +78,12 @@ export async function startServer(options: ServerOptions = {}): Promise<void> {
     process.exit(0);
   });
 
+  // Initialize terminal session in background (don't block MCP connection)
+  // This allows MCP server to start accepting messages while session initializes
+  manager.initSession().catch((error) => {
+    console.error("[terminal-mcp] Failed to initialize session:", error);
+  });
+
+  // Connect to transport (this will block until transport closes)
   await server.connect(transport);
 }

@@ -87,7 +87,7 @@ export class TerminalManager {
   getSession(): TerminalSession {
     if (!this.session || !this.session.isActive()) {
       throw new Error(
-        "Session not initialized. Use getSessionAsync() or call initSession() first."
+        "Session not initialized. Call initSession() first."
       );
     }
     return this.session;

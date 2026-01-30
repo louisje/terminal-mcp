@@ -12,7 +12,14 @@ import { screenshotTool, handleScreenshot } from "./screenshot.js";
 import { startRecordingTool, handleStartRecording } from "./startRecording.js";
 import { stopRecordingTool, handleStopRecording } from "./stopRecording.js";
 
-const tools = [typeTool, sendKeyTool, getContentTool, screenshotTool, startRecordingTool, stopRecordingTool];
+const tools = [
+  typeTool,
+  sendKeyTool,
+  getContentTool,
+  screenshotTool,
+  startRecordingTool,
+  stopRecordingTool,
+];
 
 export function registerTools(server: Server, manager: TerminalManager): void {
   // Register list tools handler
