@@ -1,4 +1,5 @@
 import * as net from "net";
+import * as os from "os";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { VERSION } from "./utils/version.js";
@@ -105,6 +106,19 @@ export async function startMcpClientMode(socketPath: string): Promise<void> {
         }
       });
     });
+  }
+
+  // Send initialization message to terminal
+  const hostname = os.hostname();
+  const timestamp = new Date().toISOString();
+  const initMessage = `: client ${VERSION} ${hostname} ${timestamp}`;
+  
+  try {
+    await sendRequest("type", { text: initMessage });
+    await sendRequest("sendKey", { key: "Enter" });
+  } catch (error) {
+    console.error("Warning: Failed to send init message:", error);
+    // Continue anyway - this is not critical
   }
 
   // Register list tools handler
