@@ -182,6 +182,21 @@ export class TerminalManager {
   }
 
   /**
+   * Get terminal content with ANSI color codes
+   */
+  getAnsiContent(visibleOnly = false): string {
+    return this.getSession().getAnsiContent(visibleOnly);
+  }
+
+  /**
+   * Get the underlying xterm.js Terminal instance for direct buffer access.
+   * Used by the color screenshot renderer.
+   */
+  getTerminal() {
+    return this.getSession().getTerminal();
+  }
+
+  /**
    * Take a screenshot
    */
   takeScreenshot(): ScreenshotResult {
