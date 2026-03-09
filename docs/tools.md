@@ -8,9 +8,9 @@ Terminal MCP exposes seven MCP tools for interacting with the terminal. This doc
 |------|-------------|
 | [`type`](#type) | Send text input to the terminal |
 | [`sendKey`](#sendkey) | Send special keys and key combinations |
+| [`wait`](#wait) | Pause before reading output from long-running commands |
 | [`getContent`](#getcontent) | Retrieve terminal buffer content |
 | [`takeScreenshot`](#takescreenshot) | Capture terminal state with metadata |
-| [`clear`](#clear) | Clear the terminal screen |
 | [`startRecording`](#startrecording) | Start recording terminal output |
 | [`stopRecording`](#stoprecording) | Stop recording and save file |
 
@@ -307,13 +307,15 @@ The text content is a JSON string with the following structure:
 
 ---
 
-## clear
+## wait
 
-Clear the terminal screen and scrollback buffer.
+Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.
 
 ### Parameters
 
-None.
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `seconds` | number | No | Number of seconds to wait before returning. Defaults to `5`. |
 
 ### Returns
 
@@ -322,7 +324,7 @@ None.
   "content": [
     {
       "type": "text",
-      "text": "Terminal cleared"
+      "text": "Waited 5 seconds"
     }
   ]
 }
@@ -333,8 +335,10 @@ None.
 **Request:**
 ```json
 {
-  "name": "clear",
-  "arguments": {}
+  "name": "wait",
+  "arguments": {
+    "seconds": 2
+  }
 }
 ```
 
@@ -344,7 +348,7 @@ None.
   "content": [
     {
       "type": "text",
-      "text": "Terminal cleared"
+      "text": "Waited 2 seconds"
     }
   ]
 }
@@ -352,9 +356,9 @@ None.
 
 ### Notes
 
-- Clears both the visible screen and scrollback buffer
-- Equivalent to the `clear` command but operates on the terminal emulator directly
-- The shell prompt will reappear after any subsequent output
+- Use after `sendKey("Enter")` when a command produces output asynchronously
+- Helpful for commands like `npm install`, `tail -f`, or remote sessions
+- Omitting `seconds` waits for 5 seconds by default
 
 ---
 

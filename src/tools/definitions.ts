@@ -43,6 +43,22 @@ export const toolDefinitions: ToolDefinition[] = [
     },
   },
   {
+    name: "wait",
+    description:
+      "Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        seconds: {
+          type: "number",
+          description: "Number of seconds to wait before returning (default: 5)",
+          default: 5,
+          minimum: 0,
+        },
+      },
+    },
+  },
+  {
     name: "getContent",
     description: "Get the current content of the terminal buffer",
     inputSchema: {

@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/elleryfamilia/terminal-mcp/main/ins
 - **Cross-Platform PTY**: Native pseudo-terminal support via node-pty (macOS, Linux, Windows)
 - **MCP Protocol**: Implements Model Context Protocol for AI assistant integration
 - **Session Recording**: Record terminal sessions to asciicast format for playback with asciinema
-- **Simple API**: Six intuitive tools for complete terminal control
+- **Simple API**: Seven intuitive tools for complete terminal control
 - **Sandbox Mode**: Optional security restrictions for filesystem and network access
 
 ## Building from Source
@@ -148,6 +148,20 @@ Supported keys:
 - Navigation: `Home`, `End`, `PageUp`, `PageDown`, `Insert`
 - Function: `F1` through `F12`
 - Control: `Ctrl+A` through `Ctrl+Z`, `Ctrl+C`, `Ctrl+D`, etc.
+
+### `wait`
+Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.
+
+```json
+{
+  "name": "wait",
+  "arguments": {
+    "seconds": 5
+  }
+}
+```
+
+- `seconds`: Optional wait duration in seconds (defaults to `5`)
 
 ### `getContent`
 Get the terminal buffer as plain text.

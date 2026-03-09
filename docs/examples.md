@@ -317,8 +317,8 @@ For commands that produce output over time, you may need to wait before reading 
 ```
 1. type: {"text": "npm install"}
 2. sendKey: {"key": "Enter"}
-3. // Tool will return, but npm is still running
-4. // Wait and poll getContent until complete
+3. wait: {"seconds": 5}
+4. getContent: {}
 ```
 
 ### Clear When Needed

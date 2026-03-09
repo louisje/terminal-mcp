@@ -7,6 +7,7 @@ import { TerminalManager } from "../terminal/index.js";
 
 import { typeTool, handleType } from "./type.js";
 import { sendKeyTool, handleSendKey } from "./sendKey.js";
+import { waitTool, handleWait } from "./wait.js";
 import { getContentTool, handleGetContent } from "./getContent.js";
 import { screenshotTool, handleScreenshot } from "./screenshot.js";
 import { startRecordingTool, handleStartRecording } from "./startRecording.js";
@@ -15,6 +16,7 @@ import { stopRecordingTool, handleStopRecording } from "./stopRecording.js";
 const tools = [
   typeTool,
   sendKeyTool,
+  waitTool,
   getContentTool,
   screenshotTool,
   startRecordingTool,
@@ -38,6 +40,9 @@ export function registerTools(server: Server, manager: TerminalManager): void {
 
         case "sendKey":
           return handleSendKey(manager, args);
+
+        case "wait":
+          return await handleWait(manager, args);
 
         case "getContent":
           return handleGetContent(manager, args);
