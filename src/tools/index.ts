@@ -36,7 +36,7 @@ export function registerTools(server: Server, manager: TerminalManager): void {
     try {
       switch (name) {
         case "type":
-          return handleType(manager, args);
+          return await handleType(manager, args);
 
         case "sendKey":
           return handleSendKey(manager, args);

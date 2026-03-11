@@ -23,6 +23,11 @@ export const toolDefinitions: ToolDefinition[] = [
           type: "string",
           description: "The text to type",
         },
+        autoSubmit: {
+          type: "boolean",
+          description: "If true, automatically send Enter key and return terminal content",
+          default: false,
+        },
       },
       required: ["text"],
     },

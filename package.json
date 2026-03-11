@@ -19,7 +19,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "node --test --import tsx test/**/*.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sandbox-runtime": "^0.0.32",
