@@ -45,7 +45,7 @@ export function registerTools(server: Server, manager: TerminalManager): void {
           return await handleSleep(manager, args);
 
         case "getContent":
-          return handleGetContent(manager, args);
+          return await handleGetContent(manager, args);
 
         case "takeScreenshot":
           return handleScreenshot(manager, args);

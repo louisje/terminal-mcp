@@ -201,7 +201,7 @@ async function handleToolRequest(
 
       case "getContent":
         stats.recordToolCall("getContent");
-        result = handleGetContent(manager, params);
+        result = await handleGetContent(manager, params);
         break;
 
       case "takeScreenshot":
