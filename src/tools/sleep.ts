@@ -2,27 +2,27 @@ import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
 import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
-export const waitSchema = z.object({
+export const sleepSchema = z.object({
   milliseconds: z
     .number()
     .finite()
     .nonnegative()
     .optional()
     .default(5000)
-    .describe(TOOL_DESCRIPTIONS.wait.milliseconds),
+    .describe(TOOL_DESCRIPTIONS.sleep.milliseconds),
 });
 
-export type WaitArgs = z.infer<typeof waitSchema>;
+export type SleepArgs = z.infer<typeof sleepSchema>;
 
-export const waitTool = {
-  name: "wait",
-  description: TOOL_DESCRIPTIONS.wait.main,
+export const sleepTool = {
+  name: "sleep",
+  description: TOOL_DESCRIPTIONS.sleep.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       milliseconds: {
         type: "number",
-        description: TOOL_DESCRIPTIONS.wait.milliseconds,
+        description: TOOL_DESCRIPTIONS.sleep.milliseconds,
         default: 5000,
         minimum: 0,
       },
@@ -42,11 +42,11 @@ function formatMilliseconds(milliseconds: number): string {
   }
 }
 
-export async function handleWait(
+export async function handleSleep(
   _manager: TerminalManager,
   args: unknown
 ): Promise<{ content: Array<{ type: "text"; text: string }> }> {
-  const parsed = waitSchema.parse(args ?? {});
+  const parsed = sleepSchema.parse(args ?? {});
 
   await new Promise((resolve) => {
     setTimeout(resolve, parsed.milliseconds);
@@ -56,7 +56,7 @@ export async function handleWait(
     content: [
       {
         type: "text",
-        text: `Waited ${formatMilliseconds(parsed.milliseconds)}`,
+        text: `Slept for ${formatMilliseconds(parsed.milliseconds)}`,
       },
     ],
   };

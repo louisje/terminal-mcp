@@ -330,7 +330,7 @@ All tool handlers are wrapped in try-catch:
 try {
   switch (name) {
     case "type": return await handleType(manager, args);
-    case "wait": return await handleWait(manager, args);
+    case "sleep": return await handleSleep(manager, args);
     case "stopRecording": return await handleStopRecording(manager, args);
     // ... other tools (non-async ones don't need await)
   }

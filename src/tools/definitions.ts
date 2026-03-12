@@ -49,14 +49,14 @@ export const toolDefinitions: ToolDefinition[] = [
     },
   },
   {
-    name: "wait",
-    description: TOOL_DESCRIPTIONS.wait.main,
+    name: "sleep",
+    description: TOOL_DESCRIPTIONS.sleep.main,
     inputSchema: {
       type: "object",
       properties: {
         milliseconds: {
           type: "number",
-          description: TOOL_DESCRIPTIONS.wait.milliseconds,
+          description: TOOL_DESCRIPTIONS.sleep.milliseconds,
           default: 5000,
           minimum: 0,
         },

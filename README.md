@@ -133,7 +133,7 @@ Send text input to the terminal.
 }
 ```
 
-With `autoSubmit: true`, the command is executed automatically and returns the output - no need to call `sendKey('Enter')`, `wait()`, or `getContent()` separately.
+With `autoSubmit: true`, the command is executed automatically and returns the output - no need to call `sendKey('Enter')`, `sleep()`, or `getContent()` separately.
 
 **Alternative (manual control):**
 ```json
@@ -166,31 +166,31 @@ Supported keys:
 - Function: `F1` through `F12`
 - Control: `Ctrl+A` through `Ctrl+Z`, `Ctrl+C`, `Ctrl+D`, etc.
 
-### `wait`
-Pause for a specified duration.
+### `sleep`
+Pause execution for an extended duration.
 
-**⚠️ WARNING: Use sparingly to avoid wasting time!**
+**⚠️ WARNING: BLOCKING operation - use ONLY for long-running processes! Avoid frequent calls.**
 
 ```json
 {
-  "name": "wait",
+  "name": "sleep",
   "arguments": {
     "milliseconds": 5000
   }
 }
 ```
 
-- `milliseconds`: Optional wait duration in milliseconds (defaults to `5000` = 5 seconds)
+- `milliseconds`: Wait duration in milliseconds (defaults to `5000` = 5 seconds)
 
 **When to use:**
-- Long-running processes (builds, downloads, installations)
-- Background tasks that need time to complete
-- Interactive prompts that appear after a delay
+- Long-running builds, downloads, or installations that genuinely take time
+- Waiting for slow background processes
+- Operations where timing is critical
 
 **When NOT to use:**
-- After `type()` with `autoSubmit=true` (already includes wait)
+- After `type()` with `autoSubmit=true` (already includes a brief wait)
 - For fast commands like `ls`, `pwd`, `cd`, `uptime`, etc.
-- After every command "just in case" (wastes time)
+- As a workaround - if you need `sleep()` frequently, something is wrong
 
 ### `getContent`
 Get the terminal buffer as plain text.
@@ -259,13 +259,13 @@ type({ text: "ls -la", autoSubmit: true })
 // Avoid: Multiple calls for simple commands
   type({ text: "ls -la" })
   sendKey({ key: "Enter" })
-  wait({ milliseconds: 2000 })  // Unnecessary!
+  sleep({ milliseconds: 2000 })  // Unnecessary!
 getContent()
 ```
 
-### ⚡ Minimize Wait Time
+### ⚡ Minimize Sleep Time
 
-**Most commands complete instantly - don't wait unnecessarily:**
+**Most commands complete instantly - don't sleep unnecessarily:**
 ```typescript
 // Good: No wait needed
 type({ text: "pwd", autoSubmit: true })
@@ -274,32 +274,32 @@ type({ text: "uptime", autoSubmit: true })
 
   // Bad: Wasting 6 seconds for fast commands
   type({ text: "pwd", autoSubmit: true })
-  wait({ milliseconds: 2000 })  // Why wait?
+  sleep({ milliseconds: 2000 })  // Why sleep?
   type({ text: "cd /tmp", autoSubmit: true })
-  wait({ milliseconds: 2000 })  // Unnecessary!
+  sleep({ milliseconds: 2000 })  // Unnecessary!
   type({ text: "uptime", autoSubmit: true })
-  wait({ milliseconds: 2000 })  // Don't do this!
+  sleep({ milliseconds: 2000 })  // Don't do this!
 ```
 
-**Only use `wait()` when truly needed:**
+**Only use `sleep()` when truly needed:**
 ```typescript
-  // Good: Wait for long-running process
+  // Good: Sleep for long-running process
   type({ text: "npm install", autoSubmit: true })
-  wait({ milliseconds: 30000 })  // Justified - installation takes time
+  sleep({ milliseconds: 30000 })  // Justified - installation takes time
   
-  // Good: Wait for build process
+  // Good: Sleep for build process
   type({ text: "npm run build", autoSubmit: true })
-  wait({ milliseconds: 10000 })  // Justified - build takes time
+  sleep({ milliseconds: 10000 })  // Justified - build takes time
 ```
 
 ### 🎯 When to Use Each Tool
 
 | Scenario | Recommended Approach | Avoid |
 |----------|---------------------|-------|
-| Execute simple command | `type(cmd, autoSubmit=true)` | Adding `wait()` after |
-| Check directory | `type('pwd', autoSubmit=true)` | Manual Enter + wait |
-| List files | `type('ls', autoSubmit=true)` | wait() unnecessarily |
-| Run build/install | `type(cmd, autoSubmit=true)` then `wait(N)` | Short wait times |
+| Execute simple command | `type(cmd, autoSubmit=true)` | Adding `sleep()` after |
+| Check directory | `type('pwd', autoSubmit=true)` | Manual Enter + sleep |
+| List files | `type('ls', autoSubmit=true)` | sleep() unnecessarily |
+| Run build/install | `type(cmd, autoSubmit=true)` then `sleep(N)` | Short sleep times |
 | Interactive input | `type(text)` then `sendKey('Enter')` | autoSubmit for prompts |
 
 ## Sandbox Mode

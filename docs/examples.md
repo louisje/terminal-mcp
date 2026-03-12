@@ -312,12 +312,12 @@ After running commands, use `getContent` or `takeScreenshot` to verify the resul
 
 ### Use Appropriate Delays
 
-For commands that produce output over time, you may need to wait before reading content:
+For commands that produce output over time, you may need to sleep before reading content:
 
 ```
 1. type: {"text": "npm install"}
 2. sendKey: {"key": "Enter"}
-3. wait: {"seconds": 5}
+3. sleep: {"milliseconds": 30000}
 4. getContent: {}
 ```
 

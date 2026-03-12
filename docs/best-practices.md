@@ -13,47 +13,47 @@ type({ text: "uptime", autoSubmit: true })
 // ❌ Avoid: Multiple calls for simple commands
 type({ text: "uptime" })
 sendKey({ key: "Enter" })
-wait({ milliseconds: 2000 })  // Unnecessary!
+sleep({ milliseconds: 2000 })  // Unnecessary!
 getContent()
 ```
 
-### ⚡ Minimize Wait Time
+### ⚡ Minimize Sleep Time
 
-Most commands complete **instantly** - don't wait unnecessarily!
+Most commands complete **instantly** - don't sleep unnecessarily!
 
 ```typescript
-// ✅ Good: No wait needed for fast commands
+// ✅ Good: No sleep needed for fast commands
 type({ text: "pwd", autoSubmit: true })
 type({ text: "ls -la", autoSubmit: true })
 type({ text: "uptime", autoSubmit: true })
 
 // ❌ Bad: Wasting time on fast commands
 type({ text: "pwd", autoSubmit: true })
-wait({ milliseconds: 2000 })  // Why wait for pwd?
+sleep({ milliseconds: 2000 })  // Why sleep for pwd?
 ```
 
 ### 📊 When to Use Each Tool
 
 | Tool | Best Use Case | Avoid |
 |------|---------------|-------|
-| `type(cmd, autoSubmit=true)` | Execute any command | Adding unnecessary `wait()` after |
+| `type(cmd, autoSubmit=true)` | Execute any command | Adding unnecessary `sleep()` after |
 | `type(text)` + `sendKey()` | Interactive input, multi-step | Simple one-off commands |
-| `wait(N)` | Long builds, downloads | After every command |
+| `sleep(N)` | Long builds, downloads | After every command |
 | `getContent()` | Manual content check | After `autoSubmit=true` (already returns content) |
 
-### ✅ When to Use `wait()`
+### ✅ When to Use `sleep()`
 
-**Use `wait()` for:**
+**Use `sleep()` ONLY for:**
 - 🔨 Build processes: `npm run build`, `make`, `cargo build`
 - 📦 Package installations: `npm install`, `pip install`, `brew install`
 - 🌐 Downloads: `curl`, `wget`, long file transfers
-- ⏳ Background tasks that need time to complete
-- 🤔 Interactive prompts that appear after a delay
+- ⏳ Background tasks that genuinely take time
+- 🤔 Operations where timing is critical
 
-**DON'T use `wait()` for:**
+**DON'T use `sleep()` for:**
 - ❌ Fast commands: `ls`, `pwd`, `cd`, `echo`, `cat`, `uptime`
 - ❌ After `type(cmd, autoSubmit=true)` - it already waits 250ms
-- ❌ "Just in case" - this wastes time
+- ❌ As a workaround - frequent `sleep()` calls indicate a problem
 
 ### 🚀 Example: Efficient Workflow
 
@@ -63,13 +63,13 @@ type({ text: "pwd", autoSubmit: true })
 type({ text: "ls -la", autoSubmit: true })
 type({ text: "uptime", autoSubmit: true })
 
-// ❌ Inefficient: 3 commands + 6 seconds of waiting
+// ❌ Inefficient: 3 commands + 6 seconds of sleeping
 type({ text: "pwd", autoSubmit: true })
-wait({ milliseconds: 2000 })  // Wasted 2 seconds
+sleep({ milliseconds: 2000 })  // Wasted 2 seconds
 type({ text: "ls -la", autoSubmit: true })
-wait({ milliseconds: 2000 })  // Wasted 2 seconds
+sleep({ milliseconds: 2000 })  // Wasted 2 seconds
 type({ text: "uptime", autoSubmit: true })
-wait({ milliseconds: 2000 })  // Wasted 2 seconds
+sleep({ milliseconds: 2000 })  // Wasted 2 seconds
 ```
 
 ### 💡 Special Cases
@@ -79,19 +79,19 @@ wait({ milliseconds: 2000 })  // Wasted 2 seconds
 // Don't use autoSubmit for interactive prompts
 type({ text: "sudo something" })
 sendKey({ key: "Enter" })
-wait({ milliseconds: 1000 })  // Wait for prompt to appear
+sleep({ milliseconds: 1000 })  // Sleep for prompt to appear
 type({ text: "password" })
 sendKey({ key: "Enter" })
 ```
 
 **Long-running Process:**
 ```typescript
-// Use autoSubmit, then wait appropriately
+// Use autoSubmit, then sleep appropriately
 type({ text: "npm install", autoSubmit: true })
-wait({ milliseconds: 30000 })  // Justified - installation takes time
+sleep({ milliseconds: 30000 })  // Justified - installation takes time
 
 type({ text: "npm run build", autoSubmit: true })
-wait({ milliseconds: 10000 })  // Justified - build takes time
+sleep({ milliseconds: 10000 })  // Justified - build takes time
 ```
 
 **Multi-line Input:**
@@ -108,20 +108,20 @@ sendKey({ key: "Ctrl+D" })  // EOF
 
 ## 📈 Performance Impact
 
-Using `autoSubmit` and avoiding unnecessary `wait()` can dramatically improve efficiency:
+Using `autoSubmit` and avoiding unnecessary `sleep()` can dramatically improve efficiency:
 
 | Approach | Time | Tool Calls |
 |----------|------|------------|
-| With `autoSubmit`, no unnecessary waits | ~100ms | 1 |
-| Without `autoSubmit`, with waits | ~2-5s | 3-4 |
+| With `autoSubmit`, no unnecessary sleeps | ~100ms | 1 |
+| Without `autoSubmit`, with sleeps | ~2-5s | 3-4 |
 
 **Speed improvement: 20-50x faster!** ⚡
 
 ## 🎓 Summary
 
 1. **Default to `autoSubmit: true`** for command execution
-2. **Only use `wait()` when commands actually need time**
-3. **Don't wait after `autoSubmit`** - it already includes a wait
+2. **Only use `sleep()` when commands genuinely require extended time**
+3. **Don't sleep after `autoSubmit`** - it already includes a brief wait (250ms)
 4. **Save time by avoiding unnecessary tool calls**
 
 Happy terminal automation! 🚀

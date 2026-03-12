@@ -8,7 +8,7 @@ import { getStats } from "../utils/stats.js";
 // Tool handlers
 import { handleType } from "../tools/type.js";
 import { handleSendKey } from "../tools/sendKey.js";
-import { handleWait } from "../tools/wait.js";
+import { handleSleep } from "../tools/sleep.js";
 import { handleGetContent } from "../tools/getContent.js";
 import { handleScreenshot } from "../tools/screenshot.js";
 import { handleStartRecording } from "../tools/startRecording.js";
@@ -194,9 +194,9 @@ async function handleToolRequest(
         result = handleSendKey(manager, params);
         break;
 
-      case "wait":
-        stats.recordToolCall("wait");
-        result = await handleWait(manager, params);
+      case "sleep":
+        stats.recordToolCall("sleep");
+        result = await handleSleep(manager, params);
         break;
 
       case "getContent":

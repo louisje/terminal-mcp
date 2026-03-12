@@ -8,7 +8,7 @@ Terminal MCP exposes seven MCP tools for interacting with the terminal. This doc
 |------|-------------|
 | [`type`](#type) | Send text input to the terminal |
 | [`sendKey`](#sendkey) | Send special keys and key combinations |
-| [`wait`](#wait) | Pause before reading output from long-running commands |
+| [`sleep`](#sleep) | Block execution for long-running operations (builds, downloads) |
 | [`getContent`](#getcontent) | Retrieve terminal buffer content |
 | [`takeScreenshot`](#takescreenshot) | Capture terminal state with metadata |
 | [`startRecording`](#startrecording) | Start recording terminal output |
@@ -307,15 +307,15 @@ The text content is a JSON string with the following structure:
 
 ---
 
-## wait
+## sleep
 
-Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.
+Blocking pause operation for extended durations. **Use ONLY when absolutely necessary** for long-running processes. Avoid frequent calls.
 
 ### Parameters
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `seconds` | number | No | Number of seconds to wait before returning. Defaults to `5`. |
+| `milliseconds` | number | No | Number of milliseconds to sleep. Defaults to `5000` (5 seconds). |
 
 ### Returns
 
@@ -324,7 +324,7 @@ Optional pause tool. Call only when a command needs time to produce output. Defa
   "content": [
     {
       "type": "text",
-      "text": "Waited 5 seconds"
+      "text": "Slept for 5 seconds"
     }
   ]
 }
@@ -335,9 +335,9 @@ Optional pause tool. Call only when a command needs time to produce output. Defa
 **Request:**
 ```json
 {
-  "name": "wait",
+  "name": "sleep",
   "arguments": {
-    "seconds": 2
+    "milliseconds": 10000
   }
 }
 ```
@@ -348,7 +348,7 @@ Optional pause tool. Call only when a command needs time to produce output. Defa
   "content": [
     {
       "type": "text",
-      "text": "Waited 2 seconds"
+      "text": "Slept for 10 seconds"
     }
   ]
 }
@@ -356,9 +356,10 @@ Optional pause tool. Call only when a command needs time to produce output. Defa
 
 ### Notes
 
-- Use after `sendKey("Enter")` when a command produces output asynchronously
-- Helpful for commands like `npm install`, `tail -f`, or remote sessions
-- Omitting `seconds` waits for 5 seconds by default
+- **Use sparingly**: Only for genuine long-running operations (builds, installations, downloads)
+- **Not for fast commands**: Commands like `ls`, `pwd`, `cd` complete instantly
+- **Not after autoSubmit**: `type()` with `autoSubmit=true` already includes a brief wait
+- **Indicator of problems**: Frequent `sleep()` calls suggest architectural issues
 
 ---
 

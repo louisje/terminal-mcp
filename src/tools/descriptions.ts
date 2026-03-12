@@ -12,9 +12,9 @@ export const TOOL_DESCRIPTIONS = {
     main: "Send a special key to the terminal (e.g., enter, tab, ctrl+c)",
     key: "The key to send (e.g., enter, tab, escape, up, down, left, right, ctrl+c, ctrl+d)",
   },
-  wait: {
-    main: "Pause for a specified duration. Use sparingly - only for long-running processes, background tasks, or interactive prompts. Not needed after autoSubmit or for fast commands.",
-    milliseconds: "Number of milliseconds to wait before returning (default: 5000 = 5 seconds)",
+  sleep: {
+    main: "Pause execution for an extended duration. This is a BLOCKING operation - use ONLY when absolutely necessary for long-running processes (builds, installations, downloads) or waiting for slow background tasks. AVOID frequent calls. Not needed after autoSubmit or for fast commands.",
+    milliseconds: "Number of milliseconds to sleep (default: 5000 = 5 seconds). Use for operations that genuinely require waiting, not as a workaround.",
   },
   getContent: {
     main: "Get the current content of the terminal buffer",
