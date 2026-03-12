@@ -312,7 +312,17 @@ After running commands, use `getContent` or `takeScreenshot` to verify the resul
 
 ### Use Appropriate Delays
 
-For commands that produce output over time, you may need to sleep before reading content:
+For commands that produce output over time, you have two options:
+
+**Option 1: Using delay parameter (recommended - saves one tool call)**
+
+```
+1. type: {"text": "npm install"}
+2. sendKey: {"key": "Enter"}
+3. getContent: {"delay": 30000}
+```
+
+**Option 2: Separate sleep call**
 
 ```
 1. type: {"text": "npm install"}

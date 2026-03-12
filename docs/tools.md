@@ -191,6 +191,7 @@ Retrieve the terminal buffer content as plain text.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `visibleOnly` | boolean | No | `false` | If true, return only the visible viewport |
+| `delay` | number | No | `0` | Delay in milliseconds before getting content. Use as shortcut to avoid separate sleep() call |
 
 ### Returns
 
@@ -225,6 +226,16 @@ Retrieve the terminal buffer content as plain text.
 }
 ```
 
+**Request (with delay for slow commands):**
+```json
+{
+  "name": "getContent",
+  "arguments": {
+    "delay": 2000
+  }
+}
+```
+
 **Response:**
 ```json
 {
@@ -243,6 +254,7 @@ Retrieve the terminal buffer content as plain text.
 - Full buffer includes scrollback history (up to 1000 lines by default)
 - Visible viewport returns only what would be displayed on screen
 - Trailing empty lines are trimmed from the output
+- **delay parameter**: Use to wait briefly before reading output, avoiding extra tool call. Common for commands that need time to produce output
 
 ---
 

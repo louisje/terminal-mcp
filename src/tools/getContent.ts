@@ -8,6 +8,13 @@ export const getContentSchema = z.object({
     .optional()
     .default(false)
     .describe(TOOL_DESCRIPTIONS.getContent.visibleOnly),
+  delay: z
+    .number()
+    .finite()
+    .nonnegative()
+    .optional()
+    .default(0)
+    .describe(TOOL_DESCRIPTIONS.getContent.delay),
 });
 
 export type GetContentArgs = z.infer<typeof getContentSchema>;
@@ -23,13 +30,26 @@ export const getContentTool = {
         description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
         default: false,
       },
+      delay: {
+        type: "number",
+        description: TOOL_DESCRIPTIONS.getContent.delay,
+        default: 0,
+        minimum: 0,
+      },
     },
     required: [],
   },
 };
 
-export function handleGetContent(manager: TerminalManager, args: unknown): { content: Array<{ type: "text"; text: string }> } {
+export async function handleGetContent(manager: TerminalManager, args: unknown): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   const parsed = getContentSchema.parse(args);
+
+  // If delay is specified, sleep before getting content
+  if (parsed.delay > 0) {
+    await new Promise((resolve) => {
+      setTimeout(resolve, parsed.delay);
+    });
+  }
 
   const content = parsed.visibleOnly
     ? manager.getVisibleContent()

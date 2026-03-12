@@ -193,13 +193,14 @@ Pause execution for an extended duration.
 - As a workaround - if you need `sleep()` frequently, something is wrong
 
 ### `getContent`
-Get the terminal buffer as plain text.
+Get the terminal buffer as plain text. Optionally delay before reading to avoid separate sleep() call.
 
 ```json
 {
   "name": "getContent",
   "arguments": {
-    "visibleOnly": false
+    "visibleOnly": false,
+    "delay": 0
   }
 }
 ```

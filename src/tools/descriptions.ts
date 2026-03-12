@@ -19,6 +19,7 @@ export const TOOL_DESCRIPTIONS = {
   getContent: {
     main: "Get the current content of the terminal buffer",
     visibleOnly: "If true, only return visible content (default: false)",
+    delay: "Optional delay in milliseconds before getting content (default: 0). Use this as a shortcut to avoid separate sleep() call when you need to wait briefly before reading output.",
   },
   takeScreenshot: {
     main: "Take a screenshot of the terminal showing current screen and cursor position",

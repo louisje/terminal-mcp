@@ -45,7 +45,14 @@ Get terminal content as plain text. Use after sending commands to see output.
 
 Returns full scrollback buffer by default (up to 1000 lines). Set visibleOnly=true for just the current viewport (useful when output is very long).
 
+Optionally set delay (in milliseconds) to wait before getting content - this avoids needing a separate sleep() call when commands need time to produce output.
+
 Prefer this over takeScreenshot when you only need text content.
+
+**Example with delay:**
+1. type('npm install')
+2. sendKey('Enter')
+3. getContent({delay: 5000}) - waits 5 seconds, then reads output
 
 ### takeScreenshot
 Capture terminal state as structured JSON with:
