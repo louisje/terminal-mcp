@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const waitSchema = z.object({
   seconds: z
@@ -8,21 +9,20 @@ export const waitSchema = z.object({
     .nonnegative()
     .optional()
     .default(5)
-    .describe("Number of seconds to wait before returning (default: 5)"),
+    .describe(TOOL_DESCRIPTIONS.wait.seconds),
 });
 
 export type WaitArgs = z.infer<typeof waitSchema>;
 
 export const waitTool = {
   name: "wait",
-  description:
-    "Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.",
+  description: TOOL_DESCRIPTIONS.wait.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       seconds: {
         type: "number",
-        description: "Number of seconds to wait before returning (default: 5)",
+        description: TOOL_DESCRIPTIONS.wait.seconds,
         default: 5,
         minimum: 0,
       },

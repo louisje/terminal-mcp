@@ -1,27 +1,28 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
 import { getKeySequence } from "../utils/keys.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const typeSchema = z.object({
-  text: z.string().describe("The text to type into the terminal"),
-  autoSubmit: z.boolean().optional().default(false).describe("If true, automatically send Enter key and return terminal content"),
+  text: z.string().describe(TOOL_DESCRIPTIONS.type.text),
+  autoSubmit: z.boolean().optional().default(false).describe(TOOL_DESCRIPTIONS.type.autoSubmit),
 });
 
 export type TypeArgs = z.infer<typeof typeSchema>;
 
 export const typeTool = {
   name: "type",
-  description: "Send text input to the terminal. Text is written exactly as provided - no Enter key is sent automatically unless autoSubmit=true. To execute a command, use type() followed by sendKey('Enter'), OR use type() with autoSubmit=true. Example workflow: type('ls -la') → sendKey('Enter') → getContent(), OR simply type('ls -la', autoSubmit=true). IMPORTANT: In zsh, avoid '!' inside double quotes as it triggers history expansion - use single quotes instead (e.g., echo 'Hello!' not echo \"Hello!\").",
+  description: TOOL_DESCRIPTIONS.type.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       text: {
         type: "string",
-        description: "The text to type into the terminal",
+        description: TOOL_DESCRIPTIONS.type.text,
       },
       autoSubmit: {
         type: "boolean",
-        description: "If true, automatically send Enter key and return terminal content",
+        description: TOOL_DESCRIPTIONS.type.autoSubmit,
         default: false,
       },
     },

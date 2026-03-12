@@ -2,6 +2,8 @@
  * Shared tool definitions used by both MCP client and UI
  */
 
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+
 export interface ToolDefinition {
   name: string;
   description: string;
@@ -15,17 +17,17 @@ export interface ToolDefinition {
 export const toolDefinitions: ToolDefinition[] = [
   {
     name: "type",
-    description: "Type text into the terminal",
+    description: TOOL_DESCRIPTIONS.type.main,
     inputSchema: {
       type: "object",
       properties: {
         text: {
           type: "string",
-          description: "The text to type",
+          description: TOOL_DESCRIPTIONS.type.text,
         },
         autoSubmit: {
           type: "boolean",
-          description: "If true, automatically send Enter key and return terminal content",
+          description: TOOL_DESCRIPTIONS.type.autoSubmit,
           default: false,
         },
       },
@@ -34,14 +36,13 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: "sendKey",
-    description: "Send a special key to the terminal (e.g., enter, tab, ctrl+c)",
+    description: TOOL_DESCRIPTIONS.sendKey.main,
     inputSchema: {
       type: "object",
       properties: {
         key: {
           type: "string",
-          description:
-            "The key to send (e.g., enter, tab, escape, up, down, left, right, ctrl+c, ctrl+d)",
+          description: TOOL_DESCRIPTIONS.sendKey.key,
         },
       },
       required: ["key"],
@@ -49,14 +50,13 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: "wait",
-    description:
-      "Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.",
+    description: TOOL_DESCRIPTIONS.wait.main,
     inputSchema: {
       type: "object",
       properties: {
         seconds: {
           type: "number",
-          description: "Number of seconds to wait before returning (default: 5)",
+          description: TOOL_DESCRIPTIONS.wait.seconds,
           default: 5,
           minimum: 0,
         },
@@ -65,21 +65,20 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: "getContent",
-    description: "Get the current content of the terminal buffer",
+    description: TOOL_DESCRIPTIONS.getContent.main,
     inputSchema: {
       type: "object",
       properties: {
         visibleOnly: {
           type: "boolean",
-          description: "If true, only return visible content (default: false)",
+          description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
         },
       },
     },
   },
   {
     name: "takeScreenshot",
-    description:
-      "Take a screenshot of the terminal showing current screen and cursor position",
+    description: TOOL_DESCRIPTIONS.takeScreenshot.main,
     inputSchema: {
       type: "object",
       properties: {},
@@ -87,55 +86,48 @@ export const toolDefinitions: ToolDefinition[] = [
   },
   {
     name: "startRecording",
-    description:
-      "Start recording terminal output to an asciicast v2 file. Returns the recording ID and path where the file will be saved. Only one recording can be active at a time.",
+    description: TOOL_DESCRIPTIONS.startRecording.main,
     inputSchema: {
       type: "object",
       properties: {
         format: {
           type: "string",
           enum: ["v2"],
-          description: "Recording format (default: v2, asciicast v2 format)",
+          description: TOOL_DESCRIPTIONS.startRecording.format,
         },
         mode: {
           type: "string",
           enum: ["always", "on-failure"],
-          description:
-            "Recording mode: always saves the recording, on-failure only saves if session exits with non-zero code (default: always)",
+          description: TOOL_DESCRIPTIONS.startRecording.mode,
         },
         outputDir: {
           type: "string",
-          description:
-            "Directory to save the recording (default: ~/.local/state/terminal-mcp/recordings, or TERMINAL_MCP_RECORD_DIR env var)",
+          description: TOOL_DESCRIPTIONS.startRecording.outputDir,
         },
         idleTimeLimit: {
           type: "number",
-          description:
-            "Max seconds between events in the recording (default: 2). Caps idle time to prevent long pauses during playback.",
+          description: TOOL_DESCRIPTIONS.startRecording.idleTimeLimit,
         },
         maxDuration: {
           type: "number",
-          description:
-            "Max recording duration in seconds (default: 3600 = 60 minutes). Recording will auto-stop when this limit is reached.",
+          description: TOOL_DESCRIPTIONS.startRecording.maxDuration,
         },
         inactivityTimeout: {
           type: "number",
-          description:
-            "Stop recording after N seconds of no terminal output (default: 600 = 10 minutes). Resets on each output event.",
+          description: TOOL_DESCRIPTIONS.startRecording.inactivityTimeout,
         },
       },
     },
   },
   {
     name: "stopRecording",
-    description:
-      "Stop a recording and finalize the asciicast file. Returns metadata about the saved recording including the file path and duration.",
+    description: TOOL_DESCRIPTIONS.stopRecording.main,
     inputSchema: {
       type: "object",
       properties: {
         recordingId: {
           type: "string",
-          description: "The recording ID returned by startRecording",
+          description: TOOL_DESCRIPTIONS.stopRecording.recordingId,
         },
       },
       required: ["recordingId"],

@@ -1,25 +1,26 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const getContentSchema = z.object({
   visibleOnly: z
     .boolean()
     .optional()
     .default(false)
-    .describe("If true, only return the visible viewport content. If false, include scrollback buffer."),
+    .describe(TOOL_DESCRIPTIONS.getContent.visibleOnly),
 });
 
 export type GetContentArgs = z.infer<typeof getContentSchema>;
 
 export const getContentTool = {
   name: "getContent",
-  description: "Get terminal content as plain text. Use after sending commands to see output. Returns full scrollback buffer by default (up to 1000 lines). Set visibleOnly=true for just the current viewport. Prefer this over takeScreenshot for reading command output.",
+  description: TOOL_DESCRIPTIONS.getContent.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       visibleOnly: {
         type: "boolean",
-        description: "If true, only return the visible viewport content. If false (default), include scrollback buffer.",
+        description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
         default: false,
       },
     },

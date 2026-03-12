@@ -121,6 +121,21 @@ Recording Options:
 ### `type`
 Send text input to the terminal.
 
+**⭐ RECOMMENDED: Use `autoSubmit` for efficient command execution**
+
+```json
+{
+  "name": "type",
+  "arguments": {
+    "text": "uptime",
+    "autoSubmit": true
+  }
+}
+```
+
+With `autoSubmit: true`, the command is executed automatically and returns the output - no need to call `sendKey('Enter')`, `wait()`, or `getContent()` separately.
+
+**Alternative (manual control):**
 ```json
 {
   "name": "type",
@@ -129,6 +144,8 @@ Send text input to the terminal.
   }
 }
 ```
+
+Without `autoSubmit`, text is typed but not executed - you need to call `sendKey('Enter')` separately.
 
 ### `sendKey`
 Send special keys or key combinations.
@@ -150,7 +167,9 @@ Supported keys:
 - Control: `Ctrl+A` through `Ctrl+Z`, `Ctrl+C`, `Ctrl+D`, etc.
 
 ### `wait`
-Optional pause tool. Call only when a command needs time to produce output. Defaults to 5 seconds when no argument is provided.
+Pause for a specified duration.
+
+**⚠️ WARNING: Use sparingly to avoid wasting time!**
 
 ```json
 {
@@ -162,6 +181,16 @@ Optional pause tool. Call only when a command needs time to produce output. Defa
 ```
 
 - `seconds`: Optional wait duration in seconds (defaults to `5`)
+
+**When to use:**
+- Long-running processes (builds, downloads, installations)
+- Background tasks that need time to complete
+- Interactive prompts that appear after a delay
+
+**When NOT to use:**
+- After `type()` with `autoSubmit=true` (already includes wait)
+- For fast commands like `ls`, `pwd`, `cd`, `uptime`, etc.
+- After every command "just in case" (wastes time)
 
 ### `getContent`
 Get the terminal buffer as plain text.
@@ -217,6 +246,61 @@ Stop a recording and finalize the asciicast file.
   }
 }
 ```
+
+## Best Practices
+
+### ✅ Efficient Command Execution
+
+**Use `autoSubmit` for one-step command execution:**
+```typescript
+// Good: One call, instant result
+type({ text: "ls -la", autoSubmit: true })
+
+// Avoid: Multiple calls for simple commands
+type({ text: "ls -la" })
+sendKey({ key: "Enter" })
+wait({ seconds: 2 })  // Unnecessary!
+getContent()
+```
+
+### ⚡ Minimize Wait Time
+
+**Most commands complete instantly - don't wait unnecessarily:**
+```typescript
+// Good: No wait needed
+type({ text: "pwd", autoSubmit: true })
+type({ text: "cd /tmp", autoSubmit: true })
+type({ text: "uptime", autoSubmit: true })
+
+// Bad: Wasting 6 seconds for fast commands
+type({ text: "pwd", autoSubmit: true })
+wait({ seconds: 2 })  // Why wait?
+type({ text: "cd /tmp", autoSubmit: true })
+wait({ seconds: 2 })  // Unnecessary!
+type({ text: "uptime", autoSubmit: true })
+wait({ seconds: 2 })  // Don't do this!
+```
+
+**Only use `wait()` when truly needed:**
+```typescript
+// Good: Wait for long-running process
+type({ text: "npm install", autoSubmit: true })
+wait({ seconds: 30 })  // Justified - installation takes time
+
+// Good: Wait for build process
+type({ text: "npm run build", autoSubmit: true })
+wait({ seconds: 10 })  // Justified - build takes time
+```
+
+### 🎯 When to Use Each Tool
+
+| Scenario | Recommended Approach | Avoid |
+|----------|---------------------|-------|
+| Execute simple command | `type(cmd, autoSubmit=true)` | Adding `wait()` after |
+| Check directory | `type('pwd', autoSubmit=true)` | Manual Enter + wait |
+| List files | `type('ls', autoSubmit=true)` | wait() unnecessarily |
+| Run build/install | `type(cmd, autoSubmit=true)` then `wait(N)` | Short wait times |
+| Interactive input | `type(text)` then `sendKey('Enter')` | autoSubmit for prompts |
 
 ## Sandbox Mode
 

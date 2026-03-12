@@ -43,7 +43,7 @@ test("handleType with autoSubmit returns terminal content", async () => {
   const mockContent = "$ echo test\ntest\n$ ";
   const mockManager = {
     write: () => {},
-    getContent: () => mockContent,
+    getVisibleContent: () => mockContent,
   } as TerminalManager;
 
   const result = await handleType(mockManager, { 
@@ -59,7 +59,7 @@ test("handleType with autoSubmit handles empty terminal", async () => {
   // Create a mock terminal manager with empty content
   const mockManager = {
     write: () => {},
-    getContent: () => "",
+    getVisibleContent: () => "",
   } as TerminalManager;
 
   const result = await handleType(mockManager, { 

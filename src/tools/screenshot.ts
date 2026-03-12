@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const screenshotSchema = z.object({});
 
@@ -7,7 +8,7 @@ export type ScreenshotArgs = z.infer<typeof screenshotSchema>;
 
 export const screenshotTool = {
   name: "takeScreenshot",
-  description: "Capture terminal state as structured JSON with: content (visible text), cursor {x, y} position, and dimensions {cols, rows}. Use when you need cursor position (e.g., for interactive apps, vim) or terminal dimensions. For simple command output, prefer getContent().",
+  description: TOOL_DESCRIPTIONS.takeScreenshot.main,
   inputSchema: {
     type: "object" as const,
     properties: {},

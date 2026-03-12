@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const stopRecordingSchema = z.object({
   recordingId: z.string(),
@@ -7,13 +8,13 @@ export const stopRecordingSchema = z.object({
 
 export const stopRecordingTool = {
   name: "stopRecording",
-  description: "Stop a recording and finalize the asciicast file. Returns metadata about the saved recording including the file path and duration.",
+  description: TOOL_DESCRIPTIONS.stopRecording.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       recordingId: {
         type: "string",
-        description: "The recording ID returned by startRecording",
+        description: TOOL_DESCRIPTIONS.stopRecording.recordingId,
       },
     },
     required: ["recordingId"],

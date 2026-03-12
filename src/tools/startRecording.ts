@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const startRecordingSchema = z.object({
   format: z.enum(['v2']).optional().default('v2'),
@@ -12,35 +13,35 @@ export const startRecordingSchema = z.object({
 
 export const startRecordingTool = {
   name: "startRecording",
-  description: "Start recording terminal output to an asciicast v2 file. Returns the recording ID and path where the file will be saved. Only one recording can be active at a time.",
+  description: TOOL_DESCRIPTIONS.startRecording.main,
   inputSchema: {
     type: "object" as const,
     properties: {
       format: {
         type: "string",
         enum: ["v2"],
-        description: "Recording format (default: v2, asciicast v2 format)",
+        description: TOOL_DESCRIPTIONS.startRecording.format,
       },
       mode: {
         type: "string",
         enum: ["always", "on-failure"],
-        description: "Recording mode: always saves the recording, on-failure only saves if session exits with non-zero code (default: always)",
+        description: TOOL_DESCRIPTIONS.startRecording.mode,
       },
       outputDir: {
         type: "string",
-        description: "Directory to save the recording (default: ~/.local/state/terminal-mcp/recordings, or TERMINAL_MCP_RECORD_DIR env var)",
+        description: TOOL_DESCRIPTIONS.startRecording.outputDir,
       },
       idleTimeLimit: {
         type: "number",
-        description: "Max seconds between events in the recording (default: 2). Caps idle time to prevent long pauses during playback.",
+        description: TOOL_DESCRIPTIONS.startRecording.idleTimeLimit,
       },
       maxDuration: {
         type: "number",
-        description: "Max recording duration in seconds (default: 3600 = 60 minutes). Recording will auto-stop when this limit is reached.",
+        description: TOOL_DESCRIPTIONS.startRecording.maxDuration,
       },
       inactivityTimeout: {
         type: "number",
-        description: "Stop recording after N seconds of no terminal output (default: 600 = 10 minutes). Resets on each output event.",
+        description: TOOL_DESCRIPTIONS.startRecording.inactivityTimeout,
       },
     },
     required: [],
