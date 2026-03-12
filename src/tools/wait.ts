@@ -3,13 +3,13 @@ import { TerminalManager } from "../terminal/index.js";
 import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const waitSchema = z.object({
-  seconds: z
+  milliseconds: z
     .number()
     .finite()
     .nonnegative()
     .optional()
-    .default(5)
-    .describe(TOOL_DESCRIPTIONS.wait.seconds),
+    .default(5000)
+    .describe(TOOL_DESCRIPTIONS.wait.milliseconds),
 });
 
 export type WaitArgs = z.infer<typeof waitSchema>;
@@ -20,10 +20,10 @@ export const waitTool = {
   inputSchema: {
     type: "object" as const,
     properties: {
-      seconds: {
+      milliseconds: {
         type: "number",
-        description: TOOL_DESCRIPTIONS.wait.seconds,
-        default: 5,
+        description: TOOL_DESCRIPTIONS.wait.milliseconds,
+        default: 5000,
         minimum: 0,
       },
     },
@@ -31,9 +31,15 @@ export const waitTool = {
   },
 };
 
-function formatSeconds(seconds: number): string {
-  const label = seconds === 1 ? "second" : "seconds";
-  return `${seconds} ${label}`;
+function formatMilliseconds(milliseconds: number): string {
+  if (milliseconds >= 1000) {
+    const seconds = milliseconds / 1000;
+    const label = seconds === 1 ? "second" : "seconds";
+    return `${seconds} ${label}`;
+  } else {
+    const label = milliseconds === 1 ? "millisecond" : "milliseconds";
+    return `${milliseconds} ${label}`;
+  }
 }
 
 export async function handleWait(
@@ -43,14 +49,14 @@ export async function handleWait(
   const parsed = waitSchema.parse(args ?? {});
 
   await new Promise((resolve) => {
-    setTimeout(resolve, parsed.seconds * 1000);
+    setTimeout(resolve, parsed.milliseconds);
   });
 
   return {
     content: [
       {
         type: "text",
-        text: `Waited ${formatSeconds(parsed.seconds)}`,
+        text: `Waited ${formatMilliseconds(parsed.milliseconds)}`,
       },
     ],
   };

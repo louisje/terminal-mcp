@@ -42,7 +42,7 @@ export async function handleType(manager: TerminalManager, args: unknown): Promi
     }
 
     // Wait a brief moment for command to execute
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 250));
 
     // Get and return terminal content (visible only)
     const content = manager.getVisibleContent();

@@ -13,7 +13,7 @@ type({ text: "uptime", autoSubmit: true })
 // ❌ Avoid: Multiple calls for simple commands
 type({ text: "uptime" })
 sendKey({ key: "Enter" })
-wait({ seconds: 2 })  // Unnecessary!
+wait({ milliseconds: 2000 })  // Unnecessary!
 getContent()
 ```
 
@@ -29,7 +29,7 @@ type({ text: "uptime", autoSubmit: true })
 
 // ❌ Bad: Wasting time on fast commands
 type({ text: "pwd", autoSubmit: true })
-wait({ seconds: 2 })  // Why wait for pwd?
+wait({ milliseconds: 2000 })  // Why wait for pwd?
 ```
 
 ### 📊 When to Use Each Tool
@@ -52,7 +52,7 @@ wait({ seconds: 2 })  // Why wait for pwd?
 
 **DON'T use `wait()` for:**
 - ❌ Fast commands: `ls`, `pwd`, `cd`, `echo`, `cat`, `uptime`
-- ❌ After `type(cmd, autoSubmit=true)` - it already waits 100ms
+- ❌ After `type(cmd, autoSubmit=true)` - it already waits 250ms
 - ❌ "Just in case" - this wastes time
 
 ### 🚀 Example: Efficient Workflow
@@ -65,11 +65,11 @@ type({ text: "uptime", autoSubmit: true })
 
 // ❌ Inefficient: 3 commands + 6 seconds of waiting
 type({ text: "pwd", autoSubmit: true })
-wait({ seconds: 2 })  // Wasted 2 seconds
+wait({ milliseconds: 2000 })  // Wasted 2 seconds
 type({ text: "ls -la", autoSubmit: true })
-wait({ seconds: 2 })  // Wasted 2 seconds
+wait({ milliseconds: 2000 })  // Wasted 2 seconds
 type({ text: "uptime", autoSubmit: true })
-wait({ seconds: 2 })  // Wasted 2 seconds
+wait({ milliseconds: 2000 })  // Wasted 2 seconds
 ```
 
 ### 💡 Special Cases
@@ -79,7 +79,7 @@ wait({ seconds: 2 })  // Wasted 2 seconds
 // Don't use autoSubmit for interactive prompts
 type({ text: "sudo something" })
 sendKey({ key: "Enter" })
-wait({ seconds: 1 })  // Wait for prompt to appear
+wait({ milliseconds: 1000 })  // Wait for prompt to appear
 type({ text: "password" })
 sendKey({ key: "Enter" })
 ```
@@ -88,10 +88,10 @@ sendKey({ key: "Enter" })
 ```typescript
 // Use autoSubmit, then wait appropriately
 type({ text: "npm install", autoSubmit: true })
-wait({ seconds: 30 })  // Justified - installation takes time
+wait({ milliseconds: 30000 })  // Justified - installation takes time
 
 type({ text: "npm run build", autoSubmit: true })
-wait({ seconds: 10 })  // Justified - build takes time
+wait({ milliseconds: 10000 })  // Justified - build takes time
 ```
 
 **Multi-line Input:**

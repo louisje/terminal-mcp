@@ -14,7 +14,7 @@ export const TOOL_DESCRIPTIONS = {
   },
   wait: {
     main: "Pause for a specified duration. Use sparingly - only for long-running processes, background tasks, or interactive prompts. Not needed after autoSubmit or for fast commands.",
-    seconds: "Number of seconds to wait before returning (default: 5)",
+    milliseconds: "Number of milliseconds to wait before returning (default: 5000 = 5 seconds)",
   },
   getContent: {
     main: "Get the current content of the terminal buffer",

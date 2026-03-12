@@ -54,10 +54,10 @@ export const toolDefinitions: ToolDefinition[] = [
     inputSchema: {
       type: "object",
       properties: {
-        seconds: {
+        milliseconds: {
           type: "number",
-          description: TOOL_DESCRIPTIONS.wait.seconds,
-          default: 5,
+          description: TOOL_DESCRIPTIONS.wait.milliseconds,
+          default: 5000,
           minimum: 0,
         },
       },

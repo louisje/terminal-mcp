@@ -175,12 +175,12 @@ Pause for a specified duration.
 {
   "name": "wait",
   "arguments": {
-    "seconds": 5
+    "milliseconds": 5000
   }
 }
 ```
 
-- `seconds`: Optional wait duration in seconds (defaults to `5`)
+- `milliseconds`: Optional wait duration in milliseconds (defaults to `5000` = 5 seconds)
 
 **When to use:**
 - Long-running processes (builds, downloads, installations)
@@ -257,9 +257,9 @@ Stop a recording and finalize the asciicast file.
 type({ text: "ls -la", autoSubmit: true })
 
 // Avoid: Multiple calls for simple commands
-type({ text: "ls -la" })
-sendKey({ key: "Enter" })
-wait({ seconds: 2 })  // Unnecessary!
+  type({ text: "ls -la" })
+  sendKey({ key: "Enter" })
+  wait({ milliseconds: 2000 })  // Unnecessary!
 getContent()
 ```
 
@@ -272,24 +272,24 @@ type({ text: "pwd", autoSubmit: true })
 type({ text: "cd /tmp", autoSubmit: true })
 type({ text: "uptime", autoSubmit: true })
 
-// Bad: Wasting 6 seconds for fast commands
-type({ text: "pwd", autoSubmit: true })
-wait({ seconds: 2 })  // Why wait?
-type({ text: "cd /tmp", autoSubmit: true })
-wait({ seconds: 2 })  // Unnecessary!
-type({ text: "uptime", autoSubmit: true })
-wait({ seconds: 2 })  // Don't do this!
+  // Bad: Wasting 6 seconds for fast commands
+  type({ text: "pwd", autoSubmit: true })
+  wait({ milliseconds: 2000 })  // Why wait?
+  type({ text: "cd /tmp", autoSubmit: true })
+  wait({ milliseconds: 2000 })  // Unnecessary!
+  type({ text: "uptime", autoSubmit: true })
+  wait({ milliseconds: 2000 })  // Don't do this!
 ```
 
 **Only use `wait()` when truly needed:**
 ```typescript
-// Good: Wait for long-running process
-type({ text: "npm install", autoSubmit: true })
-wait({ seconds: 30 })  // Justified - installation takes time
-
-// Good: Wait for build process
-type({ text: "npm run build", autoSubmit: true })
-wait({ seconds: 10 })  // Justified - build takes time
+  // Good: Wait for long-running process
+  type({ text: "npm install", autoSubmit: true })
+  wait({ milliseconds: 30000 })  // Justified - installation takes time
+  
+  // Good: Wait for build process
+  type({ text: "npm run build", autoSubmit: true })
+  wait({ milliseconds: 10000 })  // Justified - build takes time
 ```
 
 ### 🎯 When to Use Each Tool
