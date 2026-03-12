@@ -278,6 +278,7 @@ const tools = [...existingTools, newTool];
 // In switch statement:
 case "newTool":
   return handleNewTool(manager, args);
+  // Note: If your handler is async, use: return await handleNewTool(manager, args);
 ```
 
 ### Testing
@@ -328,8 +329,10 @@ All tool handlers are wrapped in try-catch:
 ```typescript
 try {
   switch (name) {
-    case "type": return handleType(manager, args);
-    // ...
+    case "type": return await handleType(manager, args);
+    case "wait": return await handleWait(manager, args);
+    case "stopRecording": return await handleStopRecording(manager, args);
+    // ... other tools (non-async ones don't need await)
   }
 } catch (error) {
   return {
