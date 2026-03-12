@@ -95,7 +95,7 @@ export class SandboxController {
 
     // Configure network based on mode
     let allowedDomains: string[];
-    let deniedDomains: string[] = [];
+    const deniedDomains: string[] = [];
 
     switch (permissions.network.mode) {
       case "none":
