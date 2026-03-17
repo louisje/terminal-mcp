@@ -190,7 +190,7 @@ Retrieve the terminal buffer content as plain text.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `visibleOnly` | boolean | No | `false` | If true, return only the visible viewport |
+| `visibleOnly` | boolean | No | `true` | If true, return only the visible viewport |
 | `delay` | number | No | `0` | Delay in milliseconds before getting content. Use as shortcut to avoid separate sleep() call |
 
 ### Returns
@@ -251,8 +251,8 @@ Retrieve the terminal buffer content as plain text.
 ### Notes
 
 - Returns `"(empty terminal)"` if the terminal is empty
-- Full buffer includes scrollback history (up to 1000 lines by default)
-- Visible viewport returns only what would be displayed on screen
+- By default, returns only the visible viewport (up to terminal height)
+- Set `visibleOnly: false` to include full scrollback history (up to 1000 lines)
 - Trailing empty lines are trimmed from the output
 - **delay parameter**: Use to wait briefly before reading output, avoiding extra tool call. Common for commands that need time to produce output
 

@@ -199,7 +199,7 @@ Get the terminal buffer as plain text. Optionally delay before reading to avoid 
 {
   "name": "getContent",
   "arguments": {
-    "visibleOnly": false,
+    "visibleOnly": true,
     "delay": 0
   }
 }

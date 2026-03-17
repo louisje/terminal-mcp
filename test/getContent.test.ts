@@ -9,9 +9,9 @@ const mockManager = {
   getVisibleContent: () => "visible content",
 } as TerminalManager;
 
-test("getContentSchema defaults: visibleOnly=false, delay=0", () => {
+test("getContentSchema defaults: visibleOnly=true, delay=0", () => {
   const parsed = getContentSchema.parse({});
-  assert.equal(parsed.visibleOnly, false);
+  assert.equal(parsed.visibleOnly, true);
   assert.equal(parsed.delay, 0);
 });
 
@@ -24,9 +24,9 @@ test("getContentSchema accepts valid delay", () => {
   assert.equal(parsed.delay, 100);
 });
 
-test("handleGetContent returns full content by default", async () => {
+test("handleGetContent returns visible content by default", async () => {
   const result = await handleGetContent(mockManager, {});
-  assert.equal(result.content[0]?.text, "test content");
+  assert.equal(result.content[0]?.text, "visible content");
 });
 
 test("handleGetContent returns visible content when visibleOnly=true", async () => {
@@ -40,7 +40,7 @@ test("handleGetContent delays when delay > 0", async () => {
   const elapsed = Date.now() - start;
 
   assert.ok(elapsed >= 40, `Expected at least 40ms, got ${elapsed}ms`);
-  assert.equal(result.content[0]?.text, "test content");
+  assert.equal(result.content[0]?.text, "visible content");
 });
 
 test("handleGetContent returns immediately when delay=0", async () => {

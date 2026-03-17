@@ -258,7 +258,7 @@ sendKey: {"key": "Ctrl+B"}  // Page up
 1. type: {"text": "tail -f /var/log/syslog"}
 2. sendKey: {"key": "Enter"}
 3. // Wait for new log entries
-4. getContent: {"visibleOnly": true}  // Get current view
+4. getContent: {}  // Returns current view (visible viewport by default)
 5. sendKey: {"key": "Ctrl+C"}  // Stop watching
 ```
 

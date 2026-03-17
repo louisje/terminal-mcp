@@ -380,5 +380,5 @@ process.on("SIGINT", () => {
 ### Throughput
 
 - High-volume output (e.g., `cat large_file`) may overwhelm buffer
-- Consider using `visibleOnly: true` for getContent
+- Default `getContent()` only returns visible viewport; use `visibleOnly: false` to include full scrollback if needed
 - Screenshot is lighter than full content retrieval

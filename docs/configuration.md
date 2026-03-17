@@ -246,7 +246,7 @@ cd /path/to/project && node /path/to/terminal-mcp/dist/index.js
 
 ## Scrollback Buffer
 
-The terminal maintains a scrollback buffer of 1000 lines by default. This allows `getContent` to retrieve historical output.
+The terminal maintains a scrollback buffer of 1000 lines by default. By default, `getContent()` returns only the visible viewport. To retrieve historical output from the scrollback buffer, use `getContent({ visibleOnly: false })`.
 
 The scrollback size is currently fixed but may become configurable in future versions.
 

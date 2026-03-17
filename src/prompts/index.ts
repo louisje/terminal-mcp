@@ -43,7 +43,7 @@ Send a special key or key combination to the terminal.
 ### getContent
 Get terminal content as plain text. Use after sending commands to see output.
 
-Returns full scrollback buffer by default (up to 1000 lines). Set visibleOnly=true for just the current viewport (useful when output is very long).
+Returns only the visible viewport by default (up to terminal height). Set visibleOnly=false for full scrollback buffer (up to 1000 lines).
 
 Optionally set delay (in milliseconds) to wait before getting content - this avoids needing a separate sleep() call when commands need time to produce output.
 

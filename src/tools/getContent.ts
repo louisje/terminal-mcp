@@ -6,7 +6,7 @@ export const getContentSchema = z.object({
   visibleOnly: z
     .boolean()
     .optional()
-    .default(false)
+    .default(true)
     .describe(TOOL_DESCRIPTIONS.getContent.visibleOnly),
   delay: z
     .number()
@@ -28,7 +28,7 @@ export const getContentTool = {
       visibleOnly: {
         type: "boolean",
         description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
-        default: false,
+        default: true,
       },
       delay: {
         type: "number",
