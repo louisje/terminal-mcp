@@ -7,7 +7,7 @@ import { startMcpClientMode } from "./client.js";
 import { TerminalManager } from "./terminal/index.js";
 import { createToolProxyServer } from "./transport/index.js";
 import { getBanner } from "./ui/index.js";
-import { getDefaultSocketPath, getDefaultShell, getDefaultRecordDir } from "./utils/platform.js";
+import { getDefaultSocketPath, getDefaultShell, getDefaultRecordDir, resolveSocketPath } from "./utils/platform.js";
 import {
   SandboxController,
   loadConfigFromFile,
@@ -142,7 +142,7 @@ Options:
   --cols <number>        Terminal width in columns (default: auto or 120)
   --rows <number>        Terminal height in rows (default: auto or 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
-  --socket <path>        Unix socket path for MCP (default: ${DEFAULT_SOCKET_PATH})
+  --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
@@ -167,6 +167,7 @@ Recording Options:
                       Resets on each terminal output event
 
 Environment Variables:
+  TERMINAL_MCP_SOCKET      Default socket/pipe path for MCP (overridden by --socket)
   TERMINAL_MCP_RECORD_DIR  Default recording output directory
 
 Mode Detection:
@@ -217,7 +218,7 @@ MCP Client Mode (add to your MCP client config):
 }
 
 async function main() {
-  const socketPath = options.socket || DEFAULT_SOCKET_PATH;
+  const socketPath = resolveSocketPath(options.socket);
 
   // Check if --mcp flag is set to use direct MCP mode
   if (options.useMcp) {

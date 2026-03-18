@@ -101,6 +101,7 @@ Options:
   --cols <number>        Terminal width in columns (default: 120)
   --rows <number>        Terminal height in rows (default: 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
+  --socket <path>        IPC socket/pipe path for MCP
   --sandbox              Enable sandbox mode (restricts filesystem/network)
   --sandbox-config <path> Load sandbox config from JSON file
   --version, -v          Show version number
@@ -115,6 +116,11 @@ Recording Options:
   --max-duration <sec>      Max recording duration (default: 3600s)
   --inactivity-timeout <sec>  Stop after no output (default: 600s)
 ```
+
+Environment variables:
+
+- `TERMINAL_MCP_SOCKET`: default socket/pipe path, overridden by `--socket`
+- `TERMINAL_MCP_RECORD_DIR`: default recording output directory, overridden by `--record-dir`
 
 ## MCP Tools
 

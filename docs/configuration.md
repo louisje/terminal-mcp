@@ -1,6 +1,6 @@
 # Configuration
 
-Terminal MCP can be configured via command-line arguments when starting the server.
+Terminal MCP can be configured via command-line arguments and selected environment variables when starting the server.
 
 ## Command-Line Options
 
@@ -11,6 +11,7 @@ Terminal MCP can be configured via command-line arguments when starting the serv
 | `--cols` | number | 120 | Terminal width in columns |
 | `--rows` | number | 40 | Terminal height in rows |
 | `--shell` | string | `$SHELL` or `bash` | Shell executable to use |
+| `--socket` | string | platform default or `TERMINAL_MCP_SOCKET` | IPC socket/pipe path for MCP |
 | `--sandbox` | flag | - | Enable sandbox mode (restricts filesystem/network) |
 | `--sandbox-config` | string | - | Path to sandbox configuration JSON file |
 | `--version`, `-v` | flag | - | Show version number |
@@ -210,8 +211,17 @@ The terminal session inherits the environment from the parent process. Key varia
 | `PATH` | Determines available commands |
 | `HOME` | Home directory for shell |
 | `USER` | Current username |
+| `TERMINAL_MCP_SOCKET` | Default socket/pipe path for MCP |
 | `TERMINAL_MCP_RECORD_DIR` | Default recording output directory |
 | `XDG_STATE_HOME` | XDG base directory for state files (fallback for recordings) |
+
+### Socket Path Resolution
+
+The socket path is resolved in this order:
+
+1. `--socket` command-line argument (if provided)
+2. `TERMINAL_MCP_SOCKET` environment variable (if set)
+3. Platform default (`\\.\\pipe\\terminal-mcp` on Windows, `$TMPDIR/terminal-mcp.sock` elsewhere)
 
 ### Recording Directory Resolution
 
@@ -224,7 +234,7 @@ The default recording directory is resolved in this order:
 
 ### Customizing Environment
 
-Currently, environment variables are inherited from the process running Terminal MCP. To customize:
+Most environment variables are inherited from the process running Terminal MCP. To customize:
 
 1. Set variables before starting:
    ```bash
@@ -233,7 +243,7 @@ Currently, environment variables are inherited from the process running Terminal
 
 2. Or export in your shell configuration
 
-Future versions may support environment configuration via command-line options.
+Additional environment configuration options may be added in future versions.
 
 ## Working Directory
 

@@ -22,12 +22,24 @@ export function getDefaultRecordDir(): string {
 /**
  * Get the default IPC path for cross-platform communication.
  * Uses named pipes on Windows, Unix sockets elsewhere.
+ * Can be overridden with TERMINAL_MCP_SOCKET environment variable.
  */
 export function getDefaultSocketPath(): string {
+  if (process.env.TERMINAL_MCP_SOCKET) {
+    return process.env.TERMINAL_MCP_SOCKET;
+  }
+
   if (process.platform === "win32") {
     return "\\\\.\\pipe\\terminal-mcp";
   }
   return path.join(os.tmpdir(), "terminal-mcp.sock");
+}
+
+/**
+ * Resolve the IPC path, allowing a CLI-provided path to override env/defaults.
+ */
+export function resolveSocketPath(socketPath?: string): string {
+  return socketPath || getDefaultSocketPath();
 }
 
 /**
