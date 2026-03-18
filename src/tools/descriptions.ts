@@ -22,6 +22,9 @@ export const TOOL_DESCRIPTIONS = {
     maxLines: "Maximum number of lines to return when visibleOnly is false (default: 100). Set to 0 to return the full buffer.",
     delay: "Optional delay in milliseconds before getting content (default: 0). Use this as a shortcut to avoid separate sleep() call when you need to wait briefly before reading output.",
   },
+  getBufferInfo: {
+    main: "Get metadata about the current terminal buffer, including total length, scrollback lines, and viewport rows",
+  },
   takeScreenshot: {
     main: "Take a screenshot of the terminal showing current screen and cursor position",
   },

@@ -9,6 +9,7 @@ import { typeTool, handleType } from "./type.js";
 import { sendKeyTool, handleSendKey } from "./sendKey.js";
 import { sleepTool, handleSleep } from "./sleep.js";
 import { getContentTool, handleGetContent } from "./getContent.js";
+import { getBufferInfoTool, handleGetBufferInfo } from "./getBufferInfo.js";
 import { screenshotTool, handleScreenshot } from "./screenshot.js";
 import { startRecordingTool, handleStartRecording } from "./startRecording.js";
 import { stopRecordingTool, handleStopRecording } from "./stopRecording.js";
@@ -18,6 +19,7 @@ const tools = [
   sendKeyTool,
   sleepTool,
   getContentTool,
+  getBufferInfoTool,
   screenshotTool,
   startRecordingTool,
   stopRecordingTool,
@@ -46,6 +48,9 @@ export function registerTools(server: Server, manager: TerminalManager): void {
 
         case "getContent":
           return await handleGetContent(manager, args);
+
+        case "getBufferInfo":
+          return handleGetBufferInfo(manager, args);
 
         case "takeScreenshot":
           return handleScreenshot(manager, args);

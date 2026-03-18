@@ -16,7 +16,7 @@ Terminal MCP bridges the gap between AI assistants and interactive terminal appl
 - **Full Terminal Emulation**: Uses xterm.js headless for accurate VT100/ANSI terminal emulation
 - **Cross-Platform PTY**: Leverages node-pty for native pseudo-terminal support on macOS, Linux, and Windows
 - **MCP Protocol**: Implements the Model Context Protocol for seamless AI assistant integration
-- **Simple API**: Seven intuitive tools for complete terminal control
+- **Simple API**: Eight intuitive tools for complete terminal control
 - **Session Recording**: Record terminal sessions to asciicast v2 format for playback with asciinema
 - **Configurable**: Customizable terminal dimensions, shell selection, and recording options
 - **Sandbox Mode**: Optional security restrictions for filesystem and network access
@@ -80,7 +80,7 @@ Terminal MCP Server (Node.js)
 2. Commands are sent through MCP tools (`type`, `sendKey`, etc.)
 3. Terminal MCP writes to a pseudo-terminal connected to a real shell
 4. Output is captured by the xterm.js headless terminal emulator
-5. The AI can read the terminal state via `getContent` or `takeScreenshot`
+5. The AI can read the terminal state via `getContent`, `getBufferInfo`, or `takeScreenshot`
 
 ## Use Cases
 

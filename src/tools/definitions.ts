@@ -90,6 +90,14 @@ export const toolDefinitions: ToolDefinition[] = [
     },
   },
   {
+    name: "getBufferInfo",
+    description: TOOL_DESCRIPTIONS.getBufferInfo.main,
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+  },
+  {
     name: "takeScreenshot",
     description: TOOL_DESCRIPTIONS.takeScreenshot.main,
     inputSchema: {

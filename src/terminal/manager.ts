@@ -1,4 +1,4 @@
-import { TerminalSession, TerminalSessionOptions, ScreenshotResult } from "./session.js";
+import { TerminalSession, TerminalSessionOptions, ScreenshotResult, BufferInfoResult } from "./session.js";
 import type { SandboxController } from "../sandbox/index.js";
 import { RecordingManager } from "../recording/index.js";
 import type { RecordingMode, RecordingFormat, RecordingMetadata } from "../recording/index.js";
@@ -172,6 +172,13 @@ export class TerminalManager {
    */
   getContent(maxLines?: number): string {
     return this.getSession().getContent(maxLines);
+  }
+
+  /**
+   * Get terminal buffer metadata
+   */
+  getBufferInfo(): BufferInfoResult {
+    return this.getSession().getBufferInfo();
   }
 
   /**

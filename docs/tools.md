@@ -1,6 +1,6 @@
 # Tools Reference
 
-Terminal MCP exposes seven MCP tools for interacting with the terminal. This document provides complete API documentation for each tool.
+Terminal MCP exposes eight MCP tools for interacting with the terminal. This document provides complete API documentation for each tool.
 
 ## Overview
 
@@ -10,6 +10,7 @@ Terminal MCP exposes seven MCP tools for interacting with the terminal. This doc
 | [`sendKey`](#sendkey) | Send special keys and key combinations |
 | [`sleep`](#sleep) | Block execution for long-running operations (builds, downloads) |
 | [`getContent`](#getcontent) | Retrieve terminal buffer content |
+| [`getBufferInfo`](#getbufferinfo) | Retrieve terminal buffer metadata |
 | [`takeScreenshot`](#takescreenshot) | Capture terminal state with metadata |
 | [`startRecording`](#startrecording) | Start recording terminal output |
 | [`stopRecording`](#stoprecording) | Stop recording and save file |
@@ -271,6 +272,66 @@ Retrieve the terminal buffer content as plain text.
 - Trailing empty lines are trimmed from the output
 - `maxLines` is ignored when `visibleOnly: true`
 - **delay parameter**: Use to wait briefly before reading output, avoiding extra tool call. Common for commands that need time to produce output
+
+---
+
+## getBufferInfo
+
+Retrieve metadata about the current terminal buffer without returning the buffer text itself.
+
+### Parameters
+
+None.
+
+### Returns
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"length\": 125,\n  \"scrollbackLines\": 100,\n  \"viewportRows\": 25\n}"
+    }
+  ]
+}
+```
+
+The text content is a JSON string with the following structure:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `length` | number | Total active buffer lines, including scrollback and viewport |
+| `scrollbackLines` | number | Number of lines above the visible viewport |
+| `viewportRows` | number | Current viewport height in terminal rows |
+
+### Example
+
+**Request:**
+```json
+{
+  "name": "getBufferInfo",
+  "arguments": {}
+}
+```
+
+**Response:**
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"length\": 125,\n  \"scrollbackLines\": 100,\n  \"viewportRows\": 25\n}"
+    }
+  ]
+}
+```
+
+### Notes
+
+- Use this when you only need buffer size metadata, not the actual terminal text
+- `length` is a raw buffer metric and may include blank lines in the active buffer
+- `scrollbackLines` excludes the currently visible viewport
+- `viewportRows` matches the current terminal height
 
 ---
 

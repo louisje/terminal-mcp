@@ -28,7 +28,7 @@ curl -fsSL https://raw.githubusercontent.com/elleryfamilia/terminal-mcp/main/ins
 - **Cross-Platform PTY**: Native pseudo-terminal support via node-pty (macOS, Linux, Windows)
 - **MCP Protocol**: Implements Model Context Protocol for AI assistant integration
 - **Session Recording**: Record terminal sessions to asciicast format for playback with asciinema
-- **Simple API**: Seven intuitive tools for complete terminal control
+- **Simple API**: Eight intuitive tools for complete terminal control
 - **Sandbox Mode**: Optional security restrictions for filesystem and network access
 
 ## Building from Source
@@ -221,6 +221,21 @@ Read the latest 50 lines from scrollback:
 - `visibleOnly: false`: read from scrollback history; returns the last `100` lines by default
 - `maxLines`: only applies when `visibleOnly: false`; set `0` to return the full scrollback buffer
 - `delay`: wait briefly before reading output, avoiding a separate `sleep()` call
+
+### `getBufferInfo`
+Get lightweight metadata about the current terminal buffer.
+
+```json
+{
+  "name": "getBufferInfo",
+  "arguments": {}
+}
+```
+
+Returns a JSON object with:
+- `length`: total active buffer lines (scrollback + viewport)
+- `scrollbackLines`: lines above the current viewport
+- `viewportRows`: current terminal viewport height in rows
 
 ### `takeScreenshot`
 Capture the terminal state with cursor position and dimensions.

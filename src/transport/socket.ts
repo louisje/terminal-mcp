@@ -10,6 +10,7 @@ import { handleType } from "../tools/type.js";
 import { handleSendKey } from "../tools/sendKey.js";
 import { handleSleep } from "../tools/sleep.js";
 import { handleGetContent } from "../tools/getContent.js";
+import { handleGetBufferInfo } from "../tools/getBufferInfo.js";
 import { handleScreenshot } from "../tools/screenshot.js";
 import { handleStartRecording } from "../tools/startRecording.js";
 import { handleStopRecording } from "../tools/stopRecording.js";
@@ -202,6 +203,11 @@ async function handleToolRequest(
       case "getContent":
         stats.recordToolCall("getContent");
         result = await handleGetContent(manager, params);
+        break;
+
+      case "getBufferInfo":
+        stats.recordToolCall("getBufferInfo");
+        result = handleGetBufferInfo(manager, params);
         break;
 
       case "takeScreenshot":

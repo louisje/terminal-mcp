@@ -32,6 +32,12 @@ export interface ScreenshotResult {
   };
 }
 
+export interface BufferInfoResult {
+  length: number;
+  scrollbackLines: number;
+  viewportRows: number;
+}
+
 /**
  * Terminal session that combines node-pty with xterm.js headless
  * for full terminal emulation
@@ -268,6 +274,23 @@ ${bannerCmd}
     }
 
     return lines.join("\n");
+  }
+
+  /**
+   * Get metadata about the current terminal buffer
+   */
+  getBufferInfo(): BufferInfoResult {
+    if (this.disposed) {
+      throw new Error("Terminal session has been disposed");
+    }
+
+    const buffer = this.terminal.buffer.active;
+
+    return {
+      length: buffer.length,
+      scrollbackLines: buffer.baseY,
+      viewportRows: this.terminal.rows,
+    };
   }
 
   /**

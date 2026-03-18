@@ -105,7 +105,7 @@ When testing Windows support, verify:
 - [ ] Startup banner displays correctly and doesn't get cleared
 - [ ] MCP configuration JSON is visible and copyable
 - [ ] Fresh prompt appears after banner
-- [ ] MCP tools work: `takeScreenshot`, `type`, `sendKey`, `getContent`
+- [ ] MCP tools work: `takeScreenshot`, `type`, `sendKey`, `getContent`, `getBufferInfo`
 - [ ] Special keys work (Enter, Ctrl+C, arrows, etc.)
 - [ ] Terminal resize works
 - [ ] Clean exit on shell close

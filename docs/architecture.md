@@ -208,9 +208,12 @@ terminal-mcp/
 │   │   ├── index.ts          # Tool registry
 │   │   ├── type.ts           # type tool
 │   │   ├── sendKey.ts        # sendKey tool
+│   │   ├── sleep.ts          # sleep tool
 │   │   ├── getContent.ts     # getContent tool
+│   │   ├── getBufferInfo.ts  # getBufferInfo tool
 │   │   ├── screenshot.ts     # takeScreenshot tool
-│   │   └── clear.ts          # clear tool
+│   │   ├── startRecording.ts # startRecording tool
+│   │   └── stopRecording.ts  # stopRecording tool
 │   └── utils/
 │       └── keys.ts           # Key code mappings
 ├── dist/                     # Compiled output

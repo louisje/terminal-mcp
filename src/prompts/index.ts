@@ -51,6 +51,16 @@ Optionally set delay (in milliseconds) to wait before getting content - this avo
 
 Prefer this over takeScreenshot when you only need text content.
 
+### getBufferInfo
+Get lightweight metadata about the terminal buffer as structured JSON.
+
+Returns:
+- length: total active buffer lines
+- scrollbackLines: lines above the current viewport
+- viewportRows: current terminal height in rows
+
+Use this when you need to know how much history is available without reading the buffer text.
+
 **Example with delay:**
 1. type('npm install')
 2. sendKey('Enter')
