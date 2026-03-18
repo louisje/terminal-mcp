@@ -74,6 +74,12 @@ export const toolDefinitions: ToolDefinition[] = [
           description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
           default: true,
         },
+        maxLines: {
+          type: "number",
+          description: TOOL_DESCRIPTIONS.getContent.maxLines,
+          default: 100,
+          minimum: 0,
+        },
         delay: {
           type: "number",
           description: TOOL_DESCRIPTIONS.getContent.delay,

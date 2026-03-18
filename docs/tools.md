@@ -191,6 +191,7 @@ Retrieve the terminal buffer content as plain text.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `visibleOnly` | boolean | No | `true` | If true, return only the visible viewport |
+| `maxLines` | number | No | `100` | Maximum number of lines to return when `visibleOnly` is `false`. Set to `0` to return the full buffer |
 | `delay` | number | No | `0` | Delay in milliseconds before getting content. Use as shortcut to avoid separate sleep() call |
 
 ### Returns
@@ -208,11 +209,24 @@ Retrieve the terminal buffer content as plain text.
 
 ### Example
 
-**Request (full buffer):**
+**Request (scrollback, last 100 lines by default):**
 ```json
 {
   "name": "getContent",
-  "arguments": {}
+  "arguments": {
+    "visibleOnly": false
+  }
+}
+```
+
+**Request (full scrollback):**
+```json
+{
+  "name": "getContent",
+  "arguments": {
+    "visibleOnly": false,
+    "maxLines": 0
+  }
 }
 ```
 
@@ -252,8 +266,10 @@ Retrieve the terminal buffer content as plain text.
 
 - Returns `"(empty terminal)"` if the terminal is empty
 - By default, returns only the visible viewport (up to terminal height)
-- Set `visibleOnly: false` to include full scrollback history (up to 1000 lines)
+- Set `visibleOnly: false` to read from scrollback history; by default this returns only the last `100` lines
+- Set `maxLines: 0` with `visibleOnly: false` to include the full scrollback history (up to 1000 lines)
 - Trailing empty lines are trimmed from the output
+- `maxLines` is ignored when `visibleOnly: true`
 - **delay parameter**: Use to wait briefly before reading output, avoiding extra tool call. Common for commands that need time to produce output
 
 ---

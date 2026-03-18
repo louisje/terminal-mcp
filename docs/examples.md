@@ -258,7 +258,7 @@ sendKey: {"key": "Ctrl+B"}  // Page up
 1. type: {"text": "tail -f /var/log/syslog"}
 2. sendKey: {"key": "Enter"}
 3. // Wait for new log entries
-4. getContent: {}  // Returns current view (visible viewport by default)
+4. getContent: {"visibleOnly": false, "maxLines": 50}  // Read the latest 50 log lines from scrollback
 5. sendKey: {"key": "Ctrl+C"}  // Stop watching
 ```
 
@@ -319,7 +319,7 @@ For commands that produce output over time, you have two options:
 ```
 1. type: {"text": "npm install"}
 2. sendKey: {"key": "Enter"}
-3. getContent: {"delay": 30000}
+3. getContent: {"delay": 30000, "visibleOnly": false, "maxLines": 100}
 ```
 
 **Option 2: Separate sleep call**
@@ -328,7 +328,7 @@ For commands that produce output over time, you have two options:
 1. type: {"text": "npm install"}
 2. sendKey: {"key": "Enter"}
 3. sleep: {"milliseconds": 30000}
-4. getContent: {}
+4. getContent: {"visibleOnly": false, "maxLines": 100}
 ```
 
 ### Clear When Needed

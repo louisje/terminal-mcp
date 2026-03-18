@@ -170,8 +170,8 @@ export class TerminalManager {
   /**
    * Get terminal content
    */
-  getContent(): string {
-    return this.getSession().getContent();
+  getContent(maxLines?: number): string {
+    return this.getSession().getContent(maxLines);
   }
 
   /**

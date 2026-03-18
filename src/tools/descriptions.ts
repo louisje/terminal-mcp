@@ -19,6 +19,7 @@ export const TOOL_DESCRIPTIONS = {
   getContent: {
     main: "Get the current content of the terminal buffer",
     visibleOnly: "If true, only return visible content (default: true)",
+    maxLines: "Maximum number of lines to return when visibleOnly is false (default: 100). Set to 0 to return the full buffer.",
     delay: "Optional delay in milliseconds before getting content (default: 0). Use this as a shortcut to avoid separate sleep() call when you need to wait briefly before reading output.",
   },
   takeScreenshot: {

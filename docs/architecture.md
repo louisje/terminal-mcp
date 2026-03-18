@@ -155,8 +155,9 @@ Maps key names to ANSI escape sequences:
 4. Session writes to terminal (xterm.js)
 5. xterm.js processes ANSI codes
 6. AI calls getContent tool
-7. Handler reads from terminal.buffer
-8. Content returned via MCP response
+7. Handler reads from terminal.buffer and trims trailing empty lines
+8. If `visibleOnly: false`, handler applies `maxLines` to the trailing scrollback content
+9. Content returned via MCP response
 ```
 
 ## Technology Choices
@@ -380,5 +381,6 @@ process.on("SIGINT", () => {
 ### Throughput
 
 - High-volume output (e.g., `cat large_file`) may overwhelm buffer
-- Default `getContent()` only returns visible viewport; use `visibleOnly: false` to include full scrollback if needed
+- Default `getContent()` only returns visible viewport; use `visibleOnly: false` to read scrollback history, which returns the last `100` lines by default
+- Use `maxLines: 0` with `visibleOnly: false` to include the full scrollback buffer when needed
 - Screenshot is lighter than full content retrieval

@@ -8,6 +8,13 @@ export const getContentSchema = z.object({
     .optional()
     .default(true)
     .describe(TOOL_DESCRIPTIONS.getContent.visibleOnly),
+  maxLines: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .default(100)
+    .describe(TOOL_DESCRIPTIONS.getContent.maxLines),
   delay: z
     .number()
     .finite()
@@ -30,6 +37,12 @@ export const getContentTool = {
         description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
         default: true,
       },
+      maxLines: {
+        type: "number",
+        description: TOOL_DESCRIPTIONS.getContent.maxLines,
+        default: 100,
+        minimum: 0,
+      },
       delay: {
         type: "number",
         description: TOOL_DESCRIPTIONS.getContent.delay,
@@ -42,7 +55,7 @@ export const getContentTool = {
 };
 
 export async function handleGetContent(manager: TerminalManager, args: unknown): Promise<{ content: Array<{ type: "text"; text: string }> }> {
-  const parsed = getContentSchema.parse(args);
+  const parsed = getContentSchema.parse(args ?? {});
 
   // If delay is specified, sleep before getting content
   if (parsed.delay > 0) {
@@ -53,7 +66,7 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
 
   const content = parsed.visibleOnly
     ? manager.getVisibleContent()
-    : manager.getContent();
+    : manager.getContent(parsed.maxLines);
 
   return {
     content: [

@@ -242,7 +242,7 @@ ${bannerCmd}
   /**
    * Get the current terminal buffer content as plain text
    */
-  getContent(): string {
+  getContent(maxLines?: number): string {
     if (this.disposed) {
       throw new Error("Terminal session has been disposed");
     }
@@ -261,6 +261,10 @@ ${bannerCmd}
     // Trim trailing empty lines
     while (lines.length > 0 && lines[lines.length - 1].trim() === "") {
       lines.pop();
+    }
+
+    if (maxLines && maxLines > 0 && lines.length > maxLines) {
+      return lines.slice(-maxLines).join("\n");
     }
 
     return lines.join("\n");

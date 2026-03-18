@@ -205,6 +205,23 @@ Get the terminal buffer as plain text. Optionally delay before reading to avoid 
 }
 ```
 
+Read the latest 50 lines from scrollback:
+
+```json
+{
+  "name": "getContent",
+  "arguments": {
+    "visibleOnly": false,
+    "maxLines": 50
+  }
+}
+```
+
+- `visibleOnly` (default: `true`): return only the visible viewport
+- `visibleOnly: false`: read from scrollback history; returns the last `100` lines by default
+- `maxLines`: only applies when `visibleOnly: false`; set `0` to return the full scrollback buffer
+- `delay`: wait briefly before reading output, avoiding a separate `sleep()` call
+
 ### `takeScreenshot`
 Capture the terminal state with cursor position and dimensions.
 
