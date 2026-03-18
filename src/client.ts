@@ -21,10 +21,50 @@ interface SocketResponse {
   error?: { message: string };
 }
 
+interface McpClientModeOptions {
+  from?: string;
+}
+
+function shellEscapeArg(value: string): string {
+  if (value.length === 0) {
+    return "''";
+  }
+
+  if (/^[A-Za-z0-9_./:@-]+$/.test(value)) {
+    return value;
+  }
+
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+export function buildClientInitMessage(options: {
+  version: string;
+  hostname: string;
+  timestamp: string;
+  from?: string;
+}): string {
+  const parts = [
+    ":",
+    "client",
+    shellEscapeArg(options.version),
+    shellEscapeArg(options.hostname),
+    shellEscapeArg(options.timestamp),
+  ];
+
+  if (options.from?.trim()) {
+    parts.push("from", shellEscapeArg(options.from));
+  }
+
+  return parts.join(" ");
+}
+
 /**
  * MCP Client Mode - connects to existing terminal socket and serves MCP over stdio
  */
-export async function startMcpClientMode(socketPath: string): Promise<void> {
+export async function startMcpClientMode(
+  socketPath: string,
+  options: McpClientModeOptions = {}
+): Promise<void> {
   // Connect to the interactive terminal's socket
   const socket = await connectToSocket(socketPath);
 
@@ -111,7 +151,12 @@ export async function startMcpClientMode(socketPath: string): Promise<void> {
   // Send initialization message to terminal
   const hostname = os.hostname();
   const timestamp = new Date().toISOString();
-  const initMessage = `: client ${VERSION} ${hostname} ${timestamp}`;
+  const initMessage = buildClientInitMessage({
+    version: VERSION,
+    hostname,
+    timestamp,
+    from: options.from,
+  });
   
   try {
     await sendRequest("type", { text: initMessage });

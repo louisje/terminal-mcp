@@ -32,6 +32,7 @@ const options: {
   rows?: number;
   shell?: string;
   socket?: string;
+  from?: string;
   sandbox?: boolean;
   sandboxConfig?: string;
   record?: RecordingMode;
@@ -72,6 +73,12 @@ for (let i = 0; i < args.length; i++) {
     case "--socket":
       if (next) {
         options.socket = next;
+        i++;
+      }
+      break;
+    case "--from":
+      if (next) {
+        options.from = next;
         i++;
       }
       break;
@@ -144,6 +151,7 @@ Options:
   --shell <path>         Shell to use (default: $SHELL or bash)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
+  --from <label>         Label the MCP client in the init message (e.g. from Augment)
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
   --version, -v          Show version number
@@ -229,7 +237,7 @@ async function main() {
     if (fs.existsSync(socketPath)) {
       try {
         console.error('[terminal-mcp] Found existing session, connecting as client...');
-        await startMcpClientMode(socketPath);
+        await startMcpClientMode(socketPath, { from: options.from });
         return;
       } catch (error) {
         // If connection fails, fall through to create new PTY
@@ -264,7 +272,7 @@ async function main() {
     await startInteractiveMode(socketPath);
   } else {
     // MCP client mode: Connect to socket, serve MCP over stdio
-    await startMcpClientMode(socketPath);
+    await startMcpClientMode(socketPath, { from: options.from });
   }
 }
 

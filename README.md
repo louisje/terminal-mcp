@@ -59,7 +59,7 @@ Add to your MCP client settings:
   "mcpServers": {
     "terminal": {
       "command": "terminal-mcp",
-      "args": ["--mcp"]
+      "args": ["--mcp", "--from", "Augment"]
     }
   }
 }
@@ -98,6 +98,7 @@ terminal-mcp [OPTIONS]
 
 Options:
   --mcp                  Use MCP mode (connects to existing session or creates new PTY)
+  --from <label>         Label the MCP client in the init message (e.g. from Augment)
   --cols <number>        Terminal width in columns (default: 120)
   --rows <number>        Terminal height in rows (default: 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
