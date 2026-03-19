@@ -1,35 +1,37 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildClientInitMessage } from "../src/client.ts";
+import { notifyClientConnected } from "../src/client.ts";
 
-test("buildClientInitMessage omits from suffix when not provided", () => {
-  const message = buildClientInitMessage({
-    version: "2.2.0",
-    hostname: "louis-iMac.local",
-    timestamp: "2026-03-18T08:34:03.100Z",
+test("notifyClientConnected sends the internal connection notice", async () => {
+  const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
+
+  await notifyClientConnected(async (method, params) => {
+    calls.push({ method, params });
+    return undefined;
+  }, {
+    title: "Augment",
   });
 
-  assert.equal(message, ": client 2.2.0 louis-iMac.local 2026-03-18T08:34:03.100Z");
+  assert.deepEqual(calls, [
+    {
+      method: "clientConnected",
+      params: { title: "Augment" },
+    },
+  ]);
 });
 
-test("buildClientInitMessage appends from suffix when provided", () => {
-  const message = buildClientInitMessage({
-    version: "2.2.0",
-    hostname: "louis-iMac.local",
-    timestamp: "2026-03-18T08:34:03.100Z",
-    from: "Augment",
-  });
+test("notifyClientConnected omits title when not provided", async () => {
+  const calls: Array<{ method: string; params?: Record<string, unknown> }> = [];
 
-  assert.equal(message, ": client 2.2.0 louis-iMac.local 2026-03-18T08:34:03.100Z from Augment");
-});
+  await notifyClientConnected(async (method, params) => {
+    calls.push({ method, params });
+    return undefined;
+  }, {});
 
-test("buildClientInitMessage shell-escapes unsafe from values", () => {
-  const message = buildClientInitMessage({
-    version: "2.2.0",
-    hostname: "louis-iMac.local",
-    timestamp: "2026-03-18T08:34:03.100Z",
-    from: "Augment Agent",
-  });
-
-  assert.equal(message, ": client 2.2.0 louis-iMac.local 2026-03-18T08:34:03.100Z from 'Augment Agent'");
+  assert.deepEqual(calls, [
+    {
+      method: "clientConnected",
+      params: undefined,
+    },
+  ]);
 });

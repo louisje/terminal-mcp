@@ -8,6 +8,7 @@ import { TerminalManager } from "./terminal/index.js";
 import { createToolProxyServer } from "./transport/index.js";
 import { getBanner } from "./ui/index.js";
 import { getDefaultSocketPath, getDefaultShell, getDefaultRecordDir, resolveSocketPath } from "./utils/platform.js";
+import { createClientTitleSetter } from "./utils/title.js";
 import {
   SandboxController,
   loadConfigFromFile,
@@ -32,7 +33,7 @@ const options: {
   rows?: number;
   shell?: string;
   socket?: string;
-  from?: string;
+  title?: string;
   sandbox?: boolean;
   sandboxConfig?: string;
   record?: RecordingMode;
@@ -76,9 +77,9 @@ for (let i = 0; i < args.length; i++) {
         i++;
       }
       break;
-    case "--from":
+    case "--title":
       if (next) {
-        options.from = next;
+        options.title = next;
         i++;
       }
       break;
@@ -151,7 +152,7 @@ Options:
   --shell <path>         Shell to use (default: $SHELL or bash)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
-  --from <label>         Label the MCP client in the init message (e.g. from Augment)
+  --title <label>        Set the interactive terminal title when connecting as a client
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
   --version, -v          Show version number
@@ -237,7 +238,7 @@ async function main() {
     if (fs.existsSync(socketPath)) {
       try {
         console.error('[terminal-mcp] Found existing session, connecting as client...');
-        await startMcpClientMode(socketPath, { from: options.from });
+        await startMcpClientMode(socketPath, { title: options.title });
         return;
       } catch (error) {
         // If connection fails, fall through to create new PTY
@@ -272,7 +273,7 @@ async function main() {
     await startInteractiveMode(socketPath);
   } else {
     // MCP client mode: Connect to socket, serve MCP over stdio
-    await startMcpClientMode(socketPath, { from: options.from });
+    await startMcpClientMode(socketPath, { title: options.title });
   }
 }
 
@@ -443,8 +444,14 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     session.resize(newCols, newRows);
   });
 
+  const setClientTitle = createClientTitleSetter((data) => {
+    process.stdout.write(data);
+  });
+
   // Start tool proxy socket server
-  const socketServer = createToolProxyServer(socketPath, manager);
+  const socketServer = createToolProxyServer(socketPath, manager, ({ title }) => {
+    setClientTitle(title);
+  });
 
   // Cleanup function (sync version for exit handler)
   function cleanup() {

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import { Server as NetServer, Socket } from "net";
 import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { JSONRPCMessage } from "@modelcontextprotocol/sdk/types.js";
+import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
 import { getStats } from "../utils/stats.js";
 
@@ -26,6 +27,12 @@ interface SocketResponse {
   result?: unknown;
   error?: { message: string };
 }
+
+const clientConnectedSchema = z.object({
+  title: z.string().optional(),
+});
+
+export type ClientConnectedParams = z.infer<typeof clientConnectedSchema>;
 
 /**
  * Transport that communicates over a Unix socket connection
@@ -124,7 +131,8 @@ export function createSocketServer(
  */
 export function createToolProxyServer(
   socketPath: string,
-  manager: TerminalManager
+  manager: TerminalManager,
+  onClientConnected?: (params: ClientConnectedParams) => void
 ): NetServer {
   // Remove existing socket file if it exists
   try {
@@ -145,7 +153,7 @@ export function createToolProxyServer(
         if (line.trim()) {
           try {
             const request = JSON.parse(line) as SocketRequest;
-            const response = await handleToolRequest(manager, request);
+            const response = await handleToolRequest(manager, request, onClientConnected);
             socket.write(JSON.stringify(response) + "\n");
           } catch (error) {
             const errorMessage =
@@ -176,7 +184,8 @@ export function createToolProxyServer(
  */
 async function handleToolRequest(
   manager: TerminalManager,
-  request: SocketRequest
+  request: SocketRequest,
+  onClientConnected?: (params: ClientConnectedParams) => void
 ): Promise<SocketResponse> {
   const { id, method, params } = request;
   const stats = getStats();
@@ -224,6 +233,13 @@ async function handleToolRequest(
         stats.recordToolCall("stopRecording");
         result = await handleStopRecording(manager, params);
         break;
+
+      case "clientConnected": {
+        const parsed = clientConnectedSchema.parse(params ?? {});
+        onClientConnected?.(parsed);
+        result = { ok: true };
+        break;
+      }
 
       default:
         return {

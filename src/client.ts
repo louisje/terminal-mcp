@@ -1,5 +1,4 @@
 import * as net from "net";
-import * as os from "os";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { VERSION } from "./utils/version.js";
@@ -22,40 +21,19 @@ interface SocketResponse {
 }
 
 interface McpClientModeOptions {
-  from?: string;
+  title?: string;
 }
 
-function shellEscapeArg(value: string): string {
-  if (value.length === 0) {
-    return "''";
-  }
-
-  if (/^[A-Za-z0-9_./:@-]+$/.test(value)) {
-    return value;
-  }
-
-  return `'${value.replace(/'/g, `'\\''`)}'`;
-}
-
-export function buildClientInitMessage(options: {
-  version: string;
-  hostname: string;
-  timestamp: string;
-  from?: string;
-}): string {
-  const parts = [
-    ":",
-    "client",
-    shellEscapeArg(options.version),
-    shellEscapeArg(options.hostname),
-    shellEscapeArg(options.timestamp),
-  ];
-
-  if (options.from?.trim()) {
-    parts.push("from", shellEscapeArg(options.from));
-  }
-
-  return parts.join(" ");
+type SocketRequestSender = (
+  method: string,
+  params?: Record<string, unknown>
+) => Promise<unknown>;
+export async function notifyClientConnected(
+  sendRequest: SocketRequestSender,
+  options: { title?: string }
+): Promise<void> {
+  const params = options.title === undefined ? undefined : { title: options.title };
+  await sendRequest("clientConnected", params);
 }
 
 /**
@@ -148,21 +126,11 @@ export async function startMcpClientMode(
     });
   }
 
-  // Send initialization message to terminal
-  const hostname = os.hostname();
-  const timestamp = new Date().toISOString();
-  const initMessage = buildClientInitMessage({
-    version: VERSION,
-    hostname,
-    timestamp,
-    from: options.from,
-  });
-  
+  // Notify the interactive terminal that a client connected
   try {
-    await sendRequest("type", { text: initMessage });
-    await sendRequest("sendKey", { key: "Enter" });
+    await notifyClientConnected(sendRequest, { title: options.title });
   } catch (error) {
-    console.error("Warning: Failed to send init message:", error);
+    console.error("Warning: Failed to notify interactive terminal about client connection:", error);
     // Continue anyway - this is not critical
   }
 
