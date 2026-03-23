@@ -7,13 +7,12 @@ import { startMcpClientMode } from "./client.js";
 import { TerminalManager } from "./terminal/index.js";
 import { createToolProxyServer } from "./transport/index.js";
 import { getBanner } from "./ui/index.js";
-import { getDefaultSocketPath, getDefaultShell, getDefaultRecordDir, resolveSocketPath } from "./utils/platform.js";
+import { getDefaultSocketPath, getDefaultShell, resolveSocketPath } from "./utils/platform.js";
 import { createClientTitleSetter } from "./utils/title.js";
 import {
   SandboxController,
   loadConfigFromFile,
   promptForPermissions,
-  DEFAULT_PERMISSIONS,
   type SandboxPermissions,
 } from "./sandbox/index.js";
 
@@ -240,7 +239,7 @@ async function main() {
         console.error('[terminal-mcp] Found existing session, connecting as client...');
         await startMcpClientMode(socketPath, { title: options.title });
         return;
-      } catch (error) {
+      } catch {
         // If connection fails, fall through to create new PTY
         console.error('[terminal-mcp] Failed to connect to existing session, creating new PTY...');
       }
