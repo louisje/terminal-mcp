@@ -17,9 +17,9 @@ export const TOOL_DESCRIPTIONS = {
     milliseconds: "Number of milliseconds to sleep (default: 5000 = 5 seconds). Use for operations that genuinely require waiting, not as a workaround.",
   },
   getContent: {
-    main: "Get the current content of the terminal buffer. WARNING: Default visibleOnly=true only returns the viewport (~40 lines) and will truncate command output. Use visibleOnly=false after running any command that produces output to avoid missing content.",
-    visibleOnly: "If true, only return visible content (default: true, ~40 lines). WARNING: This truncates output from commands. Set to false after running commands (ls, cat, npm install, etc.) to get full output from scrollback. Only keep true when checking interactive UI state (prompts, editors, menus).",
-    maxLines: "Maximum number of lines to return when visibleOnly is false (default: 100). Set to 0 to return the full buffer.",
+    main: "Get the current content of the terminal buffer. WARNING: Default visibleOnly=true only returns the viewport (~40 lines) and will truncate command output. Use visibleOnly=false or specify maxLines after running any command that produces output to avoid missing content.",
+    visibleOnly: "If true, only return visible viewport (~40 lines). If false, return from scrollback. If omitted, defaults to true UNLESS maxLines is specified (which implies visibleOnly=false). When visibleOnly=true is explicitly set, maxLines is ignored.",
+    maxLines: "Maximum number of lines to return from scrollback (default: 100). Specifying maxLines automatically reads from scrollback without needing to set visibleOnly=false. Set to 0 to return the full buffer.",
     delay: "Optional delay in milliseconds before getting content (default: 0). Use this as a shortcut to avoid separate sleep() call when you need to wait briefly before reading output.",
   },
   getBufferInfo: {

@@ -6,14 +6,12 @@ export const getContentSchema = z.object({
   visibleOnly: z
     .boolean()
     .optional()
-    .default(true)
     .describe(TOOL_DESCRIPTIONS.getContent.visibleOnly),
   maxLines: z
     .number()
     .int()
     .nonnegative()
     .optional()
-    .default(100)
     .describe(TOOL_DESCRIPTIONS.getContent.maxLines),
   delay: z
     .number()
@@ -35,12 +33,10 @@ export const getContentTool = {
       visibleOnly: {
         type: "boolean",
         description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
-        default: true,
       },
       maxLines: {
         type: "number",
         description: TOOL_DESCRIPTIONS.getContent.maxLines,
-        default: 100,
         minimum: 0,
       },
       delay: {
@@ -64,9 +60,21 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
     });
   }
 
-  const content = parsed.visibleOnly
-    ? manager.getVisibleContent()
-    : manager.getContent(parsed.maxLines);
+  // Resolve visibleOnly vs maxLines:
+  // - visibleOnly explicitly true  → viewport only (ignore maxLines)
+  // - visibleOnly explicitly false → scrollback with maxLines (default 100)
+  // - visibleOnly unset + maxLines set → scrollback (maxLines implies visibleOnly=false)
+  // - both unset → viewport only (backward compatible default)
+  let content: string;
+  if (parsed.visibleOnly === true) {
+    content = manager.getVisibleContent();
+  } else if (parsed.visibleOnly === false) {
+    content = manager.getContent(parsed.maxLines ?? 100);
+  } else if (parsed.maxLines !== undefined) {
+    content = manager.getContent(parsed.maxLines);
+  } else {
+    content = manager.getVisibleContent();
+  }
 
   return {
     content: [

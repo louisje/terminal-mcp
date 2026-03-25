@@ -72,12 +72,10 @@ export const toolDefinitions: ToolDefinition[] = [
         visibleOnly: {
           type: "boolean",
           description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
-          default: true,
         },
         maxLines: {
           type: "number",
           description: TOOL_DESCRIPTIONS.getContent.maxLines,
-          default: 100,
           minimum: 0,
         },
         delay: {

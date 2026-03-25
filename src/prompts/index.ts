@@ -43,19 +43,22 @@ Send a special key or key combination to the terminal.
 ### getContent
 Get terminal content as plain text. Use after sending commands to see output.
 
-**IMPORTANT - Truncation warning:** Default `visibleOnly=true` only returns the visible viewport (~40 lines). Any command output beyond that is silently lost.
+**IMPORTANT - Truncation warning:** With no arguments, only the visible viewport (~40 lines) is returned. Command output beyond that is silently lost.
 
 **Rule of thumb:**
-- After running any command → use `visibleOnly: false` (reads scrollback, returns last 100 lines)
-- Checking interactive UI state (prompts, editors, menus) → `visibleOnly: true` is fine
+- After running any command: use maxLines: 100 or visibleOnly: false to read scrollback
+- Checking interactive UI state (prompts, editors, menus): no arguments needed
 
-Set `maxLines` to control how many trailing lines to return when `visibleOnly=false`. Use `maxLines=0` for the full buffer.
+**Shorthand:** Specifying maxLines alone implies visibleOnly: false. No need to set both.
+If visibleOnly: true is explicitly set, maxLines is ignored.
 
-Set `delay` (milliseconds) to wait before reading — avoids a separate sleep() call.
+Set delay (milliseconds) to wait before reading - avoids a separate sleep() call.
 
-**Example workflow:**
-1. type('ls -la', {autoSubmit: true})  — or type + sendKey('Enter')
-2. getContent({visibleOnly: false})  — always use scrollback after commands
+**Examples:**
+- getContent() - viewport only (~40 lines), for checking prompts/UI
+- getContent({maxLines: 100}) - last 100 lines from scrollback
+- getContent({maxLines: 0}) - full buffer
+- getContent({visibleOnly: true, maxLines: 200}) - viewport only (visibleOnly wins)
 
 ### getBufferInfo
 Get lightweight metadata about the terminal buffer as structured JSON.
