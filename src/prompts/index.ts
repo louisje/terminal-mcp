@@ -43,13 +43,19 @@ Send a special key or key combination to the terminal.
 ### getContent
 Get terminal content as plain text. Use after sending commands to see output.
 
-Returns only the visible viewport by default (up to terminal height). Set visibleOnly=false to read from scrollback history; this returns the last 100 lines by default.
+**IMPORTANT - Truncation warning:** Default `visibleOnly=true` only returns the visible viewport (~40 lines). Any command output beyond that is silently lost.
 
-Optionally set maxLines when visibleOnly=false to control how many trailing lines are returned. Use maxLines=0 to return the full scrollback buffer (up to 1000 lines).
+**Rule of thumb:**
+- After running any command → use `visibleOnly: false` (reads scrollback, returns last 100 lines)
+- Checking interactive UI state (prompts, editors, menus) → `visibleOnly: true` is fine
 
-Optionally set delay (in milliseconds) to wait before getting content - this avoids needing a separate sleep() call when commands need time to produce output.
+Set `maxLines` to control how many trailing lines to return when `visibleOnly=false`. Use `maxLines=0` for the full buffer.
 
-Prefer this over takeScreenshot when you only need text content.
+Set `delay` (milliseconds) to wait before reading — avoids a separate sleep() call.
+
+**Example workflow:**
+1. type('ls -la', {autoSubmit: true})  — or type + sendKey('Enter')
+2. getContent({visibleOnly: false})  — always use scrollback after commands
 
 ### getBufferInfo
 Get lightweight metadata about the terminal buffer as structured JSON.
@@ -64,7 +70,7 @@ Use this when you need to know how much history is available without reading the
 **Example with delay:**
 1. type('npm install')
 2. sendKey('Enter')
-3. getContent({delay: 5000}) - waits 5 seconds, then reads output
+3. getContent({visibleOnly: false, delay: 5000}) - waits 5 seconds, then reads scrollback output
 
 ### takeScreenshot
 Capture terminal state as structured JSON with:
