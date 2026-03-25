@@ -42,10 +42,10 @@ function createSessionWithLines(lines: string[]): TerminalSession {
   return session;
 }
 
-test("getContentSchema defaults: visibleOnly=true, maxLines=100, delay=0", () => {
+test("getContentSchema defaults: visibleOnly=undefined, maxLines=undefined, delay=0", () => {
   const parsed = getContentSchema.parse({});
-  assert.equal(parsed.visibleOnly, true);
-  assert.equal(parsed.maxLines, 100);
+  assert.equal(parsed.visibleOnly, undefined);
+  assert.equal(parsed.maxLines, undefined);
   assert.equal(parsed.delay, 0);
 });
 
@@ -105,20 +105,15 @@ test("handleGetContent passes maxLines=0 through when requesting full buffer", a
   assert.equal(result.content[0]?.text, "all content");
 });
 
-test("handleGetContent ignores maxLines when visibleOnly=true", async () => {
-  let getContentCalled = false;
+test("handleGetContent applies maxLines to visible content when visibleOnly=true", async () => {
   const manager = {
-    getContent: () => {
-      getContentCalled = true;
-      return "full content";
-    },
-    getVisibleContent: () => "visible content",
+    getContent: () => "full content",
+    getVisibleContent: () => "line 1\nline 2\nline 3\nline 4\nline 5",
   } as TerminalManager;
 
-  const result = await handleGetContent(manager, { visibleOnly: true, maxLines: 5 });
+  const result = await handleGetContent(manager, { visibleOnly: true, maxLines: 2 });
 
-  assert.equal(getContentCalled, false);
-  assert.equal(result.content[0]?.text, "visible content");
+  assert.equal(result.content[0]?.text, "line 4\nline 5");
 });
 
 test("handleGetContent delays when delay > 0", async () => {

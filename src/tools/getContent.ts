@@ -60,20 +60,32 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
     });
   }
 
-  // Resolve visibleOnly vs maxLines:
-  // - visibleOnly explicitly true  → viewport only (ignore maxLines)
-  // - visibleOnly explicitly false → scrollback with maxLines (default 100)
-  // - visibleOnly unset + maxLines set → scrollback (maxLines implies visibleOnly=false)
-  // - both unset → viewport only (backward compatible default)
+  // visibleOnly and maxLines are orthogonal:
+  // - visibleOnly: data source (viewport vs full scrollback)
+  // - maxLines: cap on returned lines (applies to either source)
+  //
+  // Defaults:
+  // - visibleOnly unset + maxLines unset → viewport, all lines
+  // - visibleOnly unset + maxLines set   → scrollback (maxLines implies visibleOnly=false)
+  // - visibleOnly true  + maxLines set   → viewport, last N lines
+  // - visibleOnly false + maxLines unset → scrollback, last 100 lines
+  // - visibleOnly false + maxLines set   → scrollback, last N lines
+  const useVisible = parsed.visibleOnly === true
+    || (parsed.visibleOnly === undefined && parsed.maxLines === undefined);
+
   let content: string;
-  if (parsed.visibleOnly === true) {
+  if (useVisible) {
     content = manager.getVisibleContent();
-  } else if (parsed.visibleOnly === false) {
-    content = manager.getContent(parsed.maxLines ?? 100);
-  } else if (parsed.maxLines !== undefined) {
-    content = manager.getContent(parsed.maxLines);
   } else {
-    content = manager.getVisibleContent();
+    content = manager.getContent(parsed.maxLines ?? 100);
+  }
+
+  // Apply maxLines cap to visible content when both are specified
+  if (useVisible && parsed.maxLines !== undefined && parsed.maxLines > 0) {
+    const lines = content.split('\n');
+    if (lines.length > parsed.maxLines) {
+      content = lines.slice(-parsed.maxLines).join('\n');
+    }
   }
 
   return {

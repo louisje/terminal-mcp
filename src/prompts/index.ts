@@ -50,7 +50,7 @@ Get terminal content as plain text. Use after sending commands to see output.
 - Checking interactive UI state (prompts, editors, menus): no arguments needed
 
 **Shorthand:** Specifying maxLines alone implies visibleOnly: false. No need to set both.
-If visibleOnly: true is explicitly set, maxLines is ignored.
+visibleOnly and maxLines are independent - visibleOnly controls the data source, maxLines caps the line count.
 
 Set delay (milliseconds) to wait before reading - avoids a separate sleep() call.
 
@@ -58,7 +58,7 @@ Set delay (milliseconds) to wait before reading - avoids a separate sleep() call
 - getContent() - viewport only (~40 lines), for checking prompts/UI
 - getContent({maxLines: 100}) - last 100 lines from scrollback
 - getContent({maxLines: 0}) - full buffer
-- getContent({visibleOnly: true, maxLines: 200}) - viewport only (visibleOnly wins)
+- getContent({visibleOnly: true, maxLines: 10}) - last 10 lines of viewport
 
 ### getBufferInfo
 Get lightweight metadata about the terminal buffer as structured JSON.
