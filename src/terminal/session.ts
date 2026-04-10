@@ -96,7 +96,7 @@ export class TerminalSession {
 # Source user's bashrc if it exists
 [ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"
 # Set terminal-mcp prompt
-PS1="${PROMPT_INDICATOR} \\$ "
+PS1="\\[\\e[33m\\]${PROMPT_INDICATOR}\\[\\e[0m\\] \\$ "
 # Print startup banner
 ${bannerCmd}
 `;
