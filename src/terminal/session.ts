@@ -96,7 +96,7 @@ export class TerminalSession {
 # Source user's bashrc if it exists
 [ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"
 # Set terminal-mcp prompt
-PS1="${PROMPT_INDICATOR} \\$ "
+PS1="\\[\\e[33m\\]${PROMPT_INDICATOR}\\[\\e[0m\\]\\$ "
 # Print startup banner
 ${bannerCmd}
 `;
@@ -118,7 +118,7 @@ export ZDOTDIR="${homeDir}"
 # Source user's zshrc if it exists
 [ -f "${homeDir}/.zshrc" ] && source "${homeDir}/.zshrc"
 # Set terminal-mcp prompt
-PROMPT="${PROMPT_INDICATOR} %# "
+PROMPT="${PROMPT_INDICATOR}%# "
 # Print startup banner
 ${bannerCmd}
 `;
@@ -140,12 +140,12 @@ ${bannerCmd}
 
     // Windows cmd.exe
     if (shellName === "cmd" || shellName === "cmd.exe") {
-      env.PROMPT = `${PROMPT_INDICATOR} $P$G`;
+      env.PROMPT = `${PROMPT_INDICATOR}$P$G`;
       return { args: [], env };
     }
 
     // For other shells, just set env vars and hope for the best
-    env.PS1 = `${PROMPT_INDICATOR} $ `;
+    env.PS1 = `${PROMPT_INDICATOR}$ `;
     return { args: [], env };
   }
 
