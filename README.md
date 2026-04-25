@@ -28,8 +28,9 @@ curl -fsSL https://raw.githubusercontent.com/elleryfamilia/terminal-mcp/main/ins
 - **Cross-Platform PTY**: Native pseudo-terminal support via node-pty (macOS, Linux, Windows)
 - **MCP Protocol**: Implements Model Context Protocol for AI assistant integration
 - **Session Recording**: Record terminal sessions to asciicast format for playback with asciinema
-- **Simple API**: Six intuitive tools for complete terminal control
+- **Simple API**: Nine tools covering input, observation, recording, and session lifecycle
 - **Headless Mode**: Run as a standalone MCP server without a TTY — ideal for CI, containers, and non-interactive environments
+- **Multi-Session**: Run multiple isolated terminal sessions in one process, addressed by `sessionId`
 - **Sandbox Mode**: Optional security restrictions for filesystem and network access
 
 ## Building from Source
@@ -91,6 +92,11 @@ Recording Options:
   --idle-time-limit <sec>   Max idle time between events (default: 2s)
   --max-duration <sec>      Max recording duration (default: 3600s)
   --inactivity-timeout <sec>  Stop after no output (default: 600s)
+
+Multi-Session Options:
+  --max-sessions <n>           Max concurrent sessions (default: 5)
+  --session-idle-timeout <sec> Idle non-default sessions are auto-destroyed
+                               after this period (default: 600s)
 ```
 
 ## Headless Mode
@@ -134,9 +140,11 @@ terminal-mcp --headless
         Shell Process (bash, zsh, etc.)
 ```
 
-In headless mode, the terminal session is initialized eagerly at startup, so all tools (`type`, `sendKey`, `getContent`, `takeScreenshot`, `startRecording`, `stopRecording`) are available immediately.
+In headless mode, the terminal session is initialized eagerly at startup, so all tools (`type`, `sendKey`, `getContent`, `takeScreenshot`, `startRecording`, `stopRecording`, `createSession`, `listSessions`, `destroySession`) are available immediately.
 
 ## MCP Tools
+
+All input/output tools (`type`, `sendKey`, `getContent`, `takeScreenshot`) accept an optional `sessionId` argument. Omit it to target the default session; pass the ID returned by `createSession` to drive a specific session.
 
 ### `type`
 Send text input to the terminal.
@@ -233,6 +241,62 @@ Stop a recording and finalize the asciicast file.
   }
 }
 ```
+
+### `createSession`
+Create a new terminal session and return its metadata. Use the returned `sessionId` to target this session in subsequent tool calls.
+
+```json
+{
+  "name": "createSession",
+  "arguments": {
+    "shell": "/bin/zsh",
+    "cols": 100,
+    "rows": 30
+  }
+}
+```
+
+All arguments are optional. Returns:
+
+```json
+{
+  "sessionId": "3029d",
+  "shell": "/bin/zsh",
+  "cols": 100,
+  "rows": 30,
+  "createdAt": "2026-04-25T12:58:01.072Z",
+  "lastActivityAt": "2026-04-25T12:58:01.072Z",
+  "isDefault": false
+}
+```
+
+### `listSessions`
+List all active sessions including the default. Reports configured limits.
+
+```json
+{ "name": "listSessions", "arguments": {} }
+```
+
+### `destroySession`
+Destroy a session by ID. The default session cannot be destroyed.
+
+```json
+{
+  "name": "destroySession",
+  "arguments": { "sessionId": "3029d" }
+}
+```
+
+## Multi-Session
+
+By default, every tool call without a `sessionId` targets a single auto-created **default session** — the same behavior the project has always had. Pass `sessionId` to drive multiple isolated PTYs from one process.
+
+- The default session is created on first use and cannot be destroyed.
+- Additional sessions are created by `createSession` and tracked until they're destroyed or idle-evicted (`--session-idle-timeout`, default 600s).
+- Concurrent sessions are capped at `--max-sessions` (default 5).
+- An active recording captures output from all sessions in the process.
+
+Typical use case: an AI agent driving a long-running build in one session while running diagnostics in another, without command interleaving.
 
 ## Sandbox Mode
 
