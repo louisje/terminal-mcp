@@ -12,6 +12,7 @@ Terminal MCP can be configured via command-line arguments and selected environme
 | `--rows` | number | 40 | Terminal height in rows |
 | `--shell` | string | `$SHELL` or `bash` | Shell executable to use |
 | `--socket` | string | platform default or `TERMINAL_MCP_SOCKET` | IPC socket/pipe path for MCP |
+| `--headless` | flag | - | Run in headless mode (embedded PTY + MCP over stdio, no TTY needed) |
 | `--sandbox` | flag | - | Enable sandbox mode (restricts filesystem/network) |
 | `--sandbox-config` | string | - | Path to sandbox configuration JSON file |
 | `--version`, `-v` | flag | - | Show version number |
@@ -38,8 +39,14 @@ See [Recording Documentation](recording.md) for full details on recording featur
 # Use defaults (120x40, system shell)
 terminal-mcp
 
+# Headless mode (no TTY required — recommended for MCP configs)
+terminal-mcp --headless
+
 # Custom dimensions
 terminal-mcp --cols 80 --rows 24
+
+# Headless with custom dimensions
+terminal-mcp --headless --cols 100 --rows 30
 
 # Specific shell
 terminal-mcp --shell /bin/zsh
@@ -90,6 +97,21 @@ Example:
 ```
 
 ## Claude Code Configuration
+
+### Headless Mode (Recommended)
+
+The simplest setup — no separate interactive session needed:
+
+```json
+{
+  "mcpServers": {
+    "terminal": {
+      "command": "terminal-mcp",
+      "args": ["--headless", "--cols", "120", "--rows", "40"]
+    }
+  }
+}
+```
 
 ### Basic Configuration
 

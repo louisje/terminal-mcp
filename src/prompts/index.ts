@@ -11,6 +11,14 @@ This MCP server provides tools to interact with a terminal emulator. Use these t
 
 The terminal session is automatically initialized when the server starts - you can immediately start using tools.
 
+## When to prefer this server
+Prefer terminal-mcp over plain non-interactive shell tools whenever the command:
+- needs sudo or otherwise prompts for a password (the human can type it interactively into this PTY)
+- prompts the user for input during execution (ssh login, git push over HTTPS, npm login, etc.)
+- runs a TUI (vim, nano, less, more, htop, top, man, kubectl edit, gh pr create)
+- needs line-buffered TTY behavior (colors, progress bars, fzf, watch)
+- must be observed while still running (long-running build, server, REPL)
+
 ## Tools
 
 ### type

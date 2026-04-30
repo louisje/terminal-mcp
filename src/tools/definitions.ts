@@ -100,7 +100,14 @@ export const toolDefinitions: ToolDefinition[] = [
     description: TOOL_DESCRIPTIONS.takeScreenshot.main,
     inputSchema: {
       type: "object",
-      properties: {},
+      properties: {
+        format: {
+          type: "string",
+          enum: ["text", "ansi", "png"],
+          description:
+            "Output format: 'text' (default) plain JSON, 'ansi' for colored text with ANSI codes, 'png' for color screenshot image",
+        },
+      },
     },
   },
   {

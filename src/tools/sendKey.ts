@@ -5,6 +5,7 @@ import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const sendKeySchema = z.object({
   key: z.string().describe(TOOL_DESCRIPTIONS.sendKey.key),
+  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
 });
 
 export type SendKeyArgs = z.infer<typeof sendKeySchema>;
@@ -20,6 +21,10 @@ export const sendKeyTool = {
       key: {
         type: "string",
         description: TOOL_DESCRIPTIONS.sendKey.key,
+      },
+      sessionId: {
+        type: "string",
+        description: "Target session ID. Omit to target the default session.",
       },
     },
     required: ["key"],
@@ -37,7 +42,7 @@ export function handleSendKey(manager: TerminalManager, args: unknown): { conten
     );
   }
 
-  manager.write(sequence);
+  manager.write(sequence, parsed.sessionId);
 
   return {
     content: [

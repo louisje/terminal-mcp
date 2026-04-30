@@ -20,6 +20,7 @@ export const getContentSchema = z.object({
     .optional()
     .default(0)
     .describe(TOOL_DESCRIPTIONS.getContent.delay),
+  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
 });
 
 export type GetContentArgs = z.infer<typeof getContentSchema>;
@@ -44,6 +45,10 @@ export const getContentTool = {
         description: TOOL_DESCRIPTIONS.getContent.delay,
         default: 0,
         minimum: 0,
+      },
+      sessionId: {
+        type: "string",
+        description: "Target session ID. Omit to target the default session.",
       },
     },
     required: [],
@@ -75,13 +80,13 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
 
   let content: string;
   if (useVisible) {
-    content = manager.getVisibleContent();
+    content = manager.getVisibleContent(parsed.sessionId);
   } else {
-    content = manager.getContent(parsed.maxLines ?? 100);
+    content = manager.getContent(parsed.sessionId);
   }
 
-  // Apply maxLines cap to visible content when both are specified
-  if (useVisible && parsed.maxLines !== undefined && parsed.maxLines > 0) {
+  // Apply maxLines cap
+  if (parsed.maxLines !== undefined && parsed.maxLines > 0) {
     const lines = content.split('\n');
     if (lines.length > parsed.maxLines) {
       content = lines.slice(-parsed.maxLines).join('\n');
