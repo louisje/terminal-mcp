@@ -56,6 +56,7 @@ export class TerminalSession {
 
   private rcFile: string | null = null;
   private zdotdir: string | null = null;
+  private titleFile: string | null = null;
 
   /**
    * Private constructor - use TerminalSession.create() instead
@@ -98,15 +99,21 @@ export class TerminalSession {
       // clobber it) and sets the terminal title.
       const homeDir = os.homedir();
       const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
+      this.titleFile = path.join(os.tmpdir(), `terminal-mcp-title-${process.pid}`);
+      fs.writeFileSync(this.titleFile, "terminal-mcp");
       const bashrcContent = `
 # Source user's bashrc if it exists
 [ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"
+# Title file for dynamic title updates from MCP clients
+_TERMINAL_MCP_TITLE_FILE="${this.titleFile}"
 # Set initial terminal title
 printf '\\033]0;[terminal-mcp]\\a'
 # Prepend a marker to PS1 every prompt and refresh the title.
 # Re-runs each PROMPT_COMMAND so themes that rebuild PS1 keep the marker.
 _terminal_mcp_prompt_marker() {
-  printf '\\033]0;[terminal-mcp] %s\\a' "\${PWD/#$HOME/'~'}"
+  local _title="terminal-mcp"
+  [ -f "\$_TERMINAL_MCP_TITLE_FILE" ] && _title="\$(< "\$_TERMINAL_MCP_TITLE_FILE")"
+  printf '\\033]0;[%s] %s\\a' "\$_title" "\${PWD/#$HOME/'~'}"
   case "$PS1" in
     *"${PROMPT_INDICATOR}"*) ;;
     *) PS1="\\[\\033[30;43m\\] ${PROMPT_INDICATOR} \\[\\033[0m\\] $PS1" ;;
@@ -133,12 +140,18 @@ ${bannerCmd}
       this.zdotdir = path.join(os.tmpdir(), `terminal-mcp-zsh-${process.pid}`);
       fs.mkdirSync(this.zdotdir, { recursive: true });
 
+      if (!this.titleFile) {
+        this.titleFile = path.join(os.tmpdir(), `terminal-mcp-title-${process.pid}`);
+        fs.writeFileSync(this.titleFile, "terminal-mcp");
+      }
       const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
       const zshrcContent = `
 # Reset ZDOTDIR so nested zsh uses normal config
 export ZDOTDIR="${homeDir}"
 # Source user's zshrc if it exists
 [ -f "${homeDir}/.zshrc" ] && source "${homeDir}/.zshrc"
+# Title file for dynamic title updates from MCP clients
+_TERMINAL_MCP_TITLE_FILE="${this.titleFile}"
 # Set initial terminal title
 print -Pn '\\e]0;[terminal-mcp]\\a'
 # Prepend a marker to PROMPT every precmd and refresh the title.
@@ -146,7 +159,9 @@ print -Pn '\\e]0;[terminal-mcp]\\a'
 # regenerate PROMPT.
 autoload -Uz add-zsh-hook
 _terminal_mcp_prompt_marker() {
-  print -Pn '\\e]0;[terminal-mcp] %~\\a'
+  local _title="terminal-mcp"
+  [ -f "\$_TERMINAL_MCP_TITLE_FILE" ] && _title="\$(< "\$_TERMINAL_MCP_TITLE_FILE")"
+  print -Pn "\\e]0;[\$_title] %~\\a"
   if [[ "$PROMPT" != *"${PROMPT_INDICATOR}"* ]]; then
     PROMPT="%K{yellow}%F{black} ${PROMPT_INDICATOR} %f%k $PROMPT"
   fi
@@ -566,6 +581,30 @@ ${bannerCmd}
           // Ignore cleanup errors
         }
       }
+      if (this.titleFile) {
+        try {
+          fs.unlinkSync(this.titleFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
     }
+  }
+
+  /**
+   * Update the terminal title prefix. The shell's precmd hook will pick
+   * this up on the next prompt.
+   */
+  setTitle(title: string): void {
+    if (this.titleFile) {
+      fs.writeFileSync(this.titleFile, title);
+    }
+  }
+
+  /**
+   * Get the path to the title file (if any).
+   */
+  getTitleFile(): string | null {
+    return this.titleFile;
   }
 }

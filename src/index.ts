@@ -552,6 +552,9 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
   // Start tool proxy socket server
   const socketServer = createToolProxyServer(socketPath, manager, ({ title }) => {
     setClientTitle(title);
+    if (title) {
+      manager.setTitle(title);
+    }
   });
 
   // Cleanup function (sync version for exit handler)

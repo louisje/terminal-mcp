@@ -396,6 +396,17 @@ export class TerminalManager {
     return this.resolveSessionSync(sessionId).getDimensions();
   }
 
+  /**
+   * Update the terminal title prefix for the default session.
+   * The shell's precmd hook reads this from a file on each prompt.
+   */
+  setTitle(title: string): void {
+    const session = this.getCurrentSession();
+    if (session) {
+      session.setTitle(title);
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Recording / lifecycle
   // ---------------------------------------------------------------------------
