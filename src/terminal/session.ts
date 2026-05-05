@@ -106,7 +106,7 @@ printf '\\033]0;[terminal-mcp]\\a'
 # Prepend a marker to PS1 every prompt and refresh the title.
 # Re-runs each PROMPT_COMMAND so themes that rebuild PS1 keep the marker.
 _terminal_mcp_prompt_marker() {
-  printf '\\033]0;[terminal-mcp] %s\\a' "\${PWD/#$HOME/~}"
+  printf '\\033]0;[terminal-mcp] %s\\a' "\${PWD/#$HOME/'~'}"
   case "$PS1" in
     *"${PROMPT_INDICATOR}"*) ;;
     *) PS1="\\[\\033[30;43m\\] ${PROMPT_INDICATOR} \\[\\033[0m\\] $PS1" ;;
