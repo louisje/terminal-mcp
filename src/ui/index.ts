@@ -1,3 +1,4 @@
+import stringWidth from "string-width";
 import { VERSION } from "../utils/version.js";
 import { getToolNames } from "../tools/definitions.js";
 
@@ -43,8 +44,8 @@ export function getBanner(options: BannerOptions): string {
   // Build the logo with box around it
   const logoLines = LOGO.split("\n");
 
-  // Find the widest logo line to determine box width
-  const maxLogoWidth = Math.max(...logoLines.map((l) => l.length));
+  // Find the widest logo line to determine box width (using visual width)
+  const maxLogoWidth = Math.max(...logoLines.map((l) => stringWidth(l)));
   const boxWidth = maxLogoWidth + 4; // 2 chars padding on each side
 
   const horizontalLine = "─".repeat(boxWidth);
@@ -52,17 +53,27 @@ export function getBanner(options: BannerOptions): string {
   // Center the logo as a block (same left padding for all lines)
   // First 6 lines are TERMINAL (blue), last 6 lines are MCP (pink)
   const centeredLogo = logoLines.map((line, index) => {
-    const rightPad = boxWidth - 2 - line.length;
+    const rightPad = boxWidth - 2 - stringWidth(line);
     const color = index < 6 ? BRAND_COLOR : PINK_COLOR;
-    return YELLOW_COLOR + "│ " + color + line + " ".repeat(rightPad) + " " + YELLOW_COLOR + "│";
+    return YELLOW_COLOR + "│ " + color + line + " ".repeat(Math.max(0, rightPad)) + " " + YELLOW_COLOR + "│";
   });
+
+  // Helper: build a box content line with correct padding.
+  // `content` is the visible text (no ANSI) to place between │…│.
+  // `styled` is the same text but with ANSI color codes included.
+  const boxLine = (content: string, styled?: string): string => {
+    const pad = boxWidth - stringWidth(content);
+    return `${YELLOW_COLOR}│${styled ?? content}${" ".repeat(Math.max(0, pad))}${YELLOW_COLOR}│`;
+  };
 
   // Generate tool lines - first line has "Tools:" label, rest are indented
   const toolNames = getToolNames();
   const toolLines = toolNames.map((tool, index) => {
     const prefix = index === 0 ? "  Tools: " : "         ";
     const bullet = "• ";
-    return `${YELLOW_COLOR}│${WHITE_COLOR}${prefix}${bullet}${padRight(tool, boxWidth - prefix.length - 3)}${YELLOW_COLOR}│`;
+    const content = `${prefix}${bullet}${tool}`;
+    const styled = `${WHITE_COLOR}${content}`;
+    return boxLine(content, styled);
   });
 
   const mcpConfig = `{
@@ -73,21 +84,35 @@ export function getBanner(options: BannerOptions): string {
   }
 }`;
 
-  // Build sandbox status line if enabled
+  // Build info lines using boxLine helper
+  const socketContent = `  Socket: ${options.socketPath}`;
+  const socketStyled = `${WHITE_COLOR}${socketContent}`;
+
+  const terminalContent = `  Terminal: ${padRight(`${options.cols}x${options.rows}`, 12)}Shell: ${options.shell}`;
+  const terminalStyled = `${WHITE_COLOR}${terminalContent}`;
+
+  const sandboxContent = `  Sandbox: ENABLED (restricted filesystem/network)`;
+  const sandboxStyled = `${WHITE_COLOR}  Sandbox: ${GREEN_COLOR}ENABLED${WHITE_COLOR} (restricted filesystem/network)`;
   const sandboxLine = options.sandboxEnabled
-    ? `${YELLOW_COLOR}│${WHITE_COLOR}  Sandbox: ${GREEN_COLOR}ENABLED${WHITE_COLOR} (restricted filesystem/network)${" ".repeat(boxWidth - 47)}${YELLOW_COLOR}│\n`
+    ? boxLine(sandboxContent, sandboxStyled) + "\n"
     : "";
+
+  const versionContent = `${" ".repeat(Math.max(0, boxWidth - stringWidth(`v${VERSION}`) - 1))}v${VERSION}`;
+  const versionStyled = `${WHITE_COLOR}${versionContent}`;
+
+  const restartContent = `  Restart your MCP client to connect.`;
+  const restartStyled = `${WHITE_COLOR}${restartContent}`;
 
   return `
 ${YELLOW_COLOR}╭${horizontalLine}╮
 ${centeredLogo.join("\n")}
 ${YELLOW_COLOR}├${horizontalLine}┤
-${YELLOW_COLOR}│${WHITE_COLOR}  Socket: ${padRight(options.socketPath, boxWidth - 11)}${YELLOW_COLOR}│
-${YELLOW_COLOR}│${WHITE_COLOR}  Terminal: ${padRight(`${options.cols}x${options.rows}`, 12)}Shell: ${padRight(options.shell, boxWidth - 30)}${YELLOW_COLOR}│
+${boxLine(socketContent, socketStyled)}
+${boxLine(terminalContent, terminalStyled)}
 ${sandboxLine}${YELLOW_COLOR}├${horizontalLine}┤
 ${toolLines.join("\n")}
 ${YELLOW_COLOR}├${horizontalLine}┤
-${YELLOW_COLOR}│${WHITE_COLOR}${" ".repeat(boxWidth - 7)}v${VERSION} ${YELLOW_COLOR}│
+${boxLine(versionContent, versionStyled)}
 ${YELLOW_COLOR}╰${horizontalLine}╯${RESET}
 
 ${WHITE_COLOR}MCP Configuration (add to your MCP client):${RESET}
@@ -95,19 +120,20 @@ ${WHITE_COLOR}MCP Configuration (add to your MCP client):${RESET}
 ${mcpConfig}
 
 ${YELLOW_COLOR}╭${horizontalLine}╮
-│${WHITE_COLOR}  Restart your MCP client to connect.${" ".repeat(boxWidth - 38)}${YELLOW_COLOR}│
-╰${horizontalLine}╯${RESET}
+${boxLine(restartContent, restartStyled)}
+${YELLOW_COLOR}╰${horizontalLine}╯${RESET}
 `;
 }
 
 
 /**
- * Pad a string to the right with spaces
+ * Pad a string to the right with spaces (using visual width)
  */
 function padRight(str: string, length: number): string {
-  if (str.length >= length) {
+  const width = stringWidth(str);
+  if (width >= length) {
     return str.substring(0, length - 1) + " ";
   }
-  return str + " ".repeat(length - str.length);
+  return str + " ".repeat(length - width);
 }
 
