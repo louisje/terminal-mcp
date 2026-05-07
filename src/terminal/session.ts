@@ -144,7 +144,7 @@ _terminal_mcp_prompt_marker() {
 }
 case "\${PROMPT_COMMAND:-}" in
   *_terminal_mcp_prompt_marker*) ;;
-  *) PROMPT_COMMAND="_terminal_mcp_prompt_marker\${PROMPT_COMMAND:+; $PROMPT_COMMAND}" ;;
+  *) PROMPT_COMMAND="\${PROMPT_COMMAND:+$PROMPT_COMMAND; }_terminal_mcp_prompt_marker" ;;
 esac
 # Print startup banner
 ${bannerCmd}
