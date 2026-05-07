@@ -84,6 +84,7 @@ const options: {
   maxDuration?: number;
   inactivityTimeout?: number;
   useMcp?: boolean;
+  login?: boolean;
   maxSessions?: number;
   sessionIdleTimeout?: number;
 } = {};
@@ -128,6 +129,10 @@ for (let i = 0; i < args.length; i++) {
       break;
     case "--headless":
       options.headless = true;
+      break;
+    case "-l":
+    case "--login":
+      options.login = true;
       break;
     case "--sandbox":
       options.sandbox = true;
@@ -209,6 +214,8 @@ Options:
   --cols <number>        Terminal width in columns (default: auto or 120)
   --rows <number>        Terminal height in rows (default: auto or 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
+  -l, --login            Start a login shell (sources ~/.bash_profile or ~/.zprofile
+                         instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --title <label>        Set the interactive terminal title when connecting as a client
@@ -333,6 +340,7 @@ async function main() {
       cols: options.cols,
       rows: options.rows,
       shell: options.shell,
+      login: options.login,
     });
     return;
   }
@@ -355,6 +363,7 @@ async function main() {
       cols: options.cols,
       rows: options.rows,
       shell: options.shell,
+      login: options.login,
       maxSessions: options.maxSessions,
       sessionIdleTimeout: options.sessionIdleTimeout,
     });
@@ -468,6 +477,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     cols,
     rows,
     shell: options.shell,
+    login: options.login,
     startupBanner,
     sandboxController,
     record: options.record,

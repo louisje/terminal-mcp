@@ -18,6 +18,7 @@ export interface TerminalSessionOptions {
   cols?: number;
   rows?: number;
   shell?: string;
+  login?: boolean;
   cwd?: string;
   env?: Record<string, string>;
   startupBanner?: string;
@@ -80,7 +81,8 @@ export class TerminalSession {
   private setupShellPrompt(
     shellName: string,
     extraEnv?: Record<string, string>,
-    startupBanner?: string
+    startupBanner?: string,
+    login?: boolean
   ): { args: string[]; env: Record<string, string> } {
     const env: Record<string, string> = {
       TERMINAL_MCP: "1",
@@ -94,16 +96,37 @@ export class TerminalSession {
     };
 
     if (shellName === "bash" || shellName === "sh") {
-      // Create temp rcfile that sources user's .bashrc then prepends our marker
+      // Create temp rcfile that sources user's config then prepends our marker
       // to PS1 every prompt (so themes that rebuild PS1 in PROMPT_COMMAND can't
       // clobber it) and sets the terminal title.
+      //
+      // In login mode, source ~/.bash_profile (or ~/.bash_login or ~/.profile)
+      // like a real login shell would. In non-login mode, source ~/.bashrc.
       const homeDir = os.homedir();
       const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
       this.titleFile = path.join(os.tmpdir(), `terminal-mcp-title-${process.pid}`);
       fs.writeFileSync(this.titleFile, "terminal-mcp");
-      const bashrcContent = `
+
+      let sourceUserConfig: string;
+      if (login) {
+        // Mimic bash login shell sourcing order:
+        // /etc/profile, then first of ~/.bash_profile, ~/.bash_login, ~/.profile
+        sourceUserConfig = `
+[ -f /etc/profile ] && source /etc/profile
+if [ -f "${homeDir}/.bash_profile" ]; then
+  source "${homeDir}/.bash_profile"
+elif [ -f "${homeDir}/.bash_login" ]; then
+  source "${homeDir}/.bash_login"
+elif [ -f "${homeDir}/.profile" ]; then
+  source "${homeDir}/.profile"
+fi`;
+      } else {
+        sourceUserConfig = `
 # Source user's bashrc if it exists
-[ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"
+[ -f "${homeDir}/.bashrc" ] && source "${homeDir}/.bashrc"`;
+      }
+      const bashrcContent = `
+${sourceUserConfig}
 # Title file for dynamic title updates from MCP clients
 _TERMINAL_MCP_TITLE_FILE="${this.titleFile}"
 # Set initial terminal title
@@ -145,6 +168,18 @@ ${bannerCmd}
         fs.writeFileSync(this.titleFile, "terminal-mcp");
       }
       const bannerCmd = startupBanner ? `printf '%s\\n' '${escapeBannerForShell(startupBanner)}'` : "";
+
+      // In login mode, create .zprofile to source user's login configs
+      if (login) {
+        const zprofileContent = `
+# Source system zprofile
+[ -f /etc/zprofile ] && source /etc/zprofile
+# Source user's zprofile if it exists
+[ -f "${homeDir}/.zprofile" ] && source "${homeDir}/.zprofile"
+`;
+        fs.writeFileSync(path.join(this.zdotdir, ".zprofile"), zprofileContent);
+      }
+
       const zshrcContent = `
 # Reset ZDOTDIR so nested zsh uses normal config
 export ZDOTDIR="${homeDir}"
@@ -171,8 +206,18 @@ add-zsh-hook precmd _terminal_mcp_prompt_marker
 ${bannerCmd}
 `;
       fs.writeFileSync(path.join(this.zdotdir, ".zshrc"), zshrcContent);
+
+      // In login mode, also create .zlogin to source user's .zlogin
+      if (login) {
+        const zloginContent = `
+[ -f "${homeDir}/.zlogin" ] && source "${homeDir}/.zlogin"
+`;
+        fs.writeFileSync(path.join(this.zdotdir, ".zlogin"), zloginContent);
+      }
+
       env.ZDOTDIR = this.zdotdir;
-      return { args: [], env };
+      // Pass -l to zsh in login mode so it reads .zprofile and .zlogin
+      return { args: login ? ["-l"] : [], env };
     }
 
     // PowerShell (pwsh is PowerShell Core, powershell is Windows PowerShell)
@@ -216,7 +261,7 @@ ${bannerCmd}
 
     // Determine shell type and set up custom prompt
     const shellName = path.basename(shell);
-    const { args, env } = this.setupShellPrompt(shellName, options.env, options.startupBanner);
+    const { args, env } = this.setupShellPrompt(shellName, options.env, options.startupBanner, options.login);
 
     // Determine spawn command - may be wrapped by sandbox
     let spawnCmd = shell;

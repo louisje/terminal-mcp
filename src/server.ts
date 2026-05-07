@@ -10,6 +10,7 @@ export interface ServerOptions {
   cols?: number;
   rows?: number;
   shell?: string;
+  login?: boolean;
   maxSessions?: number;
   sessionIdleTimeout?: number;
 }
@@ -66,6 +67,7 @@ export function createServer(options: ServerOptions = {}): {
     cols: options.cols,
     rows: options.rows,
     shell: options.shell,
+    login: options.login,
     maxSessions: options.maxSessions,
     sessionIdleTimeout: options.sessionIdleTimeout,
   });
