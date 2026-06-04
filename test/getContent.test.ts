@@ -73,36 +73,36 @@ test("handleGetContent returns visible content when visibleOnly=true", async () 
   assert.equal(result.content[0]?.text, "visible content");
 });
 
-test("handleGetContent passes default maxLines when visibleOnly=false", async () => {
-  let receivedMaxLines: number | undefined;
+test("handleGetContent defaults to last 100 lines when visibleOnly=false", async () => {
+  // Generate 150 lines
+  const allLines = Array.from({ length: 150 }, (_, i) => `line ${i + 1}`);
   const manager = {
-    getContent: (maxLines?: number) => {
-      receivedMaxLines = maxLines;
-      return "full content";
-    },
+    getContent: () => allLines.join("\n"),
     getVisibleContent: () => "visible content",
   } as TerminalManager;
 
   const result = await handleGetContent(manager, { visibleOnly: false });
 
-  assert.equal(receivedMaxLines, 100);
-  assert.equal(result.content[0]?.text, "full content");
+  const outputLines = result.content[0]?.text.split("\n");
+  assert.equal(outputLines?.length, 100);
+  assert.equal(outputLines?.[0], "line 51");
+  assert.equal(outputLines?.[99], "line 150");
 });
 
-test("handleGetContent passes maxLines=0 through when requesting full buffer", async () => {
-  let receivedMaxLines: number | undefined;
+test("handleGetContent returns all lines when maxLines=0 (unlimited)", async () => {
+  // Generate 150 lines
+  const allLines = Array.from({ length: 150 }, (_, i) => `line ${i + 1}`);
   const manager = {
-    getContent: (maxLines?: number) => {
-      receivedMaxLines = maxLines;
-      return "all content";
-    },
+    getContent: () => allLines.join("\n"),
     getVisibleContent: () => "visible content",
   } as TerminalManager;
 
   const result = await handleGetContent(manager, { visibleOnly: false, maxLines: 0 });
 
-  assert.equal(receivedMaxLines, 0);
-  assert.equal(result.content[0]?.text, "all content");
+  const outputLines = result.content[0]?.text.split("\n");
+  assert.equal(outputLines?.length, 150);
+  assert.equal(outputLines?.[0], "line 1");
+  assert.equal(outputLines?.[149], "line 150");
 });
 
 test("handleGetContent applies maxLines to visible content when visibleOnly=true", async () => {

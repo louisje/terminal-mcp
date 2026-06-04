@@ -4,37 +4,24 @@ import {
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { TerminalManager } from "../terminal/index.js";
+import { toolDefinitions } from "./definitions.js";
 
-import { typeTool, handleType } from "./type.js";
-import { sendKeyTool, handleSendKey } from "./sendKey.js";
-import { sleepTool, handleSleep } from "./sleep.js";
-import { getContentTool, handleGetContent } from "./getContent.js";
-import { getBufferInfoTool, handleGetBufferInfo } from "./getBufferInfo.js";
-import { screenshotTool, handleScreenshot } from "./screenshot.js";
-import { startRecordingTool, handleStartRecording } from "./startRecording.js";
-import { stopRecordingTool, handleStopRecording } from "./stopRecording.js";
-import { createSessionTool, handleCreateSession } from "./createSession.js";
-import { listSessionsTool, handleListSessions } from "./listSessions.js";
-import { destroySessionTool, handleDestroySession } from "./destroySession.js";
-
-const tools = [
-  typeTool,
-  sendKeyTool,
-  sleepTool,
-  getContentTool,
-  getBufferInfoTool,
-  screenshotTool,
-  startRecordingTool,
-  stopRecordingTool,
-  createSessionTool,
-  listSessionsTool,
-  destroySessionTool,
-];
+import { handleType } from "./type.js";
+import { handleSendKey } from "./sendKey.js";
+import { handleSleep } from "./sleep.js";
+import { handleGetContent } from "./getContent.js";
+import { handleGetBufferInfo } from "./getBufferInfo.js";
+import { handleScreenshot } from "./screenshot.js";
+import { handleStartRecording } from "./startRecording.js";
+import { handleStopRecording } from "./stopRecording.js";
+import { handleCreateSession } from "./createSession.js";
+import { handleListSessions } from "./listSessions.js";
+import { handleDestroySession } from "./destroySession.js";
 
 export function registerTools(server: Server, manager: TerminalManager): void {
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools,
+    tools: toolDefinitions,
   }));
 
   // Register call tool handler

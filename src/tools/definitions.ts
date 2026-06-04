@@ -1,8 +1,19 @@
 /**
- * Shared tool definitions used by both MCP client and UI
+ * Shared tool definitions used by both MCP client, server, and UI.
+ * Single source of truth — derived from individual tool modules.
  */
 
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { typeTool } from "./type.js";
+import { sendKeyTool } from "./sendKey.js";
+import { sleepTool } from "./sleep.js";
+import { getContentTool } from "./getContent.js";
+import { getBufferInfoTool } from "./getBufferInfo.js";
+import { screenshotTool } from "./screenshot.js";
+import { startRecordingTool } from "./startRecording.js";
+import { stopRecordingTool } from "./stopRecording.js";
+import { createSessionTool } from "./createSession.js";
+import { listSessionsTool } from "./listSessions.js";
+import { destroySessionTool } from "./destroySession.js";
 
 export interface ToolDefinition {
   name: string;
@@ -15,150 +26,17 @@ export interface ToolDefinition {
 }
 
 export const toolDefinitions: ToolDefinition[] = [
-  {
-    name: "type",
-    description: TOOL_DESCRIPTIONS.type.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        text: {
-          type: "string",
-          description: TOOL_DESCRIPTIONS.type.text,
-        },
-        autoSubmit: {
-          type: "boolean",
-          description: TOOL_DESCRIPTIONS.type.autoSubmit,
-          default: false,
-        },
-      },
-      required: ["text"],
-    },
-  },
-  {
-    name: "sendKey",
-    description: TOOL_DESCRIPTIONS.sendKey.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        key: {
-          type: "string",
-          description: TOOL_DESCRIPTIONS.sendKey.key,
-        },
-      },
-      required: ["key"],
-    },
-  },
-  {
-    name: "sleep",
-    description: TOOL_DESCRIPTIONS.sleep.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        milliseconds: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.sleep.milliseconds,
-          default: 5000,
-          minimum: 0,
-        },
-      },
-    },
-  },
-  {
-    name: "getContent",
-    description: TOOL_DESCRIPTIONS.getContent.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        visibleOnly: {
-          type: "boolean",
-          description: TOOL_DESCRIPTIONS.getContent.visibleOnly,
-        },
-        maxLines: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.getContent.maxLines,
-          minimum: 0,
-        },
-        delay: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.getContent.delay,
-          default: 0,
-          minimum: 0,
-        },
-      },
-    },
-  },
-  {
-    name: "getBufferInfo",
-    description: TOOL_DESCRIPTIONS.getBufferInfo.main,
-    inputSchema: {
-      type: "object",
-      properties: {},
-    },
-  },
-  {
-    name: "takeScreenshot",
-    description: TOOL_DESCRIPTIONS.takeScreenshot.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        format: {
-          type: "string",
-          enum: ["text", "ansi", "png"],
-          description:
-            "Output format: 'text' (default) plain JSON, 'ansi' for colored text with ANSI codes, 'png' for color screenshot image",
-        },
-      },
-    },
-  },
-  {
-    name: "startRecording",
-    description: TOOL_DESCRIPTIONS.startRecording.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        format: {
-          type: "string",
-          enum: ["v2"],
-          description: TOOL_DESCRIPTIONS.startRecording.format,
-        },
-        mode: {
-          type: "string",
-          enum: ["always", "on-failure"],
-          description: TOOL_DESCRIPTIONS.startRecording.mode,
-        },
-        outputDir: {
-          type: "string",
-          description: TOOL_DESCRIPTIONS.startRecording.outputDir,
-        },
-        idleTimeLimit: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.startRecording.idleTimeLimit,
-        },
-        maxDuration: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.startRecording.maxDuration,
-        },
-        inactivityTimeout: {
-          type: "number",
-          description: TOOL_DESCRIPTIONS.startRecording.inactivityTimeout,
-        },
-      },
-    },
-  },
-  {
-    name: "stopRecording",
-    description: TOOL_DESCRIPTIONS.stopRecording.main,
-    inputSchema: {
-      type: "object",
-      properties: {
-        recordingId: {
-          type: "string",
-          description: TOOL_DESCRIPTIONS.stopRecording.recordingId,
-        },
-      },
-      required: ["recordingId"],
-    },
-  },
+  typeTool,
+  sendKeyTool,
+  sleepTool,
+  getContentTool,
+  getBufferInfoTool,
+  screenshotTool,
+  startRecordingTool,
+  stopRecordingTool,
+  createSessionTool,
+  listSessionsTool,
+  destroySessionTool,
 ];
 
 /**

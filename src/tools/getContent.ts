@@ -78,6 +78,14 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
   const useVisible = parsed.visibleOnly === true
     || (parsed.visibleOnly === undefined && parsed.maxLines === undefined);
 
+  // Determine effective maxLines:
+  // - scrollback without explicit maxLines → default 100
+  // - maxLines=0 → no limit (return everything)
+  // - maxLines=N → cap at N lines
+  const effectiveMaxLines = !useVisible && parsed.maxLines === undefined
+    ? 100
+    : parsed.maxLines;
+
   let content: string;
   if (useVisible) {
     content = manager.getVisibleContent(parsed.sessionId);
@@ -85,11 +93,11 @@ export async function handleGetContent(manager: TerminalManager, args: unknown):
     content = manager.getContent(parsed.sessionId);
   }
 
-  // Apply maxLines cap
-  if (parsed.maxLines !== undefined && parsed.maxLines > 0) {
+  // Apply maxLines cap (0 means unlimited)
+  if (effectiveMaxLines !== undefined && effectiveMaxLines > 0) {
     const lines = content.split('\n');
-    if (lines.length > parsed.maxLines) {
-      content = lines.slice(-parsed.maxLines).join('\n');
+    if (lines.length > effectiveMaxLines) {
+      content = lines.slice(-effectiveMaxLines).join('\n');
     }
   }
 
