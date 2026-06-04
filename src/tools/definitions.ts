@@ -14,6 +14,7 @@ import { stopRecordingTool } from "./stopRecording.js";
 import { createSessionTool } from "./createSession.js";
 import { listSessionsTool } from "./listSessions.js";
 import { destroySessionTool } from "./destroySession.js";
+import { resizeTool } from "./resize.js";
 
 export interface ToolDefinition {
   name: string;
@@ -37,6 +38,7 @@ export const toolDefinitions: ToolDefinition[] = [
   createSessionTool,
   listSessionsTool,
   destroySessionTool,
+  resizeTool,
 ];
 
 /**

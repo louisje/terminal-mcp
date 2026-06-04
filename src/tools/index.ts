@@ -17,6 +17,7 @@ import { handleStopRecording } from "./stopRecording.js";
 import { handleCreateSession } from "./createSession.js";
 import { handleListSessions } from "./listSessions.js";
 import { handleDestroySession } from "./destroySession.js";
+import { handleResize } from "./resize.js";
 
 export function registerTools(server: Server, manager: TerminalManager): void {
   // Register list tools handler
@@ -62,6 +63,9 @@ export function registerTools(server: Server, manager: TerminalManager): void {
 
         case "destroySession":
           return handleDestroySession(manager, args);
+
+        case "resize":
+          return handleResize(manager, args);
 
         default:
           throw new Error(`Unknown tool: ${name}`);
