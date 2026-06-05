@@ -3,8 +3,8 @@ import { TerminalManager } from "../terminal/index.js";
 
 export const createSessionSchema = z.object({
   shell: z.string().optional().describe("Shell to use for this session (default: $SHELL or /bin/bash)"),
-  cols: z.number().int().positive().optional().describe("Terminal width in columns (default: 120)"),
-  rows: z.number().int().positive().optional().describe("Terminal height in rows (default: 40)"),
+  cols: z.number().int().positive().optional().describe("Terminal width in columns (default: 80)"),
+  rows: z.number().int().positive().optional().describe("Terminal height in rows (default: 25)"),
 });
 
 export const createSessionTool = {
@@ -19,11 +19,11 @@ export const createSessionTool = {
       },
       cols: {
         type: "number",
-        description: "Terminal width in columns (default: 120)",
+        description: "Terminal width in columns (default: 80)",
       },
       rows: {
         type: "number",
-        description: "Terminal height in rows (default: 40)",
+        description: "Terminal height in rows (default: 25)",
       },
     },
     required: [],

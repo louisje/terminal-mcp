@@ -247,8 +247,8 @@ ${bannerCmd}
    * This is called by the create() factory method
    */
   private async initialize(options: TerminalSessionOptions): Promise<void> {
-    const cols = options.cols ?? 120;
-    const rows = options.rows ?? 40;
+    const cols = options.cols ?? 80;
+    const rows = options.rows ?? 25;
     const shell = options.shell ?? getDefaultShell();
 
     // Create headless terminal emulator

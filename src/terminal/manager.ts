@@ -219,7 +219,7 @@ export class TerminalManager {
       inactivityTimeout: this.options.inactivityTimeout ?? 600,
     });
     const session = this.getCurrentSession();
-    const dimensions = session?.getDimensions() ?? { cols: 120, rows: 40 };
+    const dimensions = session?.getDimensions() ?? { cols: 80, rows: 25 };
     recorder.start(dimensions.cols, dimensions.rows, {
       SHELL: this.options.shell ?? process.env.SHELL,
       TERM: 'xterm-256color',
