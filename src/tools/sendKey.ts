@@ -5,6 +5,7 @@ import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const sendKeySchema = z.object({
   key: z.string().describe(TOOL_DESCRIPTIONS.sendKey.key),
+  repeat: z.number().int().min(1).default(1).describe(TOOL_DESCRIPTIONS.sendKey.repeat),
   sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
 });
 
@@ -21,6 +22,11 @@ export const sendKeyTool = {
       key: {
         type: "string",
         description: TOOL_DESCRIPTIONS.sendKey.key,
+      },
+      repeat: {
+        type: "number",
+        description: TOOL_DESCRIPTIONS.sendKey.repeat,
+        default: 1,
       },
       sessionId: {
         type: "string",
@@ -42,13 +48,15 @@ export function handleSendKey(manager: TerminalManager, args: unknown): { conten
     );
   }
 
-  manager.write(sequence, parsed.sessionId);
+  const repeated = sequence.repeat(parsed.repeat);
+  manager.write(repeated, parsed.sessionId);
 
+  const repeatSuffix = parsed.repeat > 1 ? ` (repeated ${parsed.repeat} times)` : "";
   return {
     content: [
       {
         type: "text",
-        text: `Sent key: ${parsed.key}`,
+        text: `Sent key: ${parsed.key}${repeatSuffix}`,
       },
     ],
   };

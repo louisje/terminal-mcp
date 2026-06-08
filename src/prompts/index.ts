@@ -48,6 +48,8 @@ Send a special key or key combination to the terminal.
 
 **Function keys:** F1-F12
 
+**Repeat:** Use the \`repeat\` parameter (default: 1) to press the same key multiple times in one call. Example: sendKey({ key: "ArrowDown", repeat: 5 })
+
 ### getContent
 Get terminal content as plain text. Use after sending commands to see output.
 

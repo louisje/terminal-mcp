@@ -11,6 +11,7 @@ export const TOOL_DESCRIPTIONS = {
   sendKey: {
     main: "Send a special key to the terminal (e.g., enter, tab, ctrl+c)",
     key: "The key to send (e.g., enter, tab, escape, up, down, left, right, ctrl+c, ctrl+d)",
+    repeat: "Number of times to repeat the key (default: 1). Useful for pressing arrow keys or similar multiple times in one call.",
   },
   sleep: {
     main: "Pause execution for an extended duration. This is a BLOCKING operation - use ONLY when absolutely necessary for long-running processes (builds, installations, downloads) or waiting for slow background tasks. AVOID frequent calls. Not needed after autoSubmit or for fast commands.",

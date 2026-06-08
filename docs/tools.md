@@ -79,9 +79,10 @@ Send special keys or key combinations to the terminal.
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `key` | string | Yes | The key name to send |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `key` | string | Yes | - | The key name to send |
+| `repeat` | number | No | `1` | Number of times to repeat the key |
 
 ### Available Keys
 
@@ -160,6 +161,29 @@ Send special keys or key combinations to the terminal.
     {
       "type": "text",
       "text": "Sent key: Ctrl+C"
+    }
+  ]
+}
+```
+
+**Repeat example (press ArrowDown 5 times):**
+```json
+{
+  "name": "sendKey",
+  "arguments": {
+    "key": "ArrowDown",
+    "repeat": 5
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Sent key: ArrowDown (repeated 5 times)"
     }
   ]
 }

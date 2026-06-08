@@ -251,6 +251,18 @@ Send special keys or key combinations.
 }
 ```
 
+Use `repeat` to press a key multiple times in one call (default: 1):
+
+```json
+{
+  "name": "sendKey",
+  "arguments": {
+    "key": "ArrowDown",
+    "repeat": 5
+  }
+}
+```
+
 Supported keys:
 - Basic: `Enter`, `Tab`, `Escape`, `Backspace`, `Delete`
 - Arrow: `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`
