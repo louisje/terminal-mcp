@@ -43,6 +43,32 @@ export function resolveSocketPath(socketPath?: string): string {
 }
 
 /**
+ * Get the default terminal columns.
+ * Priority: TERMINAL_MCP_COLS env var → fallback (120).
+ */
+export function getDefaultCols(): number {
+  const envVal = process.env.TERMINAL_MCP_COLS;
+  if (envVal) {
+    const parsed = parseInt(envVal, 10);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  return 120;
+}
+
+/**
+ * Get the default terminal rows.
+ * Priority: TERMINAL_MCP_ROWS env var → fallback (40).
+ */
+export function getDefaultRows(): number {
+  const envVal = process.env.TERMINAL_MCP_ROWS;
+  if (envVal) {
+    const parsed = parseInt(envVal, 10);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  return 40;
+}
+
+/**
  * Get the default shell for the current platform.
  */
 export function getDefaultShell(): string {

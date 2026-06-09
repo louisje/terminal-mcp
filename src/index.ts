@@ -8,7 +8,7 @@ import { startMcpClientMode } from "./client.js";
 import { TerminalManager } from "./terminal/index.js";
 import { createToolProxyServer } from "./transport/index.js";
 import { getBanner } from "./ui/index.js";
-import { getDefaultSocketPath, getDefaultShell, resolveSocketPath } from "./utils/platform.js";
+import { getDefaultSocketPath, getDefaultShell, getDefaultCols, getDefaultRows, resolveSocketPath } from "./utils/platform.js";
 import { createClientTitleSetter } from "./utils/title.js";
 import {
   SandboxController,
@@ -211,8 +211,8 @@ Usage: terminal-mcp [options]
        terminal-mcp setup [options]   Install MCP entry into AI tool configs (run 'terminal-mcp setup --help')
 
 Options:
-  --cols <number>        Terminal width in columns (default: auto or 120)
-  --rows <number>        Terminal height in rows (default: auto or 40)
+  --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
+  --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
   -l, --login            Start a login shell (sources ~/.bash_profile or ~/.zprofile
                          instead of ~/.bashrc or ~/.zshrc only)
@@ -245,6 +245,8 @@ Recording Options:
                       Resets on each terminal output event
 
 Environment Variables:
+  TERMINAL_MCP_COLS        Default terminal width (overridden by --cols)
+  TERMINAL_MCP_ROWS        Default terminal height (overridden by --rows)
   TERMINAL_MCP_SOCKET      Default socket/pipe path for MCP (overridden by --socket)
   TERMINAL_MCP_RECORD_DIR  Default recording output directory
 
@@ -337,8 +339,8 @@ async function main() {
     
     // No existing session, create our own PTY
     await startServer({
-      cols: options.cols,
-      rows: options.rows,
+      cols: options.cols ?? getDefaultCols(),
+      rows: options.rows ?? getDefaultRows(),
       shell: options.shell,
       login: options.login,
     });
@@ -360,8 +362,8 @@ async function main() {
     // Headless mode: Spawn PTY internally, serve MCP directly over stdio
     // No TTY or socket needed
     await startServer({
-      cols: options.cols,
-      rows: options.rows,
+      cols: options.cols ?? getDefaultCols(),
+      rows: options.rows ?? getDefaultRows(),
       shell: options.shell,
       login: options.login,
       maxSessions: options.maxSessions,
@@ -386,9 +388,9 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     // Never let an update check break startup.
   }
 
-  // Get terminal size from environment or use defaults
-  const cols = options.cols ?? (process.stdout.columns || 120);
-  const rows = options.rows ?? (process.stdout.rows || 40);
+  // Get terminal size from CLI args > env vars > stdout size > defaults
+  const cols = options.cols ?? (process.stdout.columns || getDefaultCols());
+  const rows = options.rows ?? (process.stdout.rows || getDefaultRows());
   const shell = options.shell || getDefaultShell();
 
   // Initialize sandbox if enabled
