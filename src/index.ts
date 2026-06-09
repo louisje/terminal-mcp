@@ -339,6 +339,9 @@ async function main() {
     if (fs.existsSync(socketPath)) {
       try {
         console.error('[terminal-mcp] Found existing session, connecting as client...');
+        if (options.tmux) {
+          console.error('[terminal-mcp] Note: --tmux ignored when connecting to existing session.');
+        }
         await startMcpClientMode(socketPath, { title: options.title });
         return;
       } catch {
@@ -627,6 +630,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     const tmuxName = options.title?.toLowerCase();
     if (tmuxName) {
       // Session group mode: attach to target session with a named session, then switch/create window
+      console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
       session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
       // Give tmux a moment to attach, then switch/create the named window
       setTimeout(() => {
@@ -634,6 +638,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
       }, 500);
     } else {
       // Simple mode: just attach to target session
+      console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
       session.write(`tmux new -A -t ${tmuxTarget}\n`);
     }
   }

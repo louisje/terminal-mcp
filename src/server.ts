@@ -100,11 +100,13 @@ export async function startServer(options: ServerOptions = {}): Promise<void> {
     const tmuxTarget = typeof options.tmux === 'string' ? options.tmux : '0';
     const tmuxName = options.title?.toLowerCase();
     if (tmuxName) {
+      console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
       session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
       setTimeout(() => {
         session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
       }, 500);
     } else {
+      console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
       session.write(`tmux new -A -t ${tmuxTarget}\n`);
     }
   }
