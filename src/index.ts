@@ -633,10 +633,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     const sendTmuxCommands = () => {
       if (tmuxName) {
         console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
-        session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
-        setTimeout(() => {
-          session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
-        }, 500);
+        session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName} \\; if-shell 'tmux select-window -t ${tmuxName}' '' 'new-window -n ${tmuxName}'\n`);
       } else {
         console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
         session.write(`tmux new -A -t ${tmuxTarget}\n`);
