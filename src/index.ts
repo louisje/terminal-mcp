@@ -85,6 +85,7 @@ const options: {
   inactivityTimeout?: number;
   useMcp?: boolean;
   login?: boolean;
+  tmux?: boolean | string;
   maxSessions?: number;
   sessionIdleTimeout?: number;
 } = {};
@@ -136,6 +137,15 @@ for (let i = 0; i < args.length; i++) {
       break;
     case "--sandbox":
       options.sandbox = true;
+      break;
+    case "--tmux":
+      // Support bare --tmux (defaults to session '0') or --tmux <session>
+      if (!next || next.startsWith('-')) {
+        options.tmux = true;
+      } else {
+        options.tmux = next;
+        i++;
+      }
       break;
     case "--sandbox-config":
       if (next) {
@@ -220,6 +230,8 @@ Options:
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)
+  --tmux [session]       Auto-connect to tmux (default target session: 0)
+                         With --title: use session group and named window
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
   --max-sessions <n>     Max concurrent terminal sessions (default: 5)
@@ -604,6 +616,23 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
   process.on("exit", () => {
     cleanup();
   });
+
+  // Auto-connect to tmux if --tmux is specified
+  if (options.tmux) {
+    const tmuxTarget = typeof options.tmux === 'string' ? options.tmux : '0';
+    const tmuxName = options.title?.toLowerCase();
+    if (tmuxName) {
+      // Session group mode: attach to target session with a named session, then switch/create window
+      session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
+      // Give tmux a moment to attach, then switch/create the named window
+      setTimeout(() => {
+        session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
+      }, 500);
+    } else {
+      // Simple mode: just attach to target session
+      session.write(`tmux new -A -t ${tmuxTarget}\n`);
+    }
+  }
 }
 
 main().catch((error) => {

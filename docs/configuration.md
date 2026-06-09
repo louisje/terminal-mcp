@@ -8,11 +8,12 @@ Terminal MCP can be configured via command-line arguments and selected environme
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `--cols` | number | 120 | Terminal width in columns |
-| `--rows` | number | 40 | Terminal height in rows |
+| `--cols` | number | `$TERMINAL_MCP_COLS` or 120 | Terminal width in columns |
+| `--rows` | number | `$TERMINAL_MCP_ROWS` or 40 | Terminal height in rows |
 | `--shell` | string | `$SHELL` or `bash` | Shell executable to use |
 | `--socket` | string | platform default or `TERMINAL_MCP_SOCKET` | IPC socket/pipe path for MCP |
 | `--headless` | flag | - | Run in headless mode (embedded PTY + MCP over stdio, no TTY needed) |
+| `--tmux` | string | `0` | Auto-connect to tmux target session after shell starts. With `--title`: use session group and named window |
 | `--sandbox` | flag | - | Enable sandbox mode (restricts filesystem/network) |
 | `--sandbox-config` | string | - | Path to sandbox configuration JSON file |
 | `--version`, `-v` | flag | - | Show version number |
@@ -73,6 +74,32 @@ terminal-mcp --record=on-failure
 # Custom idle time limit (5 seconds max between events)
 terminal-mcp --record --idle-time-limit=5
 ```
+
+### Tmux Integration
+
+The `--tmux` flag auto-connects to a tmux session after the shell starts:
+
+```bash
+# Attach to tmux session '0' (create if not exists)
+terminal-mcp --tmux
+
+# Attach to a specific tmux session
+terminal-mcp --tmux myproject
+
+# Session group mode: attach to session '0' with named session and window
+terminal-mcp --tmux --title Copilot
+# Equivalent to: tmux new -A -t 0 -s copilot && tmux select-window -t copilot || tmux new-window -n copilot
+
+# Session group mode with custom target session
+terminal-mcp --tmux myproject --title Copilot
+# Equivalent to: tmux new -A -t myproject -s copilot && ...
+```
+
+When `--title` is provided with `--tmux`:
+1. Connects to the target session as a session group member (session name = lowercase title)
+2. Switches to or creates a window named after the lowercase title
+
+This is useful for AI agents that share a tmux session group, each with their own named window.
 
 ### Help
 
@@ -233,9 +260,20 @@ The terminal session inherits the environment from the parent process. Key varia
 | `PATH` | Determines available commands |
 | `HOME` | Home directory for shell |
 | `USER` | Current username |
+| `TERMINAL_MCP_COLS` | Default terminal width (overridden by `--cols`) |
+| `TERMINAL_MCP_ROWS` | Default terminal height (overridden by `--rows`) |
 | `TERMINAL_MCP_SOCKET` | Default socket/pipe path for MCP |
 | `TERMINAL_MCP_RECORD_DIR` | Default recording output directory |
 | `XDG_STATE_HOME` | XDG base directory for state files (fallback for recordings) |
+
+### Terminal Dimensions Resolution
+
+Terminal dimensions are resolved in this order:
+
+1. `--cols` / `--rows` command-line arguments (if provided)
+2. `TERMINAL_MCP_COLS` / `TERMINAL_MCP_ROWS` environment variables (if set)
+3. Actual terminal size from stdout (interactive mode only)
+4. Hardcoded defaults: 120 columns, 40 rows
 
 ### Socket Path Resolution
 

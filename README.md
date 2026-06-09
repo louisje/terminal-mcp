@@ -133,11 +133,13 @@ terminal-mcp [OPTIONS]
 Options:
   --mcp                  Use MCP mode (connects to existing session or creates new PTY)
   --title <label>        Set the interactive terminal title when connecting as a client
-  --cols <number>        Terminal width in columns (default: 120)
-  --rows <number>        Terminal height in rows (default: 40)
+  --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
+  --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
   --shell <path>         Shell to use (default: $SHELL or bash)
   --socket <path>        IPC socket/pipe path for MCP
   --headless             Run in headless mode (embedded PTY + MCP over stdio, no TTY needed)
+  --tmux [session]       Auto-connect to tmux (default target session: 0)
+                         With --title: use session group and named window
   --sandbox              Enable sandbox mode (restricts filesystem/network)
   --sandbox-config <path> Load sandbox config from JSON file
   --version, -v          Show version number
@@ -160,6 +162,8 @@ Multi-Session Options:
 
 Environment variables:
 
+- `TERMINAL_MCP_COLS`: default terminal width, overridden by `--cols`
+- `TERMINAL_MCP_ROWS`: default terminal height, overridden by `--rows`
 - `TERMINAL_MCP_SOCKET`: default socket/pipe path, overridden by `--socket`
 - `TERMINAL_MCP_RECORD_DIR`: default recording output directory, overridden by `--record-dir`
 

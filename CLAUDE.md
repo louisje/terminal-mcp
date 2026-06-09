@@ -113,4 +113,5 @@ Tool Proxy Server ←───────────────→ Socket Cli
 - Key sequences are in `src/utils/keys.ts` (ANSI escape codes)
 - Recording format is asciicast v2 (compatible with `asciinema play`)
 - Socket path is resolved via `resolveSocketPath()` in `src/utils/platform.ts`; can be overridden with `TERMINAL_MCP_SOCKET` env var
+- Terminal default dimensions resolved via `getDefaultCols()`/`getDefaultRows()` in `src/utils/platform.ts`; can be overridden with `TERMINAL_MCP_COLS`/`TERMINAL_MCP_ROWS` env vars
 - Recording output directory defaults to `~/.local/state/terminal-mcp/recordings`; can be overridden with `TERMINAL_MCP_RECORD_DIR` env var
