@@ -11,6 +11,8 @@ export interface ServerOptions {
   rows?: number;
   shell?: string;
   login?: boolean;
+  tmux?: boolean | string;
+  title?: string;
   maxSessions?: number;
   sessionIdleTimeout?: number;
 }
@@ -91,7 +93,21 @@ export async function startServer(options: ServerOptions = {}): Promise<void> {
   const { server, manager } = createServer(options);
 
   // Eagerly initialize the terminal session so tools can use it immediately
-  await manager.initSession();
+  const session = await manager.initSession();
+
+  // Auto-connect to tmux if --tmux is specified
+  if (options.tmux) {
+    const tmuxTarget = typeof options.tmux === 'string' ? options.tmux : '0';
+    const tmuxName = options.title?.toLowerCase();
+    if (tmuxName) {
+      session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
+      setTimeout(() => {
+        session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
+      }, 500);
+    } else {
+      session.write(`tmux new -A -t ${tmuxTarget}\n`);
+    }
+  }
 
   const transport = new StdioServerTransport();
 

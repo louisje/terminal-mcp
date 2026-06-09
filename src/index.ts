@@ -355,6 +355,8 @@ async function main() {
       rows: options.rows ?? getDefaultRows(),
       shell: options.shell,
       login: options.login,
+      tmux: options.tmux,
+      title: options.title,
     });
     return;
   }
@@ -378,6 +380,8 @@ async function main() {
       rows: options.rows ?? getDefaultRows(),
       shell: options.shell,
       login: options.login,
+      tmux: options.tmux,
+      title: options.title,
       maxSessions: options.maxSessions,
       sessionIdleTimeout: options.sessionIdleTimeout,
     });
