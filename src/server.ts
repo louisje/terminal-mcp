@@ -99,16 +99,30 @@ export async function startServer(options: ServerOptions = {}): Promise<void> {
   if (options.tmux) {
     const tmuxTarget = typeof options.tmux === 'string' ? options.tmux : '0';
     const tmuxName = options.title?.toLowerCase();
-    if (tmuxName) {
-      console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
-      session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
-      setTimeout(() => {
-        session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
-      }, 500);
-    } else {
-      console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
-      session.write(`tmux new -A -t ${tmuxTarget}\n`);
-    }
+
+    // Wait for shell to be ready (prompt indicator appears) before sending tmux commands
+    const sendTmuxCommands = () => {
+      if (tmuxName) {
+        console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
+        session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName}\n`);
+        setTimeout(() => {
+          session.write(`tmux select-window -t ${tmuxName} || tmux new-window -n ${tmuxName}\n`);
+        }, 500);
+      } else {
+        console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
+        session.write(`tmux new -A -t ${tmuxTarget}\n`);
+      }
+    };
+
+    // Listen for the prompt indicator to know shell is ready
+    let promptSeen = false;
+    session.onData((data) => {
+      if (!promptSeen && data.includes('\u26a1 mcp')) {
+        promptSeen = true;
+        // Small delay to ensure prompt is fully rendered
+        setTimeout(sendTmuxCommands, 100);
+      }
+    });
   }
 
   const transport = new StdioServerTransport();
