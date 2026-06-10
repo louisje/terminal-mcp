@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 
 import * as fs from "fs";
+import { exec } from "child_process";
 import { createRequire } from "module";
 import updateNotifier from "update-notifier";
 import { startServer } from "./server.js";
@@ -634,6 +635,9 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
       if (tmuxName) {
         console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
         session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName} \\; if-shell 'tmux select-window -t ${tmuxName}:${tmuxName}' '' 'new-window -n ${tmuxName}'\n`);
+        setTimeout(() => {
+          exec(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' 🔔 terminal-mcp (${tmuxName}) connected'; done`);
+        }, 1000);
       } else {
         console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
         session.write(`tmux new -A -t ${tmuxTarget}\n`);
