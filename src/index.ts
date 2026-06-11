@@ -1,7 +1,6 @@
 #!/usr/bin/env tsx
 
 import * as fs from "fs";
-import { exec } from "child_process";
 import { createRequire } from "module";
 import updateNotifier from "update-notifier";
 import { startServer } from "./server.js";
@@ -231,7 +230,7 @@ Options:
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)
-  --tmux [session]       Auto-connect to tmux (default target session: 0)
+  --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
                          With --title: use session group and named window
   --sandbox              Enable sandbox mode (restricts filesystem/network access)
   --sandbox-config <path> Load sandbox config from JSON file
@@ -264,7 +263,7 @@ Environment Variables:
   TERMINAL_MCP_RECORD_DIR  Default recording output directory
 
 Mode Detection:
-  - If --headless: Headless mode (embedded PTY + MCP server over stdio)
+  - If --headless or --tmux: Headless mode (embedded PTY + MCP server over stdio)
   - If stdin is a TTY: Interactive mode (gives you a shell, exposes socket)
   - If stdin is not a TTY: MCP client mode (connects to socket, serves MCP)
 
@@ -326,6 +325,11 @@ MCP Client Mode (add to your MCP client config):
 `);
       process.exit(0);
   }
+}
+
+// --tmux implies --headless (tmux mode is always headless MCP server)
+if (options.tmux) {
+  options.headless = true;
 }
 
 async function main() {
@@ -625,34 +629,6 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     cleanup();
   });
 
-  // Auto-connect to tmux if --tmux is specified
-  if (options.tmux) {
-    const tmuxTarget = typeof options.tmux === 'string' ? options.tmux : '0';
-    const tmuxName = options.title?.toLowerCase();
-
-    // Wait for shell to be ready (prompt indicator appears) before sending tmux commands
-    const sendTmuxCommands = () => {
-      if (tmuxName) {
-        console.error(`[terminal-mcp] Auto-connecting to tmux session group (target: ${tmuxTarget}, name: ${tmuxName})...`);
-        session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName} \\; if-shell 'tmux select-window -t ${tmuxName}:${tmuxName}' '' 'new-window -n ${tmuxName}'\n`);
-        setTimeout(() => {
-          exec(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' 🔔 terminal-mcp (${tmuxName}) connected'; done`);
-        }, 1000);
-      } else {
-        console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
-        session.write(`tmux new -A -t ${tmuxTarget}\n`);
-      }
-    };
-
-    // Listen for the prompt indicator to know shell is ready
-    let promptSeen = false;
-    session.onData((data) => {
-      if (!promptSeen && data.includes('\u26a1 mcp')) {
-        promptSeen = true;
-        setTimeout(sendTmuxCommands, 100);
-      }
-    });
-  }
 }
 
 main().catch((error) => {

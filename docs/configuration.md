@@ -13,7 +13,7 @@ Terminal MCP can be configured via command-line arguments and selected environme
 | `--shell` | string | `$SHELL` or `bash` | Shell executable to use |
 | `--socket` | string | platform default or `TERMINAL_MCP_SOCKET` | IPC socket/pipe path for MCP |
 | `--headless` | flag | - | Run in headless mode (embedded PTY + MCP over stdio, no TTY needed) |
-| `--tmux` | string | `0` | Auto-connect to tmux target session after shell starts. With `--title`: use session group and named window |
+| `--tmux` | string | `0` | Auto-connect to tmux target session (implies `--headless`). With `--title`: use session group and named window |
 | `--sandbox` | flag | - | Enable sandbox mode (restricts filesystem/network) |
 | `--sandbox-config` | string | - | Path to sandbox configuration JSON file |
 | `--version`, `-v` | flag | - | Show version number |
@@ -77,7 +77,7 @@ terminal-mcp --record --idle-time-limit=5
 
 ### Tmux Integration
 
-The `--tmux` flag auto-connects to a tmux session after the shell starts:
+The `--tmux` flag auto-connects to a tmux session in headless mode (it implies `--headless`):
 
 ```bash
 # Attach to tmux session '0' (create if not exists)

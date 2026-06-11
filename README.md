@@ -138,7 +138,7 @@ Options:
   --shell <path>         Shell to use (default: $SHELL or bash)
   --socket <path>        IPC socket/pipe path for MCP
   --headless             Run in headless mode (embedded PTY + MCP over stdio, no TTY needed)
-  --tmux [session]       Auto-connect to tmux (default target session: 0)
+  --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
                          With --title: use session group and named window
   --sandbox              Enable sandbox mode (restricts filesystem/network)
   --sandbox-config <path> Load sandbox config from JSON file
