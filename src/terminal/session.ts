@@ -233,7 +233,7 @@ ${bannerCmd}
 
     // Windows cmd.exe
     if (shellName === "cmd" || shellName === "cmd.exe") {
-      env.PROMPT = `${PROMPT_INDICATOR}$P$G`;
+      env.PROMPT = `$E[30;43m ${PROMPT_INDICATOR} $E[0m $P$G `;
       return { args: [], env };
     }
 
