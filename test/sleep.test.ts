@@ -10,6 +10,10 @@ test("sleepSchema rejects negative values", () => {
   assert.throws(() => sleepSchema.parse({ milliseconds: -1 }));
 });
 
+test("sleepSchema accepts numeric strings", () => {
+  assert.equal(sleepSchema.parse({ milliseconds: "50" }).milliseconds, 50);
+});
+
 test("handleSleep sleeps approximately the requested duration", async () => {
   const start = Date.now();
   const result = await handleSleep({} as never, { milliseconds: 50 });

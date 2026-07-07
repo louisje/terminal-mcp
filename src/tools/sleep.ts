@@ -4,7 +4,7 @@ import { TOOL_DESCRIPTIONS } from "./descriptions.js";
 
 export const sleepSchema = z.object({
   milliseconds: z
-    .number()
+    .coerce.number()
     .finite()
     .nonnegative()
     .optional()
