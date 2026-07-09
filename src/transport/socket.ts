@@ -15,6 +15,10 @@ import { handleGetBufferInfo } from "../tools/getBufferInfo.js";
 import { handleScreenshot } from "../tools/screenshot.js";
 import { handleStartRecording } from "../tools/startRecording.js";
 import { handleStopRecording } from "../tools/stopRecording.js";
+import { handleCreateSession } from "../tools/createSession.js";
+import { handleListSessions } from "../tools/listSessions.js";
+import { handleDestroySession } from "../tools/destroySession.js";
+import { handleResize } from "../tools/resize.js";
 
 interface SocketRequest {
   id: number;
@@ -232,6 +236,26 @@ async function handleToolRequest(
       case "stopRecording":
         stats.recordToolCall("stopRecording");
         result = await handleStopRecording(manager, params);
+        break;
+
+      case "createSession":
+        stats.recordToolCall("createSession");
+        result = await handleCreateSession(manager, params);
+        break;
+
+      case "listSessions":
+        stats.recordToolCall("listSessions");
+        result = handleListSessions(manager, params);
+        break;
+
+      case "destroySession":
+        stats.recordToolCall("destroySession");
+        result = handleDestroySession(manager, params);
+        break;
+
+      case "resize":
+        stats.recordToolCall("resize");
+        result = handleResize(manager, params);
         break;
 
       case "clientConnected": {
