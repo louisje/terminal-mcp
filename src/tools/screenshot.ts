@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { TOOL_DESCRIPTIONS, SESSION_ID_DESCRIPTION } from "./descriptions.js";
 import { renderTerminalToPng } from "../utils/render.js";
 
 export const screenshotSchema = z.object({
   format: z.enum(["text", "ansi", "png"]).optional().describe(
     "Output format: 'text' (default) returns plain JSON, 'ansi' returns text with ANSI color codes, 'png' returns a color screenshot image"
   ),
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type ScreenshotArgs = z.infer<typeof screenshotSchema>;
@@ -26,7 +26,7 @@ export const screenshotTool = {
       },
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: [],

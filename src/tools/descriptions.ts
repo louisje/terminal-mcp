@@ -2,6 +2,9 @@
  * Shared tool descriptions to avoid duplication
  */
 
+export const SESSION_ID_DESCRIPTION =
+  "Target session ID. Omit to use the default session, which is already running — no need to call createSession first.";
+
 export const TOOL_DESCRIPTIONS = {
   type: {
     main: "Send text input to the terminal. Use autoSubmit=true to execute commands in one call (recommended). Alternative: type text without autoSubmit, then use sendKey('Enter') for manual control. IMPORTANT: In zsh, avoid '!' inside double quotes - use single quotes instead (e.g., echo 'Hello!' not echo \"Hello!\").",

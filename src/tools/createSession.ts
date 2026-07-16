@@ -9,7 +9,7 @@ export const createSessionSchema = z.object({
 
 export const createSessionTool = {
   name: "createSession",
-  description: "Create a new terminal session and return its metadata. Use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this session. The default session created on first use is separate from sessions created here.",
+  description: "OPTIONAL — a default terminal session is already running and ready to use; do NOT call this before your first type/sendKey/getContent call. Only use createSession when you specifically need an ADDITIONAL, isolated terminal (e.g. running a second concurrent process, or a different shell/size) alongside the default one. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
   inputSchema: {
     type: "object" as const,
     properties: {

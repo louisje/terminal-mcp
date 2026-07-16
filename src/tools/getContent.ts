@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { TOOL_DESCRIPTIONS, SESSION_ID_DESCRIPTION } from "./descriptions.js";
 
 export const getContentSchema = z.object({
   visibleOnly: z
@@ -20,7 +20,7 @@ export const getContentSchema = z.object({
     .optional()
     .default(0)
     .describe(TOOL_DESCRIPTIONS.getContent.delay),
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type GetContentArgs = z.infer<typeof getContentSchema>;
@@ -48,7 +48,7 @@ export const getContentTool = {
       },
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: [],

@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
+import { SESSION_ID_DESCRIPTION } from "./descriptions.js";
 
 export const resizeSchema = z.object({
   cols: z.number().int().positive().describe("New terminal width in columns"),
   rows: z.number().int().positive().describe("New terminal height in rows"),
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type ResizeArgs = z.infer<typeof resizeSchema>;
@@ -25,7 +26,7 @@ export const resizeTool = {
       },
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: ["cols", "rows"],

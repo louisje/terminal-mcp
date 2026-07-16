@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
 import { getKeySequence, getAvailableKeys } from "../utils/keys.js";
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { TOOL_DESCRIPTIONS, SESSION_ID_DESCRIPTION } from "./descriptions.js";
 
 export const sendKeySchema = z.object({
   key: z.string().describe(TOOL_DESCRIPTIONS.sendKey.key),
   repeat: z.number().int().min(1).default(1).describe(TOOL_DESCRIPTIONS.sendKey.repeat),
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type SendKeyArgs = z.infer<typeof sendKeySchema>;
@@ -30,7 +30,7 @@ export const sendKeyTool = {
       },
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: ["key"],

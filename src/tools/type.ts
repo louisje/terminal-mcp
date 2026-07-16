@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
 import { getKeySequence } from "../utils/keys.js";
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { TOOL_DESCRIPTIONS, SESSION_ID_DESCRIPTION } from "./descriptions.js";
 
 export const typeSchema = z.object({
   text: z.string().describe(TOOL_DESCRIPTIONS.type.text),
   autoSubmit: z.boolean().optional().default(false).describe(TOOL_DESCRIPTIONS.type.autoSubmit),
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type TypeArgs = z.infer<typeof typeSchema>;
@@ -28,7 +28,7 @@ export const typeTool = {
       },
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: ["text"],

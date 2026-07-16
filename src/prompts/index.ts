@@ -9,7 +9,9 @@ const TOOL_USAGE_PROMPT = `# Terminal MCP Tool Usage Guide
 ## Overview
 This MCP server provides tools to interact with a terminal emulator. Use these tools to execute commands and read output.
 
-The terminal session is automatically initialized when the server starts - you can immediately start using tools.
+The terminal session is automatically initialized when the server starts - you can immediately start using tools (type, sendKey, getContent, etc.) without any setup step.
+
+**Do NOT call createSession() first.** A default session already exists and is the implicit target of every tool call that omits \`sessionId\`. createSession() is only for the rare case where you need a SECOND, independent terminal running alongside the default one (e.g. two concurrent processes, or a different shell/size).
 
 ## When to prefer this server
 Prefer terminal-mcp over plain non-interactive shell tools whenever the command:

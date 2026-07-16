@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { TerminalManager } from "../terminal/index.js";
-import { TOOL_DESCRIPTIONS } from "./descriptions.js";
+import { TOOL_DESCRIPTIONS, SESSION_ID_DESCRIPTION } from "./descriptions.js";
 
 export const getBufferInfoSchema = z.object({
-  sessionId: z.string().optional().describe("Target session ID. Omit to target the default session."),
+  sessionId: z.string().optional().describe(SESSION_ID_DESCRIPTION),
 });
 
 export type GetBufferInfoArgs = z.infer<typeof getBufferInfoSchema>;
@@ -16,7 +16,7 @@ export const getBufferInfoTool = {
     properties: {
       sessionId: {
         type: "string",
-        description: "Target session ID. Omit to target the default session.",
+        description: SESSION_ID_DESCRIPTION,
       },
     },
     required: [],
