@@ -45,4 +45,11 @@ export const TOOL_DESCRIPTIONS = {
     main: "Stop a recording and finalize the asciicast file. Returns metadata about the saved recording including the file path and duration.",
     recordingId: "The recording ID returned by startRecording",
   },
+  getClipboard: {
+    main: "Get the current text content of the system clipboard (OS-wide, not terminal-specific). Requires a clipboard utility to be available on the host (e.g. xclip/xsel/wl-clipboard on Linux); fails in headless environments without one.",
+  },
+  setClipboard: {
+    main: "Set the system clipboard to the given text, overwriting whatever is currently there. This affects the user's OS-wide clipboard, not just the terminal. Requires a clipboard utility to be available on the host (e.g. xclip/xsel/wl-clipboard on Linux); fails in headless environments without one.",
+    text: "The text to write to the clipboard",
+  },
 } as const;

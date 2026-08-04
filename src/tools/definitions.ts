@@ -15,6 +15,8 @@ import { createSessionTool } from "./createSession.js";
 import { listSessionsTool } from "./listSessions.js";
 import { destroySessionTool } from "./destroySession.js";
 import { resizeTool } from "./resize.js";
+import { getClipboardTool } from "./getClipboard.js";
+import { setClipboardTool } from "./setClipboard.js";
 
 export interface ToolDefinition {
   name: string;
@@ -39,6 +41,8 @@ export const toolDefinitions: ToolDefinition[] = [
   listSessionsTool,
   destroySessionTool,
   resizeTool,
+  getClipboardTool,
+  setClipboardTool,
 ];
 
 /**

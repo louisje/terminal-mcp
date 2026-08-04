@@ -111,6 +111,18 @@ Stop a recording and finalize the asciicast file.
 **Arguments:** recordingId (returned from startRecording)
 
 **Returns:** Metadata about the saved recording including file path and duration
+
+### getClipboard
+Get the current text content of the system clipboard (OS-wide, not terminal-specific).
+
+Requires a clipboard utility on the host (e.g. xclip/xsel/wl-clipboard on Linux); fails in headless environments without one.
+
+### setClipboard
+Set the system clipboard to the given text, overwriting whatever is currently there.
+
+**Arguments:** text (the string to write to the clipboard)
+
+**Note:** This affects the user's OS-wide clipboard, not just the terminal.
 `;
 
 const prompts = [
