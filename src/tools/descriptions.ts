@@ -52,4 +52,10 @@ export const TOOL_DESCRIPTIONS = {
     main: "Set the system clipboard to the given text, overwriting whatever is currently there. This affects the user's OS-wide clipboard, not just the terminal. Requires a clipboard utility to be available on the host (e.g. xclip/xsel/wl-clipboard on Linux); fails in headless environments without one.",
     text: "The text to write to the clipboard",
   },
+  notify: {
+    main: "Send a desktop notification (OS-level popup/toast, not terminal output) to alert the human. Use this when a long-running task finishes, or when you need the user's input/decision and they may not be watching this conversation. Unlike terminal output, this is visible even if the user is focused on a different window or away from the screen. Silently degrades to a text-only response (no error thrown) in headless/CI environments without a desktop notification service.",
+    message: "The notification body text (e.g. 'Build finished' or 'Need your input: which option do you want?')",
+    title: "The notification title (default: 'Terminal MCP')",
+    sound: "Whether to play the OS notification sound (default: true). Set to false for quieter, less intrusive notifications.",
+  },
 } as const;

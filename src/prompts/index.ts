@@ -123,6 +123,15 @@ Set the system clipboard to the given text, overwriting whatever is currently th
 **Arguments:** text (the string to write to the clipboard)
 
 **Note:** This affects the user's OS-wide clipboard, not just the terminal.
+
+### notify
+Send an OS-level desktop notification (popup/toast), not terminal output.
+
+Use this when a long-running task finishes, or when you need the user's input/decision, especially if they may not be watching this conversation right now. This is visible even if the user is focused on a different window.
+
+**Arguments:** message (required), title (default: "Terminal MCP"), sound (default: true)
+
+**Note:** Degrades gracefully to a text-only response in headless/CI environments without a desktop notification service - it will not throw an error.
 `;
 
 const prompts = [

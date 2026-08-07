@@ -21,6 +21,7 @@ import { handleDestroySession } from "../tools/destroySession.js";
 import { handleResize } from "../tools/resize.js";
 import { handleGetClipboard } from "../tools/getClipboard.js";
 import { handleSetClipboard } from "../tools/setClipboard.js";
+import { handleNotify } from "../tools/notify.js";
 
 interface SocketRequest {
   id: number;
@@ -268,6 +269,11 @@ async function handleToolRequest(
       case "setClipboard":
         stats.recordToolCall("setClipboard");
         result = await handleSetClipboard(manager, params);
+        break;
+
+      case "notify":
+        stats.recordToolCall("notify");
+        result = await handleNotify(manager, params);
         break;
 
       case "clientConnected": {

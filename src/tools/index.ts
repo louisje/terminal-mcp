@@ -20,6 +20,7 @@ import { handleDestroySession } from "./destroySession.js";
 import { handleResize } from "./resize.js";
 import { handleGetClipboard } from "./getClipboard.js";
 import { handleSetClipboard } from "./setClipboard.js";
+import { handleNotify } from "./notify.js";
 
 export function registerTools(server: Server, manager: TerminalManager): void {
   // Register list tools handler
@@ -74,6 +75,9 @@ export function registerTools(server: Server, manager: TerminalManager): void {
 
         case "setClipboard":
           return await handleSetClipboard(manager, args);
+
+        case "notify":
+          return await handleNotify(manager, args);
 
         default:
           throw new Error(`Unknown tool: ${name}`);

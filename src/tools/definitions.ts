@@ -17,6 +17,7 @@ import { destroySessionTool } from "./destroySession.js";
 import { resizeTool } from "./resize.js";
 import { getClipboardTool } from "./getClipboard.js";
 import { setClipboardTool } from "./setClipboard.js";
+import { notifyTool } from "./notify.js";
 
 export interface ToolDefinition {
   name: string;
@@ -43,6 +44,7 @@ export const toolDefinitions: ToolDefinition[] = [
   resizeTool,
   getClipboardTool,
   setClipboardTool,
+  notifyTool,
 ];
 
 /**
