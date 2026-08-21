@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env node
 
 import * as fs from "fs";
 import { createRequire } from "module";

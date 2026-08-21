@@ -14,7 +14,7 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "terminal-mcp": "src/index.ts"
+    "terminal-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
