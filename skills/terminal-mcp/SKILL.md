@@ -10,7 +10,8 @@ description: |
   type the secret, not the agent; (3) the user should be able to watch the command
   run live for trust/visibility on risky or notable changes, not just read a summary
   afterward; (4) the command is a TUI (vim, htop, less, kubectl edit) or needs real
-  TTY behavior (color, progress bars, fzf, watch) or must be observed while running.
+  TTY behavior (color, progress bars, fzf, watch) or must be observed while running;
+  (5) the built-in Bash tool is unavailable or cannot execute the required command.
   Triggers: "sudo", "password prompt", "ssh into", "log me in", "run this so I can
   watch", "let me type my password", "open vim", "use my terminal", "in my shell",
   "watch this build run", "interactive login", "npm login", "gh pr create", "git push
@@ -22,10 +23,10 @@ description: |
 ## Default rule
 
 Bash stays the default for ordinary, non-interactive commands. terminal-mcp is an
-additional option for the four reasons below — not a replacement, and not something
+additional option for the five reasons below — not a replacement, and not something
 to reach for on every command.
 
-## The four reasons to switch
+## The five reasons to switch
 
 ### 1. Environment continuity
 
@@ -62,6 +63,12 @@ own `instructions` field (delivered to every MCP client on connect) — see
 `src/server.ts`'s `SERVER_INSTRUCTIONS` in this repo for the exact, up-to-date list.
 Deliberately not re-copied here so this file doesn't drift out of sync with it.
 
+### 5. Built-in Bash is unavailable
+
+When the agent's built-in Bash tool is unavailable, disabled, or cannot execute the
+required command, use terminal-mcp as the fallback terminal instead of stopping solely
+because Bash cannot be used.
+
 ## Tool workflow
 
 Basic loop: `type(<command>)` → `sendKey('Enter')` → `getContent()` to read the
@@ -83,6 +90,6 @@ long-running command finishes while they're not watching).
 - Don't ask the user to paste a sudo/SSH password into chat — switch to
   terminal-mcp so they type it themselves.
 - Don't reach for terminal-mcp for routine, invisible one-off commands where none
-  of the four reasons above apply — Bash is simpler and stays the default.
+  of the five reasons above apply — Bash is simpler and stays the default.
 - Don't silently keep using Bash after the user has visibly changed their own shell
   state (cd, export, activating a venv) mid-session — that's the continuity case.
