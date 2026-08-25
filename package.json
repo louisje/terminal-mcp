@@ -17,9 +17,9 @@
     "terminal-mcp": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --emitDeclarationOnly && node scripts/build.mjs",
+    "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsx src/index.ts",
-    "prepare": "npm run build",
     "test": "node --test --import tsx test/**/*.test.ts",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix"
@@ -30,7 +30,7 @@
     "@xterm/headless": "^5.3.0",
     "clipboardy": "^5.3.2",
     "node-notifier": "^10.0.1",
-    "node-pty": "^1.2.0-beta.8",
+    "node-pty": "^1.2.0-beta.15",
     "smol-toml": "^1.6.1",
     "string-width": "^8.2.1",
     "update-notifier": "^7.3.1",
@@ -45,6 +45,7 @@
     "@types/update-notifier": "^6.0.8",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
+    "esbuild": "^0.28.2",
     "eslint": "^10.0.3",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
@@ -60,5 +61,11 @@
     "ai",
     "claude"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.27.7": true,
+    "fsevents@2.3.3": true,
+    "node-pty@1.2.0-beta.15": true
+  }
 }

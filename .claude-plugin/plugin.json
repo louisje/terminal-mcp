@@ -4,9 +4,9 @@
   "description": "A headless terminal emulator exposed via MCP — gives AI assistants a real PTY-backed shell for sudo prompts, SSH/interactive logins, TUI programs, and commands the user wants to watch live.",
   "author": {
     "name": "Louis Jeng",
-    "email": "louis_jeng@asus.com"
+    "email": "louisje@gmail.com"
   },
-  "homepage": "https://github.com/elleryfamilia/terminal-mcp#readme",
+  "homepage": "https://github.com/louisje/terminal-mcp",
   "repository": "https://github.com/louisje/terminal-mcp",
   "license": "MIT",
   "keywords": ["mcp", "terminal", "pty", "xterm", "ai", "shell", "tui"],

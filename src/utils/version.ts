@@ -1,11 +1,11 @@
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
-// Navigate from dist/utils/version.js to package.json at project root
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const packagePath = join(__dirname, "..", "..", "package.json");
-
-const pkg = JSON.parse(readFileSync(packagePath, "utf-8"));
+// NOTE: this file is bundled into a single dist/index.js by esbuild, so the
+// relative path here must match "../package.json" as seen from dist/index.js
+// (one level up to the project root), not from this file's original
+// location at src/utils/version.ts. Do not "fix" this to "../../package.json"
+// based on this file's own nesting depth.
+const require = createRequire(import.meta.url);
+const pkg = require("../package.json");
 
 export const VERSION: string = pkg.version;
