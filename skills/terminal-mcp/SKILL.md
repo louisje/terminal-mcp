@@ -1,21 +1,10 @@
 ---
 name: terminal-mcp
 description: |
-  Use the terminal-mcp MCP tools (type, sendKey, getContent, etc.) instead of Bash
-  when working in the user's actual shell matters, not just running any subprocess.
-  Bash stays the default for ordinary non-interactive commands. Reach for terminal-mcp
-  when: (1) staying in the user's real shell session matters — same cwd, exported env
-  vars, aliases, tmux state, not a fresh stateless subprocess; (2) a command needs
-  sudo, an SSH/login password, or any mid-execution human input — so the HUMAN can
-  type the secret, not the agent; (3) the user should be able to watch the command
-  run live for trust/visibility on risky or notable changes, not just read a summary
-  afterward; (4) the command is a TUI (vim, htop, less, kubectl edit) or needs real
-  TTY behavior (color, progress bars, fzf, watch) or must be observed while running;
-  (5) the built-in Bash tool is unavailable or cannot execute the required command.
-  Triggers: "sudo", "password prompt", "ssh into", "log me in", "run this so I can
-  watch", "let me type my password", "open vim", "use my terminal", "in my shell",
-  "watch this build run", "interactive login", "npm login", "gh pr create", "git push
-  over https", "let the user see this".
+  Use terminal-mcp instead of Bash when the user's real shell matters: its cwd,
+  exported environment (including PATH), aliases, and tmux state persist, while
+  built-in Bash runs a fresh subprocess. Also prefer it for interactive input,
+  observable or risky commands, TUI/TTY programs, or when Bash is unavailable.
 ---
 
 # Terminal MCP: When to Use the User's Real Shell Instead of Bash
