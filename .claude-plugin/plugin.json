@@ -13,7 +13,7 @@
   "mcpServers": {
     "terminal-mcp": {
       "command": "/usr/local/bin/bash",
-      "args": ["-c", "node ${CLAUDE_PLUGIN_ROOT}/dist/index.js --mcp"]
+      "args": ["-c", "npx -y louisje/terminal-mcp --mcp"]
     }
   },
   "skills": "./skills/"
