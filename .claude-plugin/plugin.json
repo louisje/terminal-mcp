@@ -12,8 +12,8 @@
   "keywords": ["mcp", "terminal", "pty", "xterm", "ai", "shell", "tui"],
   "mcpServers": {
     "terminal-mcp": {
-      "command": "/usr/local/bin/bash",
-      "args": ["-c", "npx -y louisje/terminal-mcp --mcp"]
+      "command": "npx",
+      "args": ["--yes", "louisje/terminal-mcp", "--mcp"]
     }
   },
   "skills": "./skills/"
