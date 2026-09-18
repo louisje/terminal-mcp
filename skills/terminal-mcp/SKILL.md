@@ -60,7 +60,13 @@ because Bash cannot be used.
 
 ## Tool workflow
 
-Basic loop: `type(<command>)` → `sendKey('Enter')` → `getContent()` to read the
+First call `getContent()` without `sessionId` to check whether the default terminal
+is already in use. Reuse it only when clearly idle and available. If someone is
+using it, a command/TUI is running, or availability is unclear, call
+`createSession()` and pass the returned `sessionId` to subsequent terminal calls.
+Do not send input or interrupt work in an occupied terminal.
+
+Basic loop in the chosen session: `type(<command>)` → `sendKey('Enter')` → `getContent()` to read the
 result. For TUI programs, use `sendKey` for navigation and `takeScreenshot` to
 inspect cursor position and on-screen state.
 

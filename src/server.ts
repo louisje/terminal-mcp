@@ -30,7 +30,12 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - requires line-buffered TTY behavior (color output, progress bars, fzf, watch)
 - needs to be observed while still running (long-running build, server, REPL)
 
-Workflow: type(<command>), sendKey('Enter'), then getContent() to read the result.
+First call getContent() without sessionId to inspect the default terminal. Reuse it
+only when clearly idle and available. If someone is using it, a command/TUI is
+running, or availability is unclear, call createSession() and use the returned
+sessionId for subsequent terminal calls. Do not send input or interrupt occupied terminals.
+
+Workflow in the chosen session: type(<command>), sendKey('Enter'), then getContent() to read the result.
 For long-running interactive programs, sendKey for navigation and takeScreenshot to
 inspect cursor position and TUI state.
 

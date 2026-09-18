@@ -9,7 +9,7 @@ export const createSessionSchema = z.object({
 
 export const createSessionTool = {
   name: "createSession",
-  description: "OPTIONAL — a default terminal session is already running and ready to use; do NOT call this before your first type/sendKey/getContent call. Only use createSession when you specifically need an ADDITIONAL, isolated terminal (e.g. running a second concurrent process, or a different shell/size) alongside the default one. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
+  description: "First call getContent() without sessionId to inspect the default terminal. Reuse it only when clearly idle and available. Create an isolated terminal if someone is using it, a command/TUI is running, availability is unclear, or you need parallel work or a different shell/size. Do not send input or interrupt work in an occupied terminal. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
   inputSchema: {
     type: "object" as const,
     properties: {
