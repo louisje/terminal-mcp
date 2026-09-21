@@ -2868,13 +2868,13 @@ var require_proto_list = __commonJS({
     }
     function ProtoList() {
       this.list = [];
-      var root2 = null;
+      var root3 = null;
       Object.defineProperty(this, "root", {
         get: function() {
-          return root2;
+          return root3;
         },
         set: function(r) {
-          root2 = r;
+          root3 = r;
           if (this.list.length) {
             setProto(this.list[this.list.length - 1], r);
           }
@@ -3514,11 +3514,11 @@ var require_util = __commonJS({
           if (files.includes("node_modules") || files.includes("package.json") || files.includes("package.json5") || files.includes("package.yaml") || files.includes("pnpm-workspace.yaml")) {
             return name2;
           }
-          const dirname5 = path27.dirname(name2);
-          if (dirname5 === name2) {
+          const dirname6 = path27.dirname(name2);
+          if (dirname6 === name2) {
             return original;
           }
-          return find(dirname5, original);
+          return find(dirname6, original);
         } catch (error2) {
           if (name2 === original) {
             if (error2.code === "ENOENT") {
@@ -8998,22 +8998,22 @@ var require_compile = __commonJS({
       }
     }
     exports2.compileSchema = compileSchema;
-    function resolveRef(root2, baseId, ref) {
+    function resolveRef(root3, baseId, ref) {
       var _a;
       ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, ref);
-      const schOrFunc = root2.refs[ref];
+      const schOrFunc = root3.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve4.call(this, root2, ref);
+      let _sch = resolve5.call(this, root3, ref);
       if (_sch === void 0) {
-        const schema = (_a = root2.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
+        const schema = (_a = root3.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
         const { schemaId } = this.opts;
         if (schema)
-          _sch = new SchemaEnv({ schema, schemaId, root: root2, baseId });
+          _sch = new SchemaEnv({ schema, schemaId, root: root3, baseId });
       }
       if (_sch === void 0)
         return;
-      return root2.refs[ref] = inlineOrCompile.call(this, _sch);
+      return root3.refs[ref] = inlineOrCompile.call(this, _sch);
     }
     exports2.resolveRef = resolveRef;
     function inlineOrCompile(sch) {
@@ -9031,23 +9031,23 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve4(root2, ref) {
+    function resolve5(root3, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
-      return sch || this.schemas[ref] || resolveSchema.call(this, root2, ref);
+      return sch || this.schemas[ref] || resolveSchema.call(this, root3, ref);
     }
-    function resolveSchema(root2, ref) {
+    function resolveSchema(root3, ref) {
       const p = this.opts.uriResolver.parse(ref);
       const refPath = (0, resolve_1._getFullPath)(this.opts.uriResolver, p);
-      let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root2.baseId, void 0);
-      if (Object.keys(root2.schema).length > 0 && refPath === baseId) {
-        return getJsonPointer.call(this, p, root2);
+      let baseId = (0, resolve_1.getFullPath)(this.opts.uriResolver, root3.baseId, void 0);
+      if (Object.keys(root3.schema).length > 0 && refPath === baseId) {
+        return getJsonPointer.call(this, p, root3);
       }
       const id = (0, resolve_1.normalizeId)(refPath);
       const schOrRef = this.refs[id] || this.schemas[id];
       if (typeof schOrRef == "string") {
-        const sch = resolveSchema.call(this, root2, schOrRef);
+        const sch = resolveSchema.call(this, root3, schOrRef);
         if (typeof (sch === null || sch === void 0 ? void 0 : sch.schema) !== "object")
           return;
         return getJsonPointer.call(this, p, sch);
@@ -9062,7 +9062,7 @@ var require_compile = __commonJS({
         const schId = schema[schemaId];
         if (schId)
           baseId = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schId);
-        return new SchemaEnv({ schema, schemaId, root: root2, baseId });
+        return new SchemaEnv({ schema, schemaId, root: root3, baseId });
       }
       return getJsonPointer.call(this, p, schOrRef);
     }
@@ -9074,7 +9074,7 @@ var require_compile = __commonJS({
       "dependencies",
       "definitions"
     ]);
-    function getJsonPointer(parsedRef, { baseId, schema, root: root2 }) {
+    function getJsonPointer(parsedRef, { baseId, schema, root: root3 }) {
       var _a;
       if (((_a = parsedRef.fragment) === null || _a === void 0 ? void 0 : _a[0]) !== "/")
         return;
@@ -9093,10 +9093,10 @@ var require_compile = __commonJS({
       let env5;
       if (typeof schema != "boolean" && schema.$ref && !(0, util_1.schemaHasRulesButRef)(schema, this.RULES)) {
         const $ref = (0, resolve_1.resolveUrl)(this.opts.uriResolver, baseId, schema.$ref);
-        env5 = resolveSchema.call(this, root2, $ref);
+        env5 = resolveSchema.call(this, root3, $ref);
       }
       const { schemaId } = this.opts;
-      env5 = env5 || new SchemaEnv({ schema, schemaId, root: root2, baseId });
+      env5 = env5 || new SchemaEnv({ schema, schemaId, root: root3, baseId });
       if (env5.schema !== env5.root.schema)
         return env5;
       return void 0;
@@ -9662,7 +9662,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve4(baseURI, relativeURI, options2) {
+    function resolve5(baseURI, relativeURI, options2) {
       const schemelessOptions = options2 ? Object.assign({ scheme: "null" }, options2) : { scheme: "null" };
       const { parsed: baseParsed, malformedAuthorityOrPort: baseMalformed } = parseWithStatus(baseURI, schemelessOptions);
       const { parsed: relativeParsed, malformedAuthorityOrPort: relativeMalformed } = parseWithStatus(relativeURI, schemelessOptions);
@@ -9946,7 +9946,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize: normalize2,
-      resolve: resolve4,
+      resolve: resolve5,
       resolveComponent,
       equal,
       serialize: serialize2,
@@ -10251,8 +10251,8 @@ var require_core = __commonJS({
           keyRef = sch;
         if (sch === void 0) {
           const { schemaId } = this.opts;
-          const root2 = new compile_1.SchemaEnv({ schema: {}, schemaId });
-          sch = compile_1.resolveSchema.call(this, root2, keyRef);
+          const root3 = new compile_1.SchemaEnv({ schema: {}, schemaId });
+          sch = compile_1.resolveSchema.call(this, root3, keyRef);
           if (!sch)
             return;
           this.refs[keyRef] = sch;
@@ -10613,20 +10613,20 @@ var require_ref = __commonJS({
       code(cxt) {
         const { gen, schema: $ref, it } = cxt;
         const { baseId, schemaEnv: env5, validateName, opts, self: self2 } = it;
-        const { root: root2 } = env5;
-        if (($ref === "#" || $ref === "#/") && baseId === root2.baseId)
+        const { root: root3 } = env5;
+        if (($ref === "#" || $ref === "#/") && baseId === root3.baseId)
           return callRootRef();
-        const schOrEnv = compile_1.resolveRef.call(self2, root2, baseId, $ref);
+        const schOrEnv = compile_1.resolveRef.call(self2, root3, baseId, $ref);
         if (schOrEnv === void 0)
           throw new ref_error_1.default(it.opts.uriResolver, baseId, $ref);
         if (schOrEnv instanceof compile_1.SchemaEnv)
           return callValidate(schOrEnv);
         return inlineRefSchema(schOrEnv);
         function callRootRef() {
-          if (env5 === root2)
+          if (env5 === root3)
             return callRef(cxt, validateName, env5, env5.$async);
-          const rootName = gen.scopeValue("root", { ref: root2 });
-          return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root2, root2.$async);
+          const rootName = gen.scopeValue("root", { ref: root3 });
+          return callRef(cxt, (0, codegen_1._)`${rootName}.validate`, root3, root3.$async);
         }
         function callValidate(sch) {
           const v = getValidate(cxt, sch);
@@ -16420,12 +16420,12 @@ var require_isexe = __commonJS({
         if (typeof Promise !== "function") {
           throw new TypeError("callback not provided");
         }
-        return new Promise(function(resolve4, reject) {
+        return new Promise(function(resolve5, reject) {
           isexe(path27, options2 || {}, function(er, is) {
             if (er) {
               reject(er);
             } else {
-              resolve4(is);
+              resolve5(is);
             }
           });
         });
@@ -16491,27 +16491,27 @@ var require_which = __commonJS({
         opt = {};
       const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
       const found = [];
-      const step = (i2) => new Promise((resolve4, reject) => {
+      const step = (i2) => new Promise((resolve5, reject) => {
         if (i2 === pathEnv.length)
-          return opt.all && found.length ? resolve4(found) : reject(getNotFoundError(cmd));
+          return opt.all && found.length ? resolve5(found) : reject(getNotFoundError(cmd));
         const ppRaw = pathEnv[i2];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
         const pCmd = path27.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
-        resolve4(subStep(p, i2, 0));
+        resolve5(subStep(p, i2, 0));
       });
-      const subStep = (p, i2, ii) => new Promise((resolve4, reject) => {
+      const subStep = (p, i2, ii) => new Promise((resolve5, reject) => {
         if (ii === pathExt.length)
-          return resolve4(step(i2 + 1));
+          return resolve5(step(i2 + 1));
         const ext = pathExt[ii];
         isexe(p + ext, { pathExt: pathExtExe }, (er, is) => {
           if (!er && is) {
             if (opt.all)
               found.push(p + ext);
             else
-              return resolve4(p + ext);
+              return resolve5(p + ext);
           }
-          return resolve4(subStep(p, i2, ii + 1));
+          return resolve5(subStep(p, i2, ii + 1));
         });
       });
       return cb ? step(0).then((res) => cb(null, res), cb) : step(0);
@@ -16803,7 +16803,7 @@ var require_cross_spawn = __commonJS({
     var cp = __require("child_process");
     var parse5 = require_parse2();
     var enoent = require_enoent();
-    function spawn6(command, args2, options2) {
+    function spawn5(command, args2, options2) {
       const parsed = parse5(command, args2, options2);
       const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
       enoent.hookChildProcess(spawned, parsed);
@@ -16815,8 +16815,8 @@ var require_cross_spawn = __commonJS({
       result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
       return result;
     }
-    module2.exports = spawn6;
-    module2.exports.spawn = spawn6;
+    module2.exports = spawn5;
+    module2.exports.spawn = spawn5;
     module2.exports.sync = spawnSync5;
     module2.exports._parse = parse5;
     module2.exports._enoent = enoent;
@@ -17702,7 +17702,7 @@ var require_kill = __commonJS({
         return spawnedPromise;
       }
       let timeoutId;
-      const timeoutPromise = new Promise((resolve4, reject) => {
+      const timeoutPromise = new Promise((resolve5, reject) => {
         timeoutId = setTimeout(() => {
           timeoutKill(spawned, killSignal, reject);
         }, timeout2);
@@ -17821,7 +17821,7 @@ var require_get_stream = __commonJS({
       };
       const { maxBuffer } = options2;
       const stream2 = bufferStream(options2);
-      await new Promise((resolve4, reject) => {
+      await new Promise((resolve5, reject) => {
         const rejectPromise = (error2) => {
           if (error2 && stream2.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
             error2.bufferedData = stream2.getBufferedValue();
@@ -17831,7 +17831,7 @@ var require_get_stream = __commonJS({
         (async () => {
           try {
             await streamPipelinePromisified(inputStream, stream2);
-            resolve4();
+            resolve5();
           } catch (error2) {
             rejectPromise(error2);
           }
@@ -17988,9 +17988,9 @@ var require_promise = __commonJS({
       return spawned;
     };
     var getSpawnedPromise = (spawned) => {
-      return new Promise((resolve4, reject) => {
+      return new Promise((resolve5, reject) => {
         spawned.on("exit", (exitCode, signal) => {
-          resolve4({ exitCode, signal });
+          resolve5({ exitCode, signal });
         });
         spawned.on("error", (error2) => {
           reject(error2);
@@ -18826,7 +18826,7 @@ var require_utils3 = __commonJS({
     }
     module2.exports.createNamedPipe = (server) => {
       const buf = Buffer.alloc(BUFFER_SIZE);
-      return new Promise((resolve4) => {
+      return new Promise((resolve5) => {
         server.instance = net2.createServer((stream) => {
           stream.on("data", (c3) => {
             buf.write(c3.toString());
@@ -18836,7 +18836,7 @@ var require_utils3 = __commonJS({
           });
         });
         server.instance.listen(server.namedPipe, () => {
-          resolve4(buf);
+          resolve5(buf);
         });
       });
     };
@@ -19995,7 +19995,7 @@ var require_dist4 = __commonJS({
         this.handleGreeting();
       }
       readBytes(len) {
-        return new Promise((resolve4) => {
+        return new Promise((resolve5) => {
           let buf = Buffer.allocUnsafe(len);
           let offset = 0;
           const dataListener = (chunk) => {
@@ -20005,7 +20005,7 @@ var require_dist4 = __commonJS({
             if (offset < len) return;
             this.socket.removeListener("data", dataListener);
             this.socket.push(chunk.subarray(readAmount));
-            resolve4(buf);
+            resolve5(buf);
             this.socket.pause();
           };
           this.socket.on("data", dataListener);
@@ -21556,11 +21556,11 @@ var init_dist = __esm({
 import * as fs23 from "fs";
 import * as os12 from "os";
 import * as path26 from "path";
-import { execSync as execSync2 } from "child_process";
+import { execSync as execSync3 } from "child_process";
 function existsOnPath(bin) {
   try {
     const cmd = process.platform === "win32" ? `where ${bin}` : `command -v ${bin}`;
-    execSync2(cmd, { stdio: "ignore", shell: process.platform === "win32" ? "cmd.exe" : "/bin/sh" });
+    execSync3(cmd, { stdio: "ignore", shell: process.platform === "win32" ? "cmd.exe" : "/bin/sh" });
     return true;
   } catch {
     return false;
@@ -21900,7 +21900,7 @@ var init_setup = __esm({
 
 // src/index.ts
 import * as fs24 from "fs";
-import { createRequire as createRequire3 } from "module";
+import { createRequire as createRequire4 } from "module";
 
 // node_modules/update-notifier/update-notifier.js
 import process10 from "node:process";
@@ -21980,7 +21980,7 @@ var retryifyAsync = (fn2, options2) => {
           throw error2;
         const delay2 = Math.round(interval * Math.random());
         if (delay2 > 0) {
-          const delayPromise = new Promise((resolve4) => setTimeout(resolve4, delay2));
+          const delayPromise = new Promise((resolve5) => setTimeout(resolve5, delay2));
           return delayPromise.then(() => attempt.apply(void 0, args2));
         } else {
           return attempt.apply(void 0, args2);
@@ -22496,7 +22496,7 @@ function setProperty(object3, path27, value) {
   if (!isObject(object3) || typeof path27 !== "string") {
     return object3;
   }
-  const root2 = object3;
+  const root3 = object3;
   const pathArray = getPathSegments(path27);
   for (let index = 0; index < pathArray.length; index++) {
     const key = pathArray[index];
@@ -22508,7 +22508,7 @@ function setProperty(object3, path27, value) {
     }
     object3 = object3[key];
   }
-  return root2;
+  return root3;
 }
 function deleteProperty(object3, path27) {
   if (!isObject(object3) || typeof path27 !== "string") {
@@ -23546,14 +23546,14 @@ var TimeoutError = class extends Error {
 
 // node_modules/ky/distribution/utils/timeout.js
 async function timeout(request, init, abortController, options2) {
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     const timeoutId = setTimeout(() => {
       if (abortController) {
         abortController.abort();
       }
       reject(new TimeoutError(request));
     }, options2.timeout);
-    void options2.fetch(request, init).then(resolve4).catch(reject).then(() => {
+    void options2.fetch(request, init).then(resolve5).catch(reject).then(() => {
       clearTimeout(timeoutId);
     });
   });
@@ -23561,7 +23561,7 @@ async function timeout(request, init, abortController, options2) {
 
 // node_modules/ky/distribution/utils/delay.js
 async function delay(ms, { signal }) {
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     if (signal) {
       signal.throwIfAborted();
       signal.addEventListener("abort", abortHandler, { once: true });
@@ -23572,7 +23572,7 @@ async function delay(ms, { signal }) {
     }
     const timeoutId = setTimeout(() => {
       signal?.removeEventListener("abort", abortHandler);
-      resolve4();
+      resolve5();
     }, ms);
   });
 }
@@ -25260,6 +25260,40 @@ function updateNotifier(options2) {
   const updateNotifier2 = new UpdateNotifier(options2);
   updateNotifier2.check();
   return updateNotifier2;
+}
+
+// src/utils/ensure-native-deps.ts
+import { execSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath as fileURLToPath3 } from "node:url";
+var __dirname4 = dirname(fileURLToPath3(import.meta.url));
+var root = existsSync(resolve(__dirname4, "..", "dist")) ? resolve(__dirname4, "..") : resolve(__dirname4, "..", "..");
+var NATIVE_DEPS = ["node-pty", "@resvg/resvg-js"];
+for (const pkg3 of NATIVE_DEPS) {
+  const resolved = (() => {
+    try {
+      const req = createRequire(resolve(root, "package.json"));
+      req.resolve(pkg3);
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  if (!resolved) {
+    try {
+      execSync(
+        `${process.platform === "win32" ? "npm.cmd" : "npm"} install ${pkg3} --no-package-lock --no-save --silent --ignore-scripts`,
+        { cwd: root, stdio: "ignore", timeout: 12e4 }
+      );
+    } catch {
+      const message = `[terminal-mcp] Native dependency "${pkg3}" is missing and automatic installation failed.
+Run \`npm install ${pkg3}\` in ${root} and retry.`;
+      process.stderr.write(message + "\n");
+      process.exit(1);
+    }
+  }
 }
 
 // src/server.ts
@@ -35146,7 +35180,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve4) => setTimeout(resolve4, pollInterval));
+        await new Promise((resolve5) => setTimeout(resolve5, pollInterval));
         options2?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -35163,7 +35197,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options2) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options2 ?? {};
-    return new Promise((resolve4, reject) => {
+    return new Promise((resolve5, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -35241,7 +35275,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve4(parseResult.data);
+            resolve5(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -35502,12 +35536,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve4, reject) => {
+    return new Promise((resolve5, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve4, interval);
+      const timeoutId = setTimeout(resolve5, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -36383,12 +36417,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve4) => {
+    return new Promise((resolve5) => {
       const json = serializeMessage(message);
       if (this._stdout.write(json)) {
-        resolve4();
+        resolve5();
       } else {
-        this._stdout.once("drain", resolve4);
+        this._stdout.once("drain", resolve5);
       }
     });
   }
@@ -36396,7 +36430,6 @@ var StdioServerTransport = class {
 
 // src/terminal/session.ts
 var import_headless = __toESM(require_xterm_headless(), 1);
-import * as pty from "node-pty";
 import * as fs5 from "fs";
 import * as os6 from "os";
 import * as path10 from "path";
@@ -36448,6 +36481,11 @@ function getDefaultShell() {
 
 // src/terminal/session.ts
 var { Terminal } = import_headless.default;
+var ptyModule = null;
+async function loadPty() {
+  if (!ptyModule) ptyModule = await import("node-pty");
+  return ptyModule;
+}
 var PROMPT_INDICATOR = "\u26A1 mcp";
 var TerminalSession = class _TerminalSession {
   ptyProcess;
@@ -36626,6 +36664,7 @@ ${bannerCmd}
         console.error("[sandbox-debug] CWD:", options2.cwd ?? process.cwd());
       }
     }
+    const pty = await loadPty();
     this.ptyProcess = pty.spawn(spawnCmd, spawnArgs, {
       name: "xterm-256color",
       cols,
@@ -37046,10 +37085,10 @@ var Recorder = class {
     this.clearTimers();
     const finalStopReason = stopReason ?? this.stopReason;
     if (this.writeStream) {
-      await new Promise((resolve4, reject) => {
+      await new Promise((resolve5, reject) => {
         this.writeStream.end((err) => {
           if (err) reject(err);
-          else resolve4();
+          else resolve5();
         });
       });
     }
@@ -37661,8 +37700,8 @@ var TerminalManager = class {
 };
 
 // src/utils/version.ts
-import { createRequire } from "module";
-var require2 = createRequire(import.meta.url);
+import { createRequire as createRequire2 } from "module";
+var require2 = createRequire2(import.meta.url);
 var pkg = require2("../package.json");
 var VERSION = pkg.version;
 
@@ -37844,7 +37883,7 @@ async function handleType(manager, args2) {
     if (enterSequence) {
       manager.write(enterSequence, parsed.sessionId);
     }
-    await new Promise((resolve4) => setTimeout(resolve4, 250));
+    await new Promise((resolve5) => setTimeout(resolve5, 250));
     const content = manager.getVisibleContent(parsed.sessionId);
     return {
       content: [
@@ -37949,8 +37988,8 @@ function formatMilliseconds(milliseconds) {
 }
 async function handleSleep(_manager, args2) {
   const parsed = sleepSchema.parse(args2 ?? {});
-  await new Promise((resolve4) => {
-    setTimeout(resolve4, parsed.milliseconds);
+  await new Promise((resolve5) => {
+    setTimeout(resolve5, parsed.milliseconds);
   });
   return {
     content: [
@@ -38001,8 +38040,8 @@ var getContentTool = {
 async function handleGetContent(manager, args2) {
   const parsed = getContentSchema.parse(args2 ?? {});
   if (parsed.delay > 0) {
-    await new Promise((resolve4) => {
-      setTimeout(resolve4, parsed.delay);
+    await new Promise((resolve5) => {
+      setTimeout(resolve5, parsed.delay);
     });
   }
   const useVisible = parsed.visibleOnly === true || parsed.visibleOnly === void 0 && parsed.maxLines === void 0;
@@ -38060,11 +38099,11 @@ function handleGetBufferInfo(manager, args2) {
 }
 
 // src/utils/render.ts
-import { createRequire as createRequire2 } from "module";
+import { createRequire as createRequire3 } from "module";
 import * as os8 from "os";
 import * as path12 from "path";
 import * as fs7 from "fs";
-var require3 = createRequire2(import.meta.url);
+var require3 = createRequire3(import.meta.url);
 function defaultFontDirs() {
   const dirs = [];
   const home = os8.homedir();
@@ -38706,7 +38745,7 @@ function isWayland() {
 
 // node_modules/clipboard-image/index.js
 import process15 from "node:process";
-import { fileURLToPath as fileURLToPath3 } from "node:url";
+import { fileURLToPath as fileURLToPath4 } from "node:url";
 
 // node_modules/run-jxa/index.js
 var import_execa = __toESM(require_execa(), 1);
@@ -39138,7 +39177,7 @@ async function writeClipboardImages(filePaths) {
   if (process15.platform !== "darwin") {
     return;
   }
-  const paths = filePaths.map((path27) => path27 instanceof URL ? fileURLToPath3(path27) : path27);
+  const paths = filePaths.map((path27) => path27 instanceof URL ? fileURLToPath4(path27) : path27);
   await runJxa((...paths2) => {
     ObjC.import("AppKit");
     ObjC.import("Foundation");
@@ -39187,7 +39226,7 @@ function isPlainObject3(value) {
 }
 
 // node_modules/execa/lib/arguments/file-url.js
-import { fileURLToPath as fileURLToPath4 } from "node:url";
+import { fileURLToPath as fileURLToPath5 } from "node:url";
 var safeNormalizeFileUrl = (file, name) => {
   const fileString = normalizeFileUrl(normalizeDenoExecPath(file));
   if (typeof fileString !== "string") {
@@ -39197,7 +39236,7 @@ var safeNormalizeFileUrl = (file, name) => {
 };
 var normalizeDenoExecPath = (file) => isDenoExecPath(file) ? file.toString() : file;
 var isDenoExecPath = (file) => typeof file !== "string" && file && Object.getPrototypeOf(file) === String.prototype;
-var normalizeFileUrl = (file) => file instanceof URL ? fileURLToPath4(file) : file;
+var normalizeFileUrl = (file) => file instanceof URL ? fileURLToPath5(file) : file;
 
 // node_modules/execa/lib/methods/parameters.js
 var normalizeParameters = (rawFile, rawArguments = [], rawOptions = {}) => {
@@ -40065,10 +40104,10 @@ function pathKey(options2 = {}) {
 import { promisify as promisify3 } from "node:util";
 import { execFile as execFileCallback, execFileSync as execFileSyncOriginal } from "node:child_process";
 import path13 from "node:path";
-import { fileURLToPath as fileURLToPath5 } from "node:url";
+import { fileURLToPath as fileURLToPath6 } from "node:url";
 var execFileOriginal = promisify3(execFileCallback);
 function toPath(urlOrPath) {
-  return urlOrPath instanceof URL ? fileURLToPath5(urlOrPath) : urlOrPath;
+  return urlOrPath instanceof URL ? fileURLToPath6(urlOrPath) : urlOrPath;
 }
 function traversePathUp(startPath) {
   return {
@@ -40745,8 +40784,8 @@ var disconnect = (anyProcess) => {
 // node_modules/execa/lib/utils/deferred.js
 var createDeferred = () => {
   const methods = {};
-  const promise = new Promise((resolve4, reject) => {
-    Object.assign(methods, { resolve: resolve4, reject });
+  const promise = new Promise((resolve5, reject) => {
+    Object.assign(methods, { resolve: resolve5, reject });
   });
   return Object.assign(promise, methods);
 };
@@ -43800,7 +43839,7 @@ var getSyncResult = ({ error: error2, exitCode, signal, timedOut, isMaxBuffer, s
 
 // node_modules/execa/lib/methods/main-async.js
 import { setMaxListeners } from "node:events";
-import { spawn as spawn3 } from "node:child_process";
+import { spawn as spawn2 } from "node:child_process";
 
 // node_modules/execa/lib/ipc/methods.js
 import process22 from "node:process";
@@ -45388,11 +45427,11 @@ var addConcurrentStream = (concurrentStreams, stream, waitName) => {
   const promises = weakMap.get(stream);
   const promise = createDeferred();
   promises.push(promise);
-  const resolve4 = promise.resolve.bind(promise);
-  return { resolve: resolve4, promises };
+  const resolve5 = promise.resolve.bind(promise);
+  return { resolve: resolve5, promises };
 };
-var waitForConcurrentStreams = async ({ resolve: resolve4, promises }, subprocess) => {
-  resolve4();
+var waitForConcurrentStreams = async ({ resolve: resolve5, promises }, subprocess) => {
+  resolve5();
   const [isSubprocessExit] = await Promise.race([
     Promise.allSettled([true, subprocess]),
     Promise.all([false, ...promises])
@@ -45750,7 +45789,7 @@ var handleAsyncOptions = ({ timeout: timeout2, signal, ...options2 }) => {
 var spawnSubprocessAsync = ({ file, commandArguments: commandArguments2, options: options2, startTime, verboseInfo, command, escapedCommand, fileDescriptors }) => {
   let subprocess;
   try {
-    subprocess = spawn3(...concatenateShell(file, commandArguments2, options2));
+    subprocess = spawn2(...concatenateShell(file, commandArguments2, options2));
   } catch (error2) {
     return handleEarlyError({
       error: error2,
@@ -46020,10 +46059,10 @@ var termux_default = clipboard;
 // node_modules/clipboardy/lib/linux.js
 import fs12 from "node:fs";
 import path18 from "node:path";
-import { fileURLToPath as fileURLToPath6 } from "node:url";
-var __dirname4 = path18.dirname(fileURLToPath6(import.meta.url));
+import { fileURLToPath as fileURLToPath7 } from "node:url";
+var __dirname5 = path18.dirname(fileURLToPath7(import.meta.url));
 var xsel = "xsel";
-var xselFallbackPath = path18.join(__dirname4, "../fallbacks/linux/xsel");
+var xselFallbackPath = path18.join(__dirname5, "../fallbacks/linux/xsel");
 var hasXselFallback = fs12.existsSync(xselFallbackPath);
 var copyArguments = ["--clipboard", "--input"];
 var pasteArguments = ["--clipboard", "--output"];
@@ -46197,7 +46236,7 @@ var macos_default = clipboard4;
 // node_modules/clipboardy/lib/windows.js
 import fs14 from "node:fs";
 import path20 from "node:path";
-import { fileURLToPath as fileURLToPath7 } from "node:url";
+import { fileURLToPath as fileURLToPath8 } from "node:url";
 
 // node_modules/system-architecture/index.js
 import { promisify as promisify5 } from "node:util";
@@ -46273,9 +46312,9 @@ executePowerShell.escapeArgument = escapeArgument;
 executePowerShell.createArguments = createArguments;
 
 // node_modules/clipboardy/lib/windows.js
-var __dirname5 = path20.dirname(fileURLToPath7(import.meta.url));
+var __dirname6 = path20.dirname(fileURLToPath8(import.meta.url));
 var binarySuffix = process.arch === "arm64" ? "aarch64" : is64bitSync() ? "x86_64" : "i686";
-var windowBinaryPath = path20.join(__dirname5, `../fallbacks/windows/clipboard_${binarySuffix}.exe`);
+var windowBinaryPath = path20.join(__dirname6, `../fallbacks/windows/clipboard_${binarySuffix}.exe`);
 var hasWindowsBinaryFallback = fs14.existsSync(windowBinaryPath);
 var psCopyScript = `
 try {
@@ -46537,7 +46576,7 @@ var notifyTool = {
 async function handleNotify(_manager, args2) {
   const parsed = notifySchema.parse(args2);
   try {
-    await new Promise((resolve4, reject) => {
+    await new Promise((resolve5, reject) => {
       import_node_notifier.default.notify(
         {
           title: parsed.title,
@@ -46549,7 +46588,7 @@ async function handleNotify(_manager, args2) {
           if (error2) {
             reject(error2);
           } else {
-            resolve4();
+            resolve5();
           }
         }
       );
@@ -46963,8 +47002,8 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   async function sendRequest(method, params) {
     const id = ++requestId;
     const request = { id, method, params };
-    return new Promise((resolve4, reject) => {
-      pendingRequests.set(id, { resolve: resolve4, reject });
+    return new Promise((resolve5, reject) => {
+      pendingRequests.set(id, { resolve: resolve5, reject });
       socket.write(JSON.stringify(request) + "\n", (error2) => {
         if (error2) {
           pendingRequests.delete(id);
@@ -47003,9 +47042,9 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   await server.connect(transport);
 }
 function connectToSocket(socketPath) {
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     const socket = net.createConnection(socketPath, () => {
-      resolve4(socket);
+      resolve5(socket);
     });
     socket.on("error", (error2) => {
       if (error2.code === "ENOENT") {
@@ -47799,12 +47838,12 @@ function createSocksProxyServer(options2) {
       return void 0;
     },
     listen(port, hostname2) {
-      return new Promise((resolve4, reject) => {
+      return new Promise((resolve5, reject) => {
         const listeningCallback = () => {
           const actualPort = this.getPort();
           if (actualPort) {
             logForDebugging(`SOCKS proxy listening on ${hostname2}:${actualPort}`);
-            resolve4(actualPort);
+            resolve5(actualPort);
           } else {
             reject(new Error("Failed to get SOCKS proxy server port"));
           }
@@ -47813,7 +47852,7 @@ function createSocksProxyServer(options2) {
       });
     },
     async close() {
-      return new Promise((resolve4, reject) => {
+      return new Promise((resolve5, reject) => {
         socksServer.close((error2) => {
           if (error2) {
             const errorMessage = error2.message?.toLowerCase() || "";
@@ -47823,7 +47862,7 @@ function createSocksProxyServer(options2) {
               return;
             }
           }
-          resolve4();
+          resolve5();
         });
       });
     },
@@ -47846,8 +47885,8 @@ var freeGlobal_default = freeGlobal;
 
 // node_modules/lodash-es/_root.js
 var freeSelf = typeof self == "object" && self && self.Object === Object && self;
-var root = freeGlobal_default || freeSelf || Function("return this")();
-var root_default = root;
+var root2 = freeGlobal_default || freeSelf || Function("return this")();
+var root_default = root2;
 
 // node_modules/lodash-es/_Symbol.js
 var Symbol2 = root_default.Symbol;
@@ -49059,7 +49098,7 @@ import { spawnSync as spawnSync4 } from "child_process";
 var import_shell_quote = __toESM(require_shell_quote(), 1);
 import { randomBytes as randomBytes3 } from "node:crypto";
 import * as fs20 from "fs";
-import { spawn as spawn4, spawnSync as spawnSync2 } from "node:child_process";
+import { spawn as spawn3, spawnSync as spawnSync2 } from "node:child_process";
 import { tmpdir as tmpdir4 } from "node:os";
 import path23, { join as join8 } from "node:path";
 
@@ -49067,7 +49106,7 @@ import path23, { join as join8 } from "node:path";
 import { execFile as execFile2 } from "child_process";
 async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) {
   const { command, args: commandArgs = [] } = config3;
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     execFile2(command, [...commandArgs, ...args2, target], {
       maxBuffer: 2e7,
       // 20MB
@@ -49076,11 +49115,11 @@ async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) 
       // 10 second timeout
     }, (error2, stdout, stderr) => {
       if (!error2) {
-        resolve4(stdout.trim().split("\n").filter(Boolean));
+        resolve5(stdout.trim().split("\n").filter(Boolean));
         return;
       }
       if (error2.code === 1) {
-        resolve4([]);
+        resolve5([]);
         return;
       }
       reject(new Error(`ripgrep failed with exit code ${error2.code}: ${stderr || error2.message}`));
@@ -49278,17 +49317,17 @@ function decodeSandboxedCommand(encodedCommand) {
 }
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/generate-seccomp-filter.js
-import { join as join7, dirname as dirname2 } from "node:path";
-import { fileURLToPath as fileURLToPath8 } from "node:url";
+import { join as join7, dirname as dirname3 } from "node:path";
+import { fileURLToPath as fileURLToPath9 } from "node:url";
 import * as fs19 from "node:fs";
-import { execSync } from "node:child_process";
+import { execSync as execSync2 } from "node:child_process";
 import { homedir as homedir6 } from "node:os";
 var bpfPathCache = /* @__PURE__ */ new Map();
 var applySeccompPathCache = /* @__PURE__ */ new Map();
 function getGlobalNpmPaths() {
   const paths = [];
   try {
-    const npmRoot = execSync("npm root -g", {
+    const npmRoot = execSync2("npm root -g", {
       encoding: "utf8",
       timeout: 5e3,
       stdio: ["pipe", "pipe", "ignore"]
@@ -49333,7 +49372,7 @@ function getLocalSeccompPaths(filename) {
   const arch = getVendorArchitecture();
   if (!arch)
     return [];
-  const baseDir = dirname2(fileURLToPath8(import.meta.url));
+  const baseDir = dirname3(fileURLToPath9(import.meta.url));
   const relativePath = join7("vendor", "seccomp", arch, filename);
   return [
     join7(baseDir, relativePath),
@@ -49588,7 +49627,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
     `TCP:localhost:${httpProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting HTTP bridge: socat ${httpSocatArgs.join(" ")}`);
-  const httpBridgeProcess = spawn4("socat", httpSocatArgs, {
+  const httpBridgeProcess = spawn3("socat", httpSocatArgs, {
     stdio: "ignore"
   });
   if (!httpBridgeProcess.pid) {
@@ -49605,7 +49644,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
     `TCP:localhost:${socksProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting SOCKS bridge: socat ${socksSocatArgs.join(" ")}`);
-  const socksBridgeProcess = spawn4("socat", socksSocatArgs, {
+  const socksBridgeProcess = spawn3("socat", socksSocatArgs, {
     stdio: "ignore"
   });
   if (!socksBridgeProcess.pid) {
@@ -49653,7 +49692,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
       }
       throw new Error(`Failed to create bridge sockets after ${maxAttempts} attempts`);
     }
-    await new Promise((resolve4) => setTimeout(resolve4, i2 * 100));
+    await new Promise((resolve5) => setTimeout(resolve5, i2 * 100));
   }
   return {
     httpSocketPath,
@@ -49887,7 +49926,7 @@ async function wrapCommandWithSandboxLinux(params) {
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/macos-sandbox-utils.js
 var import_shell_quote2 = __toESM(require_shell_quote(), 1);
-import { spawn as spawn5, spawnSync as spawnSync3 } from "child_process";
+import { spawn as spawn4, spawnSync as spawnSync3 } from "child_process";
 import * as path24 from "path";
 function macGetMandatoryDenyPatterns(allowGitConfig = false) {
   const cwd = process.cwd();
@@ -50265,7 +50304,7 @@ function startMacOSSandboxLogMonitor(callback, ignoreViolations) {
   const sandboxExtractRegex = /Sandbox:\s+(.+)$/;
   const wildcardPaths = ignoreViolations?.["*"] || [];
   const commandPatterns = ignoreViolations ? Object.entries(ignoreViolations).filter(([pattern]) => pattern !== "*") : [];
-  const logProcess = spawn5("log", [
+  const logProcess = spawn4("log", [
     "stream",
     "--predicate",
     `(eventMessage ENDSWITH "${sessionSuffix}")`,
@@ -50470,7 +50509,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback),
     getMitmSocketPath
   });
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     if (!httpProxyServer) {
       reject(new Error("HTTP proxy server undefined before listen"));
       return;
@@ -50482,7 +50521,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
       if (address && typeof address === "object") {
         server.unref();
         logForDebugging(`HTTP proxy listening on localhost:${address.port}`);
-        resolve4(address.port);
+        resolve5(address.port);
       } else {
         reject(new Error("Failed to get proxy server address"));
       }
@@ -50494,14 +50533,14 @@ async function startSocksProxyServer(sandboxAskCallback) {
   socksProxyServer = createSocksProxyServer({
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback)
   });
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     if (!socksProxyServer) {
       reject(new Error("SOCKS proxy server undefined before listen"));
       return;
     }
     socksProxyServer.listen(0, "127.0.0.1").then((port) => {
       socksProxyServer?.unref();
-      resolve4(port);
+      resolve5(port);
     }).catch(reject);
   });
 }
@@ -50774,10 +50813,10 @@ async function reset2() {
       try {
         process.kill(httpBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to HTTP bridge process");
-        exitPromises.push(new Promise((resolve4) => {
+        exitPromises.push(new Promise((resolve5) => {
           httpBridgeProcess.once("exit", () => {
             logForDebugging("HTTP bridge process exited");
-            resolve4();
+            resolve5();
           });
           setTimeout(() => {
             if (!httpBridgeProcess.killed) {
@@ -50791,7 +50830,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve4();
+            resolve5();
           }, 5e3);
         }));
       } catch (err) {
@@ -50806,10 +50845,10 @@ async function reset2() {
       try {
         process.kill(socksBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to SOCKS bridge process");
-        exitPromises.push(new Promise((resolve4) => {
+        exitPromises.push(new Promise((resolve5) => {
           socksBridgeProcess.once("exit", () => {
             logForDebugging("SOCKS bridge process exited");
-            resolve4();
+            resolve5();
           });
           setTimeout(() => {
             if (!socksBridgeProcess.killed) {
@@ -50823,7 +50862,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve4();
+            resolve5();
           }, 5e3);
         }));
       } catch (err) {
@@ -50859,14 +50898,14 @@ async function reset2() {
   const closePromises = [];
   if (httpProxyServer) {
     const server = httpProxyServer;
-    const httpClose = new Promise((resolve4) => {
+    const httpClose = new Promise((resolve5) => {
       server.close((error2) => {
         if (error2 && error2.message !== "Server is not running.") {
           logForDebugging(`Error closing HTTP proxy server: ${error2.message}`, {
             level: "error"
           });
         }
-        resolve4();
+        resolve5();
       });
     });
     closePromises.push(httpClose);
@@ -51238,7 +51277,7 @@ async function promptForPermissions() {
   let inputBuffer = "";
   let inputAccessLevel = "blocked";
   const getSelectableIndices = () => items.map((item, i2) => isSelectable(item) ? i2 : -1).filter((i2) => i2 >= 0);
-  return new Promise((resolve4, reject) => {
+  return new Promise((resolve5, reject) => {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding("utf8");
@@ -51472,7 +51511,7 @@ async function promptForPermissions() {
           const permissions = getDefaultFromItems(items);
           console.log(`${GREEN}Sandbox configured.${RESET2}
 `);
-          resolve4(permissions);
+          resolve5(permissions);
           return;
         }
       } else if (key === "q" || key === "") {
@@ -51562,7 +51601,7 @@ function getDefaultFromItems(items) {
 }
 
 // src/index.ts
-var require4 = createRequire3(import.meta.url);
+var require4 = createRequire4(import.meta.url);
 var pkg2 = require4("../package.json");
 var { version: version4 } = pkg2;
 var DEFAULT_SOCKET_PATH = getDefaultSocketPath();

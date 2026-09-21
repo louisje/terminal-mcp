@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-export {};
+import "./utils/ensure-native-deps.js";
 //# sourceMappingURL=index.d.ts.map

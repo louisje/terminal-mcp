@@ -1,4 +1,4 @@
-import * as pty from "node-pty";
+import type * as PtyType from "node-pty";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -6,6 +6,18 @@ import xtermHeadless from "@xterm/headless";
 const { Terminal } = xtermHeadless;
 import { getDefaultShell } from "../utils/platform.js";
 import type { SandboxController } from "../sandbox/index.js";
+
+// node-pty is a native module and stays external in the esbuild bundle.
+// It is imported lazily (in initialize()) so that the
+// ensure-native-deps bootstrap in src/index.ts gets a chance to install
+// it before any static import would fail with ERR_MODULE_NOT_FOUND
+// (plugin installs have no node_modules until the bootstrap runs).
+type PtyModule = typeof import("node-pty");
+let ptyModule: PtyModule | null = null;
+async function loadPty(): Promise<PtyModule> {
+  if (!ptyModule) ptyModule = await import("node-pty");
+  return ptyModule;
+}
 
 // Custom prompt indicator for terminal-mcp.
 // Includes "mcp" so it's unmistakable — many shell themes (oh-my-zsh,
@@ -48,7 +60,7 @@ export interface BufferInfoResult {
  * for full terminal emulation
  */
 export class TerminalSession {
-  private ptyProcess!: pty.IPty;
+  private ptyProcess!: PtyType.IPty;
   private terminal!: InstanceType<typeof Terminal>;
   private disposed = false;
   private dataListeners: Array<(data: string) => void> = [];
@@ -280,6 +292,7 @@ ${bannerCmd}
     }
 
     // Spawn PTY process
+    const pty = await loadPty();
     this.ptyProcess = pty.spawn(spawnCmd, spawnArgs, {
       name: "xterm-256color",
       cols,

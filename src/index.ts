@@ -3,6 +3,9 @@
 import * as fs from "fs";
 import { createRequire } from "module";
 import updateNotifier from "update-notifier";
+// Must be the first app import: installs node-pty / @resvg/resvg-js when
+// running from a plugin install that has no node_modules (see file comment).
+import "./utils/ensure-native-deps.js";
 import { startServer } from "./server.js";
 import { startMcpClientMode } from "./client.js";
 import { TerminalManager } from "./terminal/index.js";
