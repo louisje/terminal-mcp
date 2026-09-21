@@ -38483,7 +38483,7 @@ var createSessionSchema = external_exports.object({
 });
 var createSessionTool = {
   name: "createSession",
-  description: "OPTIONAL \u2014 a default terminal session is already running and ready to use; do NOT call this before your first type/sendKey/getContent call. Only use createSession when you specifically need an ADDITIONAL, isolated terminal (e.g. running a second concurrent process, or a different shell/size) alongside the default one. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
+  description: "First call getContent() without sessionId to inspect the default terminal. Reuse it only when clearly idle and available. Create an isolated terminal if someone is using it, a command/TUI is running, availability is unclear, or you need parallel work or a different shell/size. Do not send input or interrupt work in an occupied terminal. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
   inputSchema: {
     type: "object",
     properties: {
@@ -46662,7 +46662,7 @@ This MCP server provides tools to interact with a terminal emulator. Use these t
 
 The terminal session is automatically initialized when the server starts - you can immediately start using tools (type, sendKey, getContent, etc.) without any setup step.
 
-**Do NOT call createSession() first.** A default session already exists and is the implicit target of every tool call that omits \`sessionId\`. createSession() is only for the rare case where you need a SECOND, independent terminal running alongside the default one (e.g. two concurrent processes, or a different shell/size).
+**First call getContent() without sessionId** to inspect whether the default terminal is already in use. Reuse it only when it is clearly idle and available. If someone is using it, a command/TUI is running, or its availability is unclear, call createSession() for an isolated PTY and pass the returned sessionId to subsequent terminal calls. Do not send input or interrupt work in an occupied terminal. Also use createSession() when you need parallel work or a different shell/size.
 
 ## When to prefer this server
 Prefer terminal-mcp over plain non-interactive shell tools whenever the command:
@@ -46823,7 +46823,12 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - requires line-buffered TTY behavior (color output, progress bars, fzf, watch)
 - needs to be observed while still running (long-running build, server, REPL)
 
-Workflow: type(<command>), sendKey('Enter'), then getContent() to read the result.
+First call getContent() without sessionId to inspect the default terminal. Reuse it
+only when clearly idle and available. If someone is using it, a command/TUI is
+running, or availability is unclear, call createSession() and use the returned
+sessionId for subsequent terminal calls. Do not send input or interrupt occupied terminals.
+
+Workflow in the chosen session: type(<command>), sendKey('Enter'), then getContent() to read the result.
 For long-running interactive programs, sendKey for navigation and takeScreenshot to
 inspect cursor position and TUI state.
 
