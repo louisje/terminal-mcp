@@ -29,7 +29,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsx src/index.ts",
     "prepare": "npm run build",
-    "test": "npm run build && node --test --import tsx",
+    "test": "npm run build && node test/run.mjs",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix"
   },

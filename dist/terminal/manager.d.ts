@@ -1,7 +1,7 @@
 import { TerminalSession, TerminalSessionOptions, ScreenshotResult, BufferInfoResult } from "./session.js";
 import type { SandboxController } from "../sandbox/index.js";
 import { RecordingManager } from "../recording/index.js";
-import type { RecordingMode, RecordingFormat, RecordingMetadata } from "../recording/index.js";
+import type { RecordingMode, RecordingFormat, RecordingMetadata, StopReason } from "../recording/index.js";
 export interface TerminalManagerOptions extends TerminalSessionOptions {
     sandboxController?: SandboxController;
     record?: RecordingMode;
@@ -40,6 +40,7 @@ export declare class TerminalManager {
     private defaultSessionId;
     private defaultSessionPromise;
     private idleCheckInterval;
+    private disposed;
     private options;
     private sandboxController?;
     private recordingManager;
@@ -47,6 +48,13 @@ export declare class TerminalManager {
     private maxSessions;
     private sessionIdleTimeoutMs;
     constructor(options?: TerminalManagerOptions);
+    /**
+     * Kill a session that finished spawning after dispose() had already swept the
+     * map. Callers must invoke this immediately after every `await
+     * TerminalSession.create()` — the session is not in this.sessions yet, so
+     * dispose() cannot reach it and it would otherwise outlive the process.
+     */
+    private abortIfDisposed;
     private generateSessionId;
     private touchSession;
     private cleanupIdleSessions;
@@ -110,7 +118,7 @@ export declare class TerminalManager {
      */
     setTitle(title: string): void;
     getRecordingManager(): RecordingManager;
-    finalizeRecordings(exitCode: number): Promise<RecordingMetadata[]>;
+    finalizeRecordings(exitCode: number | null, stopReason?: StopReason): Promise<RecordingMetadata[]>;
     dispose(): void;
     disposeAsync(): Promise<void>;
     getSandboxController(): SandboxController | undefined;

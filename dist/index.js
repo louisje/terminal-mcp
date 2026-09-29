@@ -37365,6 +37365,7 @@ var TerminalManager = class {
   defaultSessionId = null;
   defaultSessionPromise = null;
   idleCheckInterval = null;
+  disposed = false;
   options;
   sandboxController;
   recordingManager;
@@ -37390,6 +37391,17 @@ var TerminalManager = class {
   // ---------------------------------------------------------------------------
   // Session lookup helpers
   // ---------------------------------------------------------------------------
+  /**
+   * Kill a session that finished spawning after dispose() had already swept the
+   * map. Callers must invoke this immediately after every `await
+   * TerminalSession.create()` — the session is not in this.sessions yet, so
+   * dispose() cannot reach it and it would otherwise outlive the process.
+   */
+  abortIfDisposed(session) {
+    if (!this.disposed) return;
+    session.dispose();
+    throw new Error("TerminalManager was disposed during session creation");
+  }
   generateSessionId() {
     while (true) {
       const id = randomBytes2(3).toString("hex").slice(0, 5);
@@ -37428,6 +37440,9 @@ var TerminalManager = class {
    * Get or create the default session. Idempotent and concurrency-safe.
    */
   async getSessionAsync() {
+    if (this.disposed) {
+      throw new Error("TerminalManager has been disposed");
+    }
     if (this.defaultSessionId) {
       const entry = this.sessions.get(this.defaultSessionId);
       if (entry && entry.session.isActive()) {
@@ -37444,6 +37459,7 @@ var TerminalManager = class {
         ...this.options,
         sandboxController: this.sandboxController
       });
+      this.abortIfDisposed(session);
       const id = this.generateSessionId();
       const dims = session.getDimensions();
       const now = (/* @__PURE__ */ new Date()).toISOString();
@@ -37522,6 +37538,9 @@ var TerminalManager = class {
    * Create a new non-default session.
    */
   async createSession(opts = {}) {
+    if (this.disposed) {
+      throw new Error("TerminalManager has been disposed");
+    }
     if (this.sessions.size >= this.maxSessions) {
       throw new Error(
         `Maximum session limit reached (${this.maxSessions}). Destroy an existing session or raise --max-sessions.`
@@ -37537,6 +37556,7 @@ var TerminalManager = class {
       startupBanner: void 0,
       sandboxController: this.sandboxController
     });
+    this.abortIfDisposed(session);
     const dims = session.getDimensions();
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const metadata = {
@@ -37677,10 +37697,11 @@ var TerminalManager = class {
   getRecordingManager() {
     return this.recordingManager;
   }
-  async finalizeRecordings(exitCode) {
-    return this.recordingManager.finalizeAll(exitCode);
+  async finalizeRecordings(exitCode, stopReason) {
+    return this.recordingManager.finalizeAll(exitCode, stopReason);
   }
   dispose() {
+    this.disposed = true;
     if (this.idleCheckInterval) {
       clearInterval(this.idleCheckInterval);
       this.idleCheckInterval = null;
@@ -46861,6 +46882,39 @@ function registerPrompts(server) {
   });
 }
 
+// src/utils/shutdown.ts
+var CLEANUP_TIMEOUT_MS = 2e3;
+function installStdioShutdownHandlers({ cleanup }) {
+  let shuttingDown = false;
+  const shutdown = (code = 0) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    const hardExit = setTimeout(() => process.exit(code), CLEANUP_TIMEOUT_MS);
+    hardExit.unref();
+    const exitAfterStdoutDrain = () => {
+      process.stdout.write("", () => process.exit(code));
+    };
+    Promise.resolve().then(cleanup).catch((err) => {
+      console.error("[terminal-mcp] Shutdown cleanup failed:", err);
+    }).finally(exitAfterStdoutDrain);
+  };
+  process.on("SIGINT", () => shutdown(0));
+  process.on("SIGTERM", () => shutdown(0));
+  process.on("SIGHUP", () => shutdown(0));
+  process.stdin.on("end", () => shutdown(0));
+  process.stdin.on("close", () => shutdown(0));
+  process.on("exit", () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    try {
+      void Promise.resolve(cleanup()).catch(() => {
+      });
+    } catch {
+    }
+  });
+  return { isShuttingDown: () => shuttingDown };
+}
+
 // src/server.ts
 var SERVER_INSTRUCTIONS = `Terminal MCP exposes a real PTY-backed shell to AI assistants.
 
@@ -46915,6 +46969,13 @@ function createServer(options2 = {}) {
 }
 async function startServer(options2 = {}) {
   const { server, manager } = createServer(options2);
+  installStdioShutdownHandlers({
+    cleanup: () => {
+      const finalized = manager.finalizeRecordings(null, "server_shutdown");
+      manager.dispose();
+      return finalized.then(() => void 0);
+    }
+  });
   const session = await manager.initSession();
   if (options2.tmux) {
     const tmuxTarget = typeof options2.tmux === "string" ? options2.tmux : "0";
@@ -46942,17 +47003,6 @@ async function startServer(options2 = {}) {
     });
   }
   const transport = new StdioServerTransport();
-  process.on("SIGINT", () => {
-    manager.dispose();
-    process.exit(0);
-  });
-  process.on("SIGTERM", () => {
-    manager.dispose();
-    process.exit(0);
-  });
-  manager.initSession().catch((error2) => {
-    console.error("[terminal-mcp] Failed to initialize session:", error2);
-  });
   await server.connect(transport);
 }
 
@@ -46963,7 +47013,10 @@ async function notifyClientConnected(sendRequest, options2) {
   await sendRequest("clientConnected", params);
 }
 async function startMcpClientMode(socketPath, options2 = {}) {
+  const SOCKET_CLOSE_GRACE_MS = 100;
   const socket = await connectToSocket(socketPath);
+  const shutdownState = installStdioShutdownHandlers({ cleanup: () => {
+  } });
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -47005,8 +47058,13 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     process.exit(1);
   });
   socket.on("close", () => {
-    console.error("Socket closed");
-    process.exit(1);
+    if (shutdownState.isShuttingDown()) return;
+    const graceTimer = setTimeout(() => {
+      if (shutdownState.isShuttingDown()) return;
+      console.error("Socket closed");
+      process.exit(1);
+    }, SOCKET_CLOSE_GRACE_MS);
+    graceTimer.unref();
   });
   async function sendRequest(method, params) {
     const id = ++requestId;
@@ -47020,11 +47078,6 @@ async function startMcpClientMode(socketPath, options2 = {}) {
         }
       });
     });
-  }
-  try {
-    await notifyClientConnected(sendRequest, { title: options2.title });
-  } catch (error2) {
-    console.error("Warning: Failed to notify interactive terminal about client connection:", error2);
   }
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: toolDefinitions
@@ -47049,6 +47102,9 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   });
   const transport = new StdioServerTransport();
   await server.connect(transport);
+  void notifyClientConnected(sendRequest, { title: options2.title }).catch((error2) => {
+    console.error("Warning: Failed to notify interactive terminal about client connection:", error2);
+  });
 }
 function connectToSocket(socketPath) {
   return new Promise((resolve5, reject) => {

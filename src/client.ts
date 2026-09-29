@@ -146,14 +146,6 @@ export async function startMcpClientMode(
     });
   }
 
-  // Notify the interactive terminal that a client connected
-  try {
-    await notifyClientConnected(sendRequest, { title: options.title });
-  } catch (error) {
-    console.error("Warning: Failed to notify interactive terminal about client connection:", error);
-    // Continue anyway - this is not critical
-  }
-
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: toolDefinitions,
@@ -186,6 +178,11 @@ export async function startMcpClientMode(
   // Connect MCP server to stdio
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  // Notify the interactive terminal without blocking MCP startup.
+  void notifyClientConnected(sendRequest, { title: options.title }).catch((error) => {
+    console.error("Warning: Failed to notify interactive terminal about client connection:", error);
+  });
 }
 
 /**

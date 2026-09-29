@@ -32,4 +32,14 @@ await build({
   logLevel: "info",
 });
 
+await build({
+  entryPoints: ["src/utils/shutdown.ts"],
+  outfile: "dist/utils/shutdown.js",
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  target: "node18",
+  logLevel: "silent",
+});
+
 await chmod("dist/index.js", 0o755);

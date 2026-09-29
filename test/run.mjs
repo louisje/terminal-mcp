@@ -11,7 +11,7 @@ import path from "node:path";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const files = readdirSync(testDir)
-  .filter((f) => f.endsWith(".test.mjs"))
+  .filter((f) => f.endsWith(".test.mjs") || f.endsWith(".test.ts"))
   .sort()
   .map((f) => path.join("test", f));
 
@@ -20,7 +20,7 @@ if (files.length === 0) {
   process.exit(1);
 }
 
-const child = spawn(process.execPath, ["--test", ...files], { stdio: "inherit" });
+const child = spawn(process.execPath, ["--test", "--import", "tsx", ...files], { stdio: "inherit" });
 child.on("exit", (code, signal) => {
   if (signal) process.kill(process.pid, signal);
   else process.exit(code ?? 1);
