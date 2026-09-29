@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as os from "os";
 import * as path from "path";
-import { getDefaultSocketPath, resolveSocketPath } from "../src/utils/platform.ts";
+import { getDefaultShell, getDefaultSocketPath, resolveSocketPath } from "../src/utils/platform.ts";
 
 function restoreEnv(name: string, value: string | undefined): void {
   if (value === undefined) {
@@ -47,5 +47,22 @@ test("resolveSocketPath gives CLI value precedence over TERMINAL_MCP_SOCKET", ()
     assert.equal(resolveSocketPath("/tmp/from-cli.sock"), "/tmp/from-cli.sock");
   } finally {
     restoreEnv("TERMINAL_MCP_SOCKET", previous);
+  }
+});
+
+test("getDefaultShell uses TERMINAL_MCP_SHELL before native shell env", () => {
+  const previousTerminalMcpShell = process.env.TERMINAL_MCP_SHELL;
+  const previousShell = process.env.SHELL;
+  const previousComspec = process.env.COMSPEC;
+  process.env.TERMINAL_MCP_SHELL = "/tmp/terminal-mcp-shell";
+  process.env.SHELL = "/tmp/native-shell";
+  process.env.COMSPEC = "C:\\native-shell.exe";
+
+  try {
+    assert.equal(getDefaultShell(), "/tmp/terminal-mcp-shell");
+  } finally {
+    restoreEnv("TERMINAL_MCP_SHELL", previousTerminalMcpShell);
+    restoreEnv("SHELL", previousShell);
+    restoreEnv("COMSPEC", previousComspec);
   }
 });

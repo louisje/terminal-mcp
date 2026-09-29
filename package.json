@@ -20,7 +20,7 @@
     "build": "tsc --emitDeclarationOnly && node scripts/build.mjs",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsx src/index.ts",
-    "test": "node --test --import tsx test/**/*.test.ts",
+    "test": "node --test --import tsx",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix"
   },

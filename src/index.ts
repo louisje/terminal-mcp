@@ -226,7 +226,7 @@ Usage: terminal-mcp [options]
 Options:
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
   --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
-  --shell <path>         Shell to use (default: $SHELL or bash)
+  --shell <path>         Shell to use (default: $TERMINAL_MCP_SHELL, $SHELL, or bash)
   -l, --login            Start a login shell (sources ~/.bash_profile or ~/.zprofile
                          instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})

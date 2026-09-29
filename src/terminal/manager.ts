@@ -3,7 +3,7 @@ import { TerminalSession, TerminalSessionOptions, ScreenshotResult, BufferInfoRe
 import type { SandboxController } from "../sandbox/index.js";
 import { RecordingManager } from "../recording/index.js";
 import type { RecordingMode, RecordingFormat, RecordingMetadata } from "../recording/index.js";
-import { getDefaultRecordDir } from "../utils/platform.js";
+import { getDefaultRecordDir, getDefaultShell } from "../utils/platform.js";
 
 export interface TerminalManagerOptions extends TerminalSessionOptions {
   sandboxController?: SandboxController;
@@ -157,7 +157,7 @@ export class TerminalManager {
         session,
         metadata: {
           sessionId: id,
-          shell: this.options.shell ?? process.env.SHELL ?? "/bin/bash",
+          shell: this.options.shell ?? getDefaultShell(),
           cols: dims.cols,
           rows: dims.rows,
           createdAt: now,
@@ -221,7 +221,7 @@ export class TerminalManager {
     const session = this.getCurrentSession();
     const dimensions = session?.getDimensions() ?? { cols: 80, rows: 25 };
     recorder.start(dimensions.cols, dimensions.rows, {
-      SHELL: this.options.shell ?? process.env.SHELL,
+      SHELL: this.options.shell ?? getDefaultShell(),
       TERM: 'xterm-256color',
     });
     this.autoRecordingId = recorder.id;
@@ -255,7 +255,7 @@ export class TerminalManager {
     const now = new Date().toISOString();
     const metadata: SessionMetadata = {
       sessionId: id,
-      shell: opts.shell ?? this.options.shell ?? process.env.SHELL ?? "/bin/bash",
+      shell: opts.shell ?? this.options.shell ?? getDefaultShell(),
       cols: dims.cols,
       rows: dims.rows,
       createdAt: now,

@@ -26,6 +26,7 @@ export declare function getDefaultCols(): number;
 export declare function getDefaultRows(): number;
 /**
  * Get the default shell for the current platform.
+ * Priority: TERMINAL_MCP_SHELL → SHELL/COMSPEC → fallback.
  */
 export declare function getDefaultShell(): string;
 //# sourceMappingURL=platform.d.ts.map

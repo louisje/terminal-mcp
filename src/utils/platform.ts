@@ -70,8 +70,12 @@ export function getDefaultRows(): number {
 
 /**
  * Get the default shell for the current platform.
+ * Priority: TERMINAL_MCP_SHELL → SHELL/COMSPEC → fallback.
  */
 export function getDefaultShell(): string {
+  if (process.env.TERMINAL_MCP_SHELL) {
+    return process.env.TERMINAL_MCP_SHELL;
+  }
   if (process.platform === "win32") {
     return process.env.COMSPEC || "cmd.exe";
   }

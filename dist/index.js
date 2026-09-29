@@ -25271,11 +25271,11 @@ import { fileURLToPath as fileURLToPath3 } from "node:url";
 var __dirname4 = dirname(fileURLToPath3(import.meta.url));
 var root = existsSync(resolve(__dirname4, "..", "dist")) ? resolve(__dirname4, "..") : resolve(__dirname4, "..", "..");
 var NATIVE_DEPS = ["node-pty", "@resvg/resvg-js"];
-for (const pkg3 of NATIVE_DEPS) {
+for (const pkg2 of NATIVE_DEPS) {
   const resolved = (() => {
     try {
       const req = createRequire(resolve(root, "package.json"));
-      req.resolve(pkg3);
+      req.resolve(pkg2);
       return true;
     } catch {
       return false;
@@ -25284,12 +25284,12 @@ for (const pkg3 of NATIVE_DEPS) {
   if (!resolved) {
     try {
       execSync(
-        `${process.platform === "win32" ? "npm.cmd" : "npm"} install ${pkg3} --no-package-lock --no-save --silent --ignore-scripts`,
+        `${process.platform === "win32" ? "npm.cmd" : "npm"} install ${pkg2} --no-package-lock --no-save --silent --ignore-scripts`,
         { cwd: root, stdio: "ignore", timeout: 12e4 }
       );
     } catch {
-      const message = `[terminal-mcp] Native dependency "${pkg3}" is missing and automatic installation failed.
-Run \`npm install ${pkg3}\` in ${root} and retry.`;
+      const message = `[terminal-mcp] Native dependency "${pkg2}" is missing and automatic installation failed.
+Run \`npm install ${pkg2}\` in ${root} and retry.`;
       process.stderr.write(message + "\n");
       process.exit(1);
     }
@@ -36473,6 +36473,9 @@ function getDefaultRows() {
   return 40;
 }
 function getDefaultShell() {
+  if (process.env.TERMINAL_MCP_SHELL) {
+    return process.env.TERMINAL_MCP_SHELL;
+  }
   if (process.platform === "win32") {
     return process.env.COMSPEC || "cmd.exe";
   }
@@ -37448,7 +37451,7 @@ var TerminalManager = class {
         session,
         metadata: {
           sessionId: id,
-          shell: this.options.shell ?? process.env.SHELL ?? "/bin/bash",
+          shell: this.options.shell ?? getDefaultShell(),
           cols: dims.cols,
           rows: dims.rows,
           createdAt: now,
@@ -37507,7 +37510,7 @@ var TerminalManager = class {
     const session = this.getCurrentSession();
     const dimensions = session?.getDimensions() ?? { cols: 80, rows: 25 };
     recorder.start(dimensions.cols, dimensions.rows, {
-      SHELL: this.options.shell ?? process.env.SHELL,
+      SHELL: this.options.shell ?? getDefaultShell(),
       TERM: "xterm-256color"
     });
     this.autoRecordingId = recorder.id;
@@ -37538,7 +37541,7 @@ var TerminalManager = class {
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const metadata = {
       sessionId: id,
-      shell: opts.shell ?? this.options.shell ?? process.env.SHELL ?? "/bin/bash",
+      shell: opts.shell ?? this.options.shell ?? getDefaultShell(),
       cols: dims.cols,
       rows: dims.rows,
       createdAt: now,
@@ -37702,8 +37705,14 @@ var TerminalManager = class {
 // src/utils/version.ts
 import { createRequire as createRequire2 } from "module";
 var require2 = createRequire2(import.meta.url);
-var pkg = require2("../package.json");
-var VERSION = pkg.version;
+function readPackageVersion() {
+  try {
+    return require2("../../package.json").version;
+  } catch {
+    return require2("../package.json").version;
+  }
+}
+var VERSION = readPackageVersion();
 
 // src/utils/keys.ts
 var KEY_SEQUENCES = {
@@ -38516,7 +38525,7 @@ async function handleStopRecording(manager, args2) {
 
 // src/tools/createSession.ts
 var createSessionSchema = external_exports.object({
-  shell: external_exports.string().optional().describe("Shell to use for this session (default: $SHELL or /bin/bash)"),
+  shell: external_exports.string().optional().describe("Shell to use for this session (default: $TERMINAL_MCP_SHELL, $SHELL, or /bin/bash)"),
   cols: external_exports.number().int().positive().optional().describe("Terminal width in columns (default: 80)"),
   rows: external_exports.number().int().positive().optional().describe("Terminal height in rows (default: 25)")
 });
@@ -38528,7 +38537,7 @@ var createSessionTool = {
     properties: {
       shell: {
         type: "string",
-        description: "Shell to use for this session (default: $SHELL or /bin/bash)"
+        description: "Shell to use for this session (default: $TERMINAL_MCP_SHELL, $SHELL, or /bin/bash)"
       },
       cols: {
         type: "number",
@@ -51602,8 +51611,8 @@ function getDefaultFromItems(items) {
 
 // src/index.ts
 var require4 = createRequire4(import.meta.url);
-var pkg2 = require4("../package.json");
-var { version: version4 } = pkg2;
+var pkg = require4("../package.json");
+var { version: version4 } = pkg;
 var DEFAULT_SOCKET_PATH = getDefaultSocketPath();
 var subcommandArgs = process.argv.slice(2);
 var subcommand = subcommandArgs[0];
@@ -51773,7 +51782,7 @@ Usage: terminal-mcp [options]
 Options:
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
   --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
-  --shell <path>         Shell to use (default: $SHELL or bash)
+  --shell <path>         Shell to use (default: $TERMINAL_MCP_SHELL, $SHELL, or bash)
   -l, --login            Start a login shell (sources ~/.bash_profile or ~/.zprofile
                          instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
@@ -51934,7 +51943,7 @@ async function main() {
 }
 async function startInteractiveMode(socketPath) {
   try {
-    updateNotifier({ pkg: pkg2 }).notify({ defer: false });
+    updateNotifier({ pkg }).notify({ defer: false });
   } catch {
   }
   const cols = options.cols ?? (process.stdout.columns || getDefaultCols());

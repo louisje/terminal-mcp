@@ -135,7 +135,7 @@ Options:
   --title <label>        Set the interactive terminal title when connecting as a client
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
   --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
-  --shell <path>         Shell to use (default: $SHELL or bash)
+  --shell <path>         Shell to use (default: $TERMINAL_MCP_SHELL, $SHELL, or bash)
   --socket <path>        IPC socket/pipe path for MCP
   --headless             Run in headless mode (embedded PTY + MCP over stdio, no TTY needed)
   --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
