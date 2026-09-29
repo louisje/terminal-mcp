@@ -1,6 +1,6 @@
 {
   "name": "@ellery/terminal-mcp",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "A headless terminal emulator exposed via MCP for AI assistants",
   "author": "Ellery Familia",
   "repository": {
@@ -16,11 +16,20 @@
   "bin": {
     "terminal-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "logo.png",
+    "sandbox-permissions.png",
+    "tsconfig.json"
+  ],
   "scripts": {
     "build": "tsc --emitDeclarationOnly && node scripts/build.mjs",
     "build:types": "tsc --emitDeclarationOnly",
     "dev": "tsx src/index.ts",
-    "test": "node --test --import tsx",
+    "prepare": "npm run build",
+    "test": "npm run build && node --test --import tsx",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix"
   },

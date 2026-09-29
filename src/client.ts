@@ -7,6 +7,7 @@ import {
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { toolDefinitions } from "./tools/definitions.js";
+import { installStdioShutdownHandlers } from "./utils/shutdown.js";
 
 interface SocketRequest {
   id: number;
@@ -43,8 +44,16 @@ export async function startMcpClientMode(
   socketPath: string,
   options: McpClientModeOptions = {}
 ): Promise<void> {
+  // How long a socket close waits for a stdin EOF that would mark this as a
+  // clean mutual shutdown rather than the interactive session dying alone.
+  const SOCKET_CLOSE_GRACE_MS = 100;
+
   // Connect to the interactive terminal's socket
   const socket = await connectToSocket(socketPath);
+
+  // Nothing to release — the OS reclaims the socket fd on exit. We install this
+  // only for the stdin-EOF -> exit wiring (the socket keeps the loop alive).
+  const shutdownState = installStdioShutdownHandlers({ cleanup: () => {} });
 
   // Create MCP server
   const server = new Server(
@@ -103,8 +112,19 @@ export async function startMcpClientMode(
   });
 
   socket.on("close", () => {
-    console.error("Socket closed");
-    process.exit(1);
+    if (shutdownState.isShuttingDown()) return;
+    // The interactive session and the MCP host often go away together (user
+    // quits the terminal, host detaches). If the socket close is dequeued
+    // first, exiting 1 immediately would mislabel a clean mutual teardown —
+    // give an imminent stdin EOF a moment to start the clean shutdown instead.
+    const graceTimer = setTimeout(() => {
+      if (shutdownState.isShuttingDown()) return;
+      console.error("Socket closed");
+      process.exit(1);
+    }, SOCKET_CLOSE_GRACE_MS);
+    // stdin keeps the loop alive here, so this timer never needs to; unref'ing
+    // it keeps that an implementation detail rather than a load-bearing one.
+    graceTimer.unref();
   });
 
   // Helper to send request to interactive terminal
