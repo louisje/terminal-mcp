@@ -11,18 +11,23 @@ description: |
 
 ## Default rule
 
-Bash stays the default for ordinary, non-interactive commands. terminal-mcp is an
-additional option for the five reasons below — not a replacement, and not something
-to reach for on every command.
+When Pi operators are enabled, use `read`, `write`, and `edit` for direct text-file
+operations and `bash` for ordinary one-shot, non-interactive commands. These avoid
+unnecessary PTY interaction and return their result directly.
+
+Use the PTY/session tools when the user's real shell matters. The five reasons below
+are the main cases for switching from the stateless operators to the persistent PTY.
+If Pi operators are not exposed by the MCP server, use the agent's own ordinary Bash
+facility where available and apply the same decision rule.
 
 ## The five reasons to switch
 
 ### 1. Environment continuity
 
-terminal-mcp drives the same PTY session the user has been working in — their
+terminal-mcp's PTY tools drive the same session the user has been working in — their
 current directory, exported environment variables, shell aliases, and tmux state
-all persist across calls. The agent's built-in Bash tool is a fresh, stateless
-subprocess every time. If the user just `cd`'d or `export`'d something in their own
+all persist across calls. The Pi `bash` operator is a fresh, stateless `/bin/sh`
+subprocess every time, as are typical agent-provided Bash tools. If the user just `cd`'d or `export`'d something in their own
 terminal and expects the next command to pick that up, switch to terminal-mcp even
 if nothing is technically broken — staying consistent with the user's actual working
 state is itself the reason.
@@ -58,7 +63,24 @@ When the agent's built-in Bash tool is unavailable, disabled, or cannot execute 
 required command, use terminal-mcp as the fallback terminal instead of stopping solely
 because Bash cannot be used.
 
-## Tool workflow
+## Pi operators
+
+When `--pi-operators` is enabled, four additional tools are exposed:
+
+- `read`: read text files directly; `offset` is a 1-indexed line number.
+- `write`: overwrite a text file and create missing parent directories.
+- `edit`: exact, unique, non-overlapping string replacement against the original
+  file. It is not an append/prepend primitive; include surrounding text when needed
+  to anchor insertion at the beginning or end.
+- `bash`: run one independent, non-interactive `/bin/sh` subprocess from
+  terminal-mcp's startup working directory. It waits for completion and returns
+  stdout/stderr directly, with an optional timeout. It does not inherit PTY cwd,
+  exports, aliases, or other state changed during the terminal session.
+
+Prefer these operators for routine file work and one-shot commands. Do not use the
+PTY `type` → `getContent` loop merely to emulate what an operator can do directly.
+
+## PTY tool workflow
 
 First call `getContent()` without `sessionId` to check whether the default terminal
 is already in use. Reuse it only when clearly idle and available. If someone is
@@ -74,17 +96,19 @@ Multi-session: omit `sessionId` to drive the default session, or call
 `createSession` for an isolated PTY to run parallel work (e.g. a build in one
 session, diagnostics in another). The default session cannot be destroyed.
 
-Full tool list: `type`, `sendKey`, `sleep`, `getContent`, `getBufferInfo`,
+Default PTY/tool list: `type`, `sendKey`, `sleep`, `getContent`, `getBufferInfo`,
 `takeScreenshot`, `startRecording`, `stopRecording`, `createSession`,
 `listSessions`, `destroySession`, `resize`, `getClipboard`, `setClipboard`,
 `notify` (OS-level desktop notification — useful to alert the user when a
-long-running command finishes while they're not watching).
+long-running command finishes while they're not watching). With `--pi-operators`,
+`read`, `write`, `edit`, and `bash` are additionally available.
 
 ## Anti-patterns
 
 - Don't ask the user to paste a sudo/SSH password into chat — switch to
   terminal-mcp so they type it themselves.
-- Don't reach for terminal-mcp for routine, invisible one-off commands where none
-  of the five reasons above apply — Bash is simpler and stays the default.
+- Don't drive the PTY for routine, invisible one-off commands where none of the five
+  reasons above apply — use the Pi `bash` operator when available (or the agent's
+  ordinary Bash facility otherwise).
 - Don't silently keep using Bash after the user has visibly changed their own shell
   state (cd, export, activating a venv) mid-session — that's the continuity case.

@@ -45,6 +45,18 @@ Multi-session: omit sessionId to drive the default session, or call createSessio
 get a new isolated PTY for parallel work (e.g. a build in one session, diagnostics in
 another). The default session cannot be destroyed.`;
 
+const PI_OPERATOR_INSTRUCTIONS = `
+
+Pi operators are enabled. Prefer read, write, and edit for direct text-file operations instead of
+constructing shell commands for them. edit performs exact, unique, non-overlapping string
+replacements against the original file; it is not an append/prepend primitive.
+
+For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
+/bin/sh subprocess in terminal-mcp's startup working directory and returns stdout/stderr when the
+command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
+tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
+shell state across calls, interactive input, TTY behavior, or live observability.`;
+
 export function createServerWithManager(manager: TerminalManager, piOperators = false): Server {
   const server = new Server(
     {
@@ -56,7 +68,7 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
         tools: {},
         prompts: {},
       },
-      instructions: SERVER_INSTRUCTIONS,
+      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : ""),
     }
   );
 

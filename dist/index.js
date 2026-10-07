@@ -46657,10 +46657,10 @@ var editSchema = external_exports.object({ path: external_exports.string(), edit
 var bashSchema = external_exports.object({ command: external_exports.string(), timeout: external_exports.number().positive().optional() });
 var result = (value, isError = false) => ({ content: [{ type: "text", text: value }], ...isError ? { isError: true } : {} });
 var operatorToolDefinitions = [
-  { name: "read", description: "Read a text file. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
-  { name: "write", description: "Write a file, creating parent directories and overwriting it.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
-  { name: "edit", description: "Apply exact unique non-overlapping replacements against a file's original content.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
-  { name: "bash", description: "Execute one shell command in the terminal-mcp startup working directory.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
+  { name: "read", description: "Read a text file directly without using the PTY or shell. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
+  { name: "write", description: "Write a text file directly, creating parent directories and overwriting the file. Prefer this over shell redirection for whole-file writes.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
+  { name: "edit", description: "Apply exact unique non-overlapping string replacements against a file's original content. This is replacement-only, not an append/prepend primitive.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
+  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless /bin/sh subprocess in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
 ];
 var localPath = (path27) => resolve2(operatorCwd, path27);
 async function handleOperatorTool(name, args2) {
@@ -47018,6 +47018,17 @@ inspect cursor position and TUI state.
 Multi-session: omit sessionId to drive the default session, or call createSession to
 get a new isolated PTY for parallel work (e.g. a build in one session, diagnostics in
 another). The default session cannot be destroyed.`;
+var PI_OPERATOR_INSTRUCTIONS = `
+
+Pi operators are enabled. Prefer read, write, and edit for direct text-file operations instead of
+constructing shell commands for them. edit performs exact, unique, non-overlapping string
+replacements against the original file; it is not an append/prepend primitive.
+
+For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
+/bin/sh subprocess in terminal-mcp's startup working directory and returns stdout/stderr when the
+command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
+tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
+shell state across calls, interactive input, TTY behavior, or live observability.`;
 function createServerWithManager(manager, piOperators = false) {
   const server = new Server(
     {
@@ -47029,7 +47040,7 @@ function createServerWithManager(manager, piOperators = false) {
         tools: {},
         prompts: {}
       },
-      instructions: SERVER_INSTRUCTIONS
+      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "")
     }
   );
   registerTools(server, manager, piOperators);
