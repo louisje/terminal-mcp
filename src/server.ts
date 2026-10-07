@@ -17,6 +17,7 @@ export interface ServerOptions {
   title?: string;
   maxSessions?: number;
   sessionIdleTimeout?: number;
+  piOperators?: boolean;
 }
 
 /**
@@ -44,7 +45,7 @@ Multi-session: omit sessionId to drive the default session, or call createSessio
 get a new isolated PTY for parallel work (e.g. a build in one session, diagnostics in
 another). The default session cannot be destroyed.`;
 
-export function createServerWithManager(manager: TerminalManager): Server {
+export function createServerWithManager(manager: TerminalManager, piOperators = false): Server {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -59,7 +60,7 @@ export function createServerWithManager(manager: TerminalManager): Server {
     }
   );
 
-  registerTools(server, manager);
+  registerTools(server, manager, piOperators);
   registerPrompts(server);
 
   return server;
@@ -81,7 +82,7 @@ export function createServer(options: ServerOptions = {}): {
     sessionIdleTimeout: options.sessionIdleTimeout,
   });
 
-  const server = createServerWithManager(manager);
+  const server = createServerWithManager(manager, options.piOperators);
 
   return { server, manager };
 }

@@ -132,6 +132,7 @@ terminal-mcp [OPTIONS]
 
 Options:
   --mcp                  Use MCP mode (connects to existing session or creates new PTY)
+  --pi-operators         Also expose read, write, edit, and bash (19 tools total; default is 15)
   --title <label>        Set the interactive terminal title when connecting as a client
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
   --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
@@ -159,6 +160,16 @@ Multi-Session Options:
   --session-idle-timeout <sec> Idle non-default sessions are auto-destroyed
                                after this period (default: 600s)
 ```
+
+### Pi operators
+
+The default tool surface is unchanged: Terminal MCP exposes its existing 15 terminal tools. Add
+`--pi-operators` when you also want the Pi Coding Agent-style `read`, `write`, `edit`, and `bash`
+tools. These file tools operate relative to the process startup directory; `write` creates parent
+directories, and `edit` requires exact unique non-overlapping replacements from the original file.
+`bash` runs one independent subprocess in that same startup directory and accepts an optional
+timeout in seconds. The flag applies consistently to direct MCP, headless MCP, and socket/client
+mode.
 
 Environment variables:
 

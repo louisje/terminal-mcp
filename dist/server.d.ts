@@ -10,8 +10,9 @@ export interface ServerOptions {
     title?: string;
     maxSessions?: number;
     sessionIdleTimeout?: number;
+    piOperators?: boolean;
 }
-export declare function createServerWithManager(manager: TerminalManager): Server;
+export declare function createServerWithManager(manager: TerminalManager, piOperators?: boolean): Server;
 /**
  * Create and configure the MCP server with a new terminal manager
  */

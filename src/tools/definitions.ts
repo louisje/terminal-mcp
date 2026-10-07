@@ -18,6 +18,7 @@ import { resizeTool } from "./resize.js";
 import { getClipboardTool } from "./getClipboard.js";
 import { setClipboardTool } from "./setClipboard.js";
 import { notifyTool } from "./notify.js";
+import { operatorToolDefinitions } from "./operators.js";
 
 export interface ToolDefinition {
   name: string;
@@ -46,6 +47,10 @@ export const toolDefinitions: ToolDefinition[] = [
   setClipboardTool,
   notifyTool,
 ];
+
+export function getToolDefinitions(piOperators = false): ToolDefinition[] {
+  return piOperators ? [...toolDefinitions, ...operatorToolDefinitions] : toolDefinitions;
+}
 
 /**
  * Get just the tool names as an array

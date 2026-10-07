@@ -22,6 +22,7 @@ import { handleResize } from "../tools/resize.js";
 import { handleGetClipboard } from "../tools/getClipboard.js";
 import { handleSetClipboard } from "../tools/setClipboard.js";
 import { handleNotify } from "../tools/notify.js";
+import { handleOperatorTool } from "../tools/operators.js";
 
 interface SocketRequest {
   id: number;
@@ -37,6 +38,7 @@ interface SocketResponse {
 
 const clientConnectedSchema = z.object({
   title: z.string().optional(),
+  piOperators: z.boolean().optional(),
 });
 
 export type ClientConnectedParams = z.infer<typeof clientConnectedSchema>;
@@ -139,7 +141,8 @@ export function createSocketServer(
 export function createToolProxyServer(
   socketPath: string,
   manager: TerminalManager,
-  onClientConnected?: (params: ClientConnectedParams) => void
+  onClientConnected?: (params: ClientConnectedParams) => void,
+  piOperators = false
 ): NetServer {
   // Remove existing socket file if it exists
   try {
@@ -150,6 +153,7 @@ export function createToolProxyServer(
 
   const server = new NetServer((socket) => {
     let buffer = "";
+    let clientPiOperators = piOperators;
 
     socket.on("data", async (data) => {
       buffer += data.toString();
@@ -160,7 +164,9 @@ export function createToolProxyServer(
         if (line.trim()) {
           try {
             const request = JSON.parse(line) as SocketRequest;
-            const response = await handleToolRequest(manager, request, onClientConnected);
+            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, (enabled) => {
+              clientPiOperators = clientPiOperators || enabled;
+            });
             socket.write(JSON.stringify(response) + "\n");
           } catch (error) {
             const errorMessage =
@@ -192,7 +198,9 @@ export function createToolProxyServer(
 async function handleToolRequest(
   manager: TerminalManager,
   request: SocketRequest,
-  onClientConnected?: (params: ClientConnectedParams) => void
+  onClientConnected?: (params: ClientConnectedParams) => void,
+  piOperators = false,
+  setClientPiOperators?: (enabled: boolean) => void
 ): Promise<SocketResponse> {
   const { id, method, params } = request;
   const stats = getStats();
@@ -201,6 +209,13 @@ async function handleToolRequest(
     let result: unknown;
 
     switch (method) {
+      case "read":
+      case "write":
+      case "edit":
+      case "bash":
+        if (!piOperators) throw new Error(`Unknown tool: ${method}`);
+        result = await handleOperatorTool(method, params);
+        break;
       case "type":
         stats.recordToolCall("type");
         result = await handleType(manager, params);
@@ -278,6 +293,7 @@ async function handleToolRequest(
 
       case "clientConnected": {
         const parsed = clientConnectedSchema.parse(params ?? {});
+        setClientPiOperators?.(parsed.piOperators === true);
         onClientConnected?.(parsed);
         result = { ok: true };
         break;

@@ -12,6 +12,7 @@ export interface ToolDefinition {
     };
 }
 export declare const toolDefinitions: ToolDefinition[];
+export declare function getToolDefinitions(piOperators?: boolean): ToolDefinition[];
 /**
  * Get just the tool names as an array
  */

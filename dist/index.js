@@ -546,8 +546,8 @@ var require_graceful_fs = __commonJS({
       fs26.createReadStream = createReadStream2;
       fs26.createWriteStream = createWriteStream3;
       var fs$readFile = fs26.readFile;
-      fs26.readFile = readFile;
-      function readFile(path27, options2, cb) {
+      fs26.readFile = readFile2;
+      function readFile2(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$readFile(path27, options2, cb);
@@ -563,8 +563,8 @@ var require_graceful_fs = __commonJS({
         }
       }
       var fs$writeFile = fs26.writeFile;
-      fs26.writeFile = writeFile;
-      function writeFile(path27, data, options2, cb) {
+      fs26.writeFile = writeFile2;
+      function writeFile2(path27, data, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$writeFile(path27, data, options2, cb);
@@ -2520,8 +2520,8 @@ var require_graceful_fs2 = __commonJS({
       fs26.createReadStream = createReadStream2;
       fs26.createWriteStream = createWriteStream3;
       var fs$readFile = fs26.readFile;
-      fs26.readFile = readFile;
-      function readFile(path27, options2, cb) {
+      fs26.readFile = readFile2;
+      function readFile2(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$readFile(path27, options2, cb);
@@ -2537,8 +2537,8 @@ var require_graceful_fs2 = __commonJS({
         }
       }
       var fs$writeFile = fs26.writeFile;
-      fs26.writeFile = writeFile;
-      function writeFile(path27, data, options2, cb) {
+      fs26.writeFile = writeFile2;
+      function writeFile2(path27, data, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$writeFile(path27, data, options2, cb);
@@ -3514,11 +3514,11 @@ var require_util = __commonJS({
           if (files.includes("node_modules") || files.includes("package.json") || files.includes("package.json5") || files.includes("package.yaml") || files.includes("pnpm-workspace.yaml")) {
             return name2;
           }
-          const dirname6 = path27.dirname(name2);
-          if (dirname6 === name2) {
+          const dirname7 = path27.dirname(name2);
+          if (dirname7 === name2) {
             return original;
           }
-          return find(dirname6, original);
+          return find(dirname7, original);
         } catch (error2) {
           if (name2 === original) {
             if (error2.code === "ENOENT") {
@@ -4624,9 +4624,9 @@ var require_range = __commonJS({
         if (rangeMap.size > 1 && rangeMap.has("")) {
           rangeMap.delete("");
         }
-        const result = [...rangeMap.values()];
-        cache.set(memoKey, result);
-        return result;
+        const result2 = [...rangeMap.values()];
+        cache.set(memoKey, result2);
+        return result2;
       }
       intersects(range, options2) {
         if (!(range instanceof _Range)) {
@@ -4680,16 +4680,16 @@ var require_range = __commonJS({
     var isNullSet = (c3) => c3.value === "<0.0.0-0";
     var isAny = (c3) => c3.value === "";
     var isSatisfiable = (comparators, options2) => {
-      let result = true;
+      let result2 = true;
       const remainingComparators = comparators.slice();
       let testComparator = remainingComparators.pop();
-      while (result && remainingComparators.length) {
-        result = remainingComparators.every((otherComparator) => {
+      while (result2 && remainingComparators.length) {
+        result2 = remainingComparators.every((otherComparator) => {
           return testComparator.intersects(otherComparator, options2);
         });
         testComparator = remainingComparators.pop();
       }
-      return result;
+      return result2;
     };
     var parseComparator = (comp, options2) => {
       comp = comp.replace(re[t.BUILD], "");
@@ -7945,10 +7945,10 @@ var require_keyword = __commonJS({
       if (def.async && !schemaEnv.$async)
         throw new Error("async keyword in sync schema");
     }
-    function useKeyword(gen, keyword, result) {
-      if (result === void 0)
+    function useKeyword(gen, keyword, result2) {
+      if (result2 === void 0)
         throw new Error(`keyword "${keyword}" failed to compile`);
-      return gen.scopeValue("keyword", typeof result == "function" ? { ref: result } : { ref: result, code: (0, codegen_1.stringify)(result) });
+      return gen.scopeValue("keyword", typeof result2 == "function" ? { ref: result2 } : { ref: result2, code: (0, codegen_1.stringify)(result2) });
     }
     function validSchemaType(schema, schemaType, allowUndefined = false) {
       return !schemaType.length || schemaType.some((st) => st === "array" ? Array.isArray(schema) : st === "object" ? schema && typeof schema == "object" && !Array.isArray(schema) : typeof schema == st || allowUndefined && typeof schema == "undefined");
@@ -9004,7 +9004,7 @@ var require_compile = __commonJS({
       const schOrFunc = root3.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve5.call(this, root3, ref);
+      let _sch = resolve6.call(this, root3, ref);
       if (_sch === void 0) {
         const schema = (_a = root3.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
         const { schemaId } = this.opts;
@@ -9031,7 +9031,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve5(root3, ref) {
+    function resolve6(root3, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -9662,7 +9662,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve5(baseURI, relativeURI, options2) {
+    function resolve6(baseURI, relativeURI, options2) {
       const schemelessOptions = options2 ? Object.assign({ scheme: "null" }, options2) : { scheme: "null" };
       const { parsed: baseParsed, malformedAuthorityOrPort: baseMalformed } = parseWithStatus(baseURI, schemelessOptions);
       const { parsed: relativeParsed, malformedAuthorityOrPort: relativeMalformed } = parseWithStatus(relativeURI, schemelessOptions);
@@ -9946,7 +9946,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize: normalize2,
-      resolve: resolve5,
+      resolve: resolve6,
       resolveComponent,
       equal,
       serialize: serialize2,
@@ -16420,12 +16420,12 @@ var require_isexe = __commonJS({
         if (typeof Promise !== "function") {
           throw new TypeError("callback not provided");
         }
-        return new Promise(function(resolve5, reject) {
+        return new Promise(function(resolve6, reject) {
           isexe(path27, options2 || {}, function(er, is) {
             if (er) {
               reject(er);
             } else {
-              resolve5(is);
+              resolve6(is);
             }
           });
         });
@@ -16491,27 +16491,27 @@ var require_which = __commonJS({
         opt = {};
       const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
       const found = [];
-      const step = (i2) => new Promise((resolve5, reject) => {
+      const step = (i2) => new Promise((resolve6, reject) => {
         if (i2 === pathEnv.length)
-          return opt.all && found.length ? resolve5(found) : reject(getNotFoundError(cmd));
+          return opt.all && found.length ? resolve6(found) : reject(getNotFoundError(cmd));
         const ppRaw = pathEnv[i2];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
         const pCmd = path27.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
-        resolve5(subStep(p, i2, 0));
+        resolve6(subStep(p, i2, 0));
       });
-      const subStep = (p, i2, ii) => new Promise((resolve5, reject) => {
+      const subStep = (p, i2, ii) => new Promise((resolve6, reject) => {
         if (ii === pathExt.length)
-          return resolve5(step(i2 + 1));
+          return resolve6(step(i2 + 1));
         const ext = pathExt[ii];
         isexe(p + ext, { pathExt: pathExtExe }, (er, is) => {
           if (!er && is) {
             if (opt.all)
               found.push(p + ext);
             else
-              return resolve5(p + ext);
+              return resolve6(p + ext);
           }
-          return resolve5(subStep(p, i2, ii + 1));
+          return resolve6(subStep(p, i2, ii + 1));
         });
       });
       return cb ? step(0).then((res) => cb(null, res), cb) : step(0);
@@ -16811,9 +16811,9 @@ var require_cross_spawn = __commonJS({
     }
     function spawnSync5(command, args2, options2) {
       const parsed = parse5(command, args2, options2);
-      const result = cp.spawnSync(parsed.command, parsed.args, parsed.options);
-      result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
-      return result;
+      const result2 = cp.spawnSync(parsed.command, parsed.args, parsed.options);
+      result2.error = result2.error || enoent.verifyENOENTSync(result2.status, parsed);
+      return result2;
     }
     module2.exports = spawn5;
     module2.exports.spawn = spawn5;
@@ -16856,15 +16856,15 @@ var require_npm_run_path = __commonJS({
       };
       let previous;
       let cwdPath = path27.resolve(options2.cwd);
-      const result = [];
+      const result2 = [];
       while (previous !== cwdPath) {
-        result.push(path27.join(cwdPath, "node_modules/.bin"));
+        result2.push(path27.join(cwdPath, "node_modules/.bin"));
         previous = cwdPath;
         cwdPath = path27.resolve(cwdPath, "..");
       }
       const execPathDir = path27.resolve(options2.cwd, options2.execPath, "..");
-      result.push(execPathDir);
-      return result.concat(options2.path).join(path27.delimiter);
+      result2.push(execPathDir);
+      return result2.concat(options2.path).join(path27.delimiter);
     };
     module2.exports = npmRunPath2;
     module2.exports.default = npmRunPath2;
@@ -17702,7 +17702,7 @@ var require_kill = __commonJS({
         return spawnedPromise;
       }
       let timeoutId;
-      const timeoutPromise = new Promise((resolve5, reject) => {
+      const timeoutPromise = new Promise((resolve6, reject) => {
         timeoutId = setTimeout(() => {
           timeoutKill(spawned, killSignal, reject);
         }, timeout2);
@@ -17802,9 +17802,9 @@ var require_get_stream = __commonJS({
     "use strict";
     var { constants: BufferConstants } = __require("buffer");
     var stream = __require("stream");
-    var { promisify: promisify7 } = __require("util");
+    var { promisify: promisify8 } = __require("util");
     var bufferStream = require_buffer_stream();
-    var streamPipelinePromisified = promisify7(stream.pipeline);
+    var streamPipelinePromisified = promisify8(stream.pipeline);
     var MaxBufferError2 = class extends Error {
       constructor() {
         super("maxBuffer exceeded");
@@ -17821,7 +17821,7 @@ var require_get_stream = __commonJS({
       };
       const { maxBuffer } = options2;
       const stream2 = bufferStream(options2);
-      await new Promise((resolve5, reject) => {
+      await new Promise((resolve6, reject) => {
         const rejectPromise = (error2) => {
           if (error2 && stream2.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
             error2.bufferedData = stream2.getBufferedValue();
@@ -17831,7 +17831,7 @@ var require_get_stream = __commonJS({
         (async () => {
           try {
             await streamPipelinePromisified(inputStream, stream2);
-            resolve5();
+            resolve6();
           } catch (error2) {
             rejectPromise(error2);
           }
@@ -17988,9 +17988,9 @@ var require_promise = __commonJS({
       return spawned;
     };
     var getSpawnedPromise = (spawned) => {
-      return new Promise((resolve5, reject) => {
+      return new Promise((resolve6, reject) => {
         spawned.on("exit", (exitCode, signal) => {
-          resolve5({ exitCode, signal });
+          resolve6({ exitCode, signal });
         });
         spawned.on("error", (error2) => {
           reject(error2);
@@ -18193,9 +18193,9 @@ var require_execa = __commonJS({
       const command = joinCommand2(file, args2);
       const escapedCommand = getEscapedCommand(file, args2);
       validateInputSync(parsed.options);
-      let result;
+      let result2;
       try {
-        result = childProcess3.spawnSync(parsed.file, parsed.args, parsed.options);
+        result2 = childProcess3.spawnSync(parsed.file, parsed.args, parsed.options);
       } catch (error2) {
         throw makeError4({
           error: error2,
@@ -18210,21 +18210,21 @@ var require_execa = __commonJS({
           killed: false
         });
       }
-      const stdout = handleOutput2(parsed.options, result.stdout, result.error);
-      const stderr = handleOutput2(parsed.options, result.stderr, result.error);
-      if (result.error || result.status !== 0 || result.signal !== null) {
+      const stdout = handleOutput2(parsed.options, result2.stdout, result2.error);
+      const stderr = handleOutput2(parsed.options, result2.stderr, result2.error);
+      if (result2.error || result2.status !== 0 || result2.signal !== null) {
         const error2 = makeError4({
           stdout,
           stderr,
-          error: result.error,
-          signal: result.signal,
-          exitCode: result.status,
+          error: result2.error,
+          signal: result2.signal,
+          exitCode: result2.status,
           command,
           escapedCommand,
           parsed,
-          timedOut: result.error && result.error.code === "ETIMEDOUT",
+          timedOut: result2.error && result2.error.code === "ETIMEDOUT",
           isCanceled: false,
-          killed: result.signal !== null
+          killed: result2.signal !== null
         });
         if (!parsed.options.reject) {
           return error2;
@@ -18288,20 +18288,20 @@ var require_shellwords = __commonJS({
     (function() {
       var scan;
       scan = function(string3, pattern, callback) {
-        var match, result;
-        result = "";
+        var match, result2;
+        result2 = "";
         while (string3.length > 0) {
           match = string3.match(pattern);
           if (match) {
-            result += string3.slice(0, match.index);
-            result += callback(match);
+            result2 += string3.slice(0, match.index);
+            result2 += callback(match);
             string3 = string3.slice(match.index + match[0].length);
           } else {
-            result += string3;
+            result2 += string3;
             string3 = "";
           }
         }
-        return result;
+        return result2;
       };
       exports2.split = function(line) {
         var field, words;
@@ -18826,7 +18826,7 @@ var require_utils3 = __commonJS({
     }
     module2.exports.createNamedPipe = (server) => {
       const buf = Buffer.alloc(BUFFER_SIZE);
-      return new Promise((resolve5) => {
+      return new Promise((resolve6) => {
         server.instance = net2.createServer((stream) => {
           stream.on("data", (c3) => {
             buf.write(c3.toString());
@@ -18836,7 +18836,7 @@ var require_utils3 = __commonJS({
           });
         });
         server.instance.listen(server.namedPipe, () => {
-          resolve5(buf);
+          resolve6(buf);
         });
       });
     };
@@ -19815,18 +19815,18 @@ var require_toaster = __commonJS({
         );
       }
       const snoreToastResultParser = (err, callback2) => {
-        const result = parseResult(
+        const result2 = parseResult(
           resultBuffer && resultBuffer.toString("utf16le")
         );
-        if (result.action === "buttonClicked" && result.button) {
-          result.activationType = result.button;
-        } else if (result.action) {
-          result.activationType = result.action;
+        if (result2.action === "buttonClicked" && result2.button) {
+          result2.activationType = result2.button;
+        } else if (result2.action) {
+          result2.activationType = result2.action;
         }
         if (err && err.code === -1) {
-          callback2(err, result);
+          callback2(err, result2);
         }
-        callback2(null, result);
+        callback2(null, result2);
         server.instance && server.instance.close();
       };
       const actionJackedCallback = (err) => snoreToastResultParser(
@@ -19995,7 +19995,7 @@ var require_dist4 = __commonJS({
         this.handleGreeting();
       }
       readBytes(len) {
-        return new Promise((resolve5) => {
+        return new Promise((resolve6) => {
           let buf = Buffer.allocUnsafe(len);
           let offset = 0;
           const dataListener = (chunk) => {
@@ -20005,7 +20005,7 @@ var require_dist4 = __commonJS({
             if (offset < len) return;
             this.socket.removeListener("data", dataListener);
             this.socket.push(chunk.subarray(readAmount));
-            resolve5(buf);
+            resolve6(buf);
             this.socket.pause();
           };
           this.socket.on("data", dataListener);
@@ -21980,7 +21980,7 @@ var retryifyAsync = (fn2, options2) => {
           throw error2;
         const delay2 = Math.round(interval * Math.random());
         if (delay2 > 0) {
-          const delayPromise = new Promise((resolve5) => setTimeout(resolve5, delay2));
+          const delayPromise = new Promise((resolve6) => setTimeout(resolve6, delay2));
           return delayPromise.then(() => attempt.apply(void 0, args2));
         } else {
           return attempt.apply(void 0, args2);
@@ -22796,11 +22796,11 @@ function assembleStyles() {
         if (value === 0) {
           return 30;
         }
-        let result = 30 + (Math.round(blue2) << 2 | Math.round(green2) << 1 | Math.round(red2));
+        let result2 = 30 + (Math.round(blue2) << 2 | Math.round(green2) << 1 | Math.round(red2));
         if (value === 2) {
-          result += 60;
+          result2 += 60;
         }
-        return result;
+        return result2;
       },
       enumerable: false
     },
@@ -23378,17 +23378,17 @@ var validateAndMerge = (...sources) => {
   return deepMerge({}, ...sources);
 };
 var mergeHeaders = (source1 = {}, source2 = {}) => {
-  const result = new globalThis.Headers(source1);
+  const result2 = new globalThis.Headers(source1);
   const isHeadersInstance = source2 instanceof globalThis.Headers;
   const source = new globalThis.Headers(source2);
   for (const [key, value] of source.entries()) {
     if (isHeadersInstance && value === "undefined" || value === void 0) {
-      result.delete(key);
+      result2.delete(key);
     } else {
-      result.set(key, value);
+      result2.set(key, value);
     }
   }
-  return result;
+  return result2;
 };
 function newHookValue(original, incoming, property) {
   return Object.hasOwn(incoming, property) && incoming[property] === void 0 ? [] : deepMerge(original[property] ?? [], incoming[property] ?? []);
@@ -23400,36 +23400,36 @@ var mergeHooks = (original = {}, incoming = {}) => ({
   beforeError: newHookValue(original, incoming, "beforeError")
 });
 var appendSearchParameters = (target, source) => {
-  const result = new URLSearchParams();
+  const result2 = new URLSearchParams();
   for (const input of [target, source]) {
     if (input === void 0) {
       continue;
     }
     if (input instanceof URLSearchParams) {
       for (const [key, value] of input.entries()) {
-        result.append(key, value);
+        result2.append(key, value);
       }
     } else if (Array.isArray(input)) {
       for (const pair of input) {
         if (!Array.isArray(pair) || pair.length !== 2) {
           throw new TypeError("Array search parameters must be provided in [[key, value], ...] format");
         }
-        result.append(String(pair[0]), String(pair[1]));
+        result2.append(String(pair[0]), String(pair[1]));
       }
     } else if (isObject2(input)) {
       for (const [key, value] of Object.entries(input)) {
         if (value !== void 0) {
-          result.append(key, String(value));
+          result2.append(key, String(value));
         }
       }
     } else {
       const parameters = new URLSearchParams(input);
       for (const [key, value] of parameters.entries()) {
-        result.append(key, value);
+        result2.append(key, value);
       }
     }
   }
-  return result;
+  return result2;
 };
 var deepMerge = (...sources) => {
   let returnValue = {};
@@ -23546,14 +23546,14 @@ var TimeoutError = class extends Error {
 
 // node_modules/ky/distribution/utils/timeout.js
 async function timeout(request, init, abortController, options2) {
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     const timeoutId = setTimeout(() => {
       if (abortController) {
         abortController.abort();
       }
       reject(new TimeoutError(request));
     }, options2.timeout);
-    void options2.fetch(request, init).then(resolve5).catch(reject).then(() => {
+    void options2.fetch(request, init).then(resolve6).catch(reject).then(() => {
       clearTimeout(timeoutId);
     });
   });
@@ -23561,7 +23561,7 @@ async function timeout(request, init, abortController, options2) {
 
 // node_modules/ky/distribution/utils/delay.js
 async function delay(ms, { signal }) {
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     if (signal) {
       signal.throwIfAborted();
       signal.addEventListener("abort", abortHandler, { once: true });
@@ -23572,7 +23572,7 @@ async function delay(ms, { signal }) {
     }
     const timeoutId = setTimeout(() => {
       signal?.removeEventListener("abort", abortHandler);
-      resolve5();
+      resolve6();
     }, ms);
   });
 }
@@ -23672,7 +23672,7 @@ var Ky = class _Ky {
       }
       return response;
     };
-    const result = ky2.#retry(function_).finally(() => {
+    const result2 = ky2.#retry(function_).finally(() => {
       const originalRequest = ky2.#originalRequest;
       ky2.#cancelBody(originalRequest?.body ?? void 0);
       ky2.#cancelBody(ky2.request.body ?? void 0);
@@ -23681,9 +23681,9 @@ var Ky = class _Ky {
       if (type === "bytes" && typeof globalThis.Response?.prototype?.bytes !== "function") {
         continue;
       }
-      result[type] = async () => {
+      result2[type] = async () => {
         ky2.request.headers.set("accept", ky2.request.headers.get("accept") || mimeType);
-        const response = await result;
+        const response = await result2;
         if (type === "json") {
           if (response.status === 204) {
             return "";
@@ -23700,7 +23700,7 @@ var Ky = class _Ky {
         return response[type]();
       };
     }
-    return result;
+    return result2;
   }
   // eslint-disable-next-line unicorn/prevent-abbreviations
   static #normalizeSearchParams(searchParams) {
@@ -23811,11 +23811,11 @@ var Ky = class _Ky {
       throw error2;
     }
     if (this.#options.retry.shouldRetry !== void 0) {
-      const result = await this.#options.retry.shouldRetry({ error: errorObject, retryCount: this.#retryCount });
-      if (result === false) {
+      const result2 = await this.#options.retry.shouldRetry({ error: errorObject, retryCount: this.#retryCount });
+      if (result2 === false) {
         throw error2;
       }
-      if (result === true) {
+      if (result2 === true) {
         return this.#calculateDelay();
       }
     }
@@ -23899,12 +23899,12 @@ var Ky = class _Ky {
       this.request = new globalThis.Request(this.request, { signal: this.#options.signal });
     }
     for (const hook of this.#options.hooks.beforeRequest) {
-      const result = await hook(this.request, this.#getNormalizedOptions(), { retryCount: this.#retryCount });
-      if (result instanceof Response) {
-        return result;
+      const result2 = await hook(this.request, this.#getNormalizedOptions(), { retryCount: this.#retryCount });
+      if (result2 instanceof Response) {
+        return result2;
       }
-      if (result instanceof globalThis.Request) {
-        this.#assignRequest(result);
+      if (result2 instanceof globalThis.Request) {
+        this.#assignRequest(result2);
         break;
       }
     }
@@ -23958,8 +23958,8 @@ var distribution_default = ky;
 // node_modules/registry-url/index.js
 var import_rc = __toESM(require_rc(), 1);
 function registryUrl(scope) {
-  const result = (0, import_rc.default)("npm", { registry: "https://registry.npmjs.org/" });
-  const url = result[`${scope}:registry`] || result.config_registry || result.registry;
+  const result2 = (0, import_rc.default)("npm", { registry: "https://registry.npmjs.org/" });
+  const url = result2[`${scope}:registry`] || result2.config_registry || result2.registry;
   return url.slice(-1) === "/" ? url : `${url}/`;
 }
 
@@ -24588,11 +24588,11 @@ function assembleStyles2() {
         if (value === 0) {
           return 30;
         }
-        let result = 30 + (Math.round(blue2) << 2 | Math.round(green2) << 1 | Math.round(red2));
+        let result2 = 30 + (Math.round(blue2) << 2 | Math.round(green2) << 1 | Math.round(red2));
         if (value === 2) {
-          result += 60;
+          result2 += 60;
         }
-        return result;
+        return result2;
       },
       enumerable: false
     },
@@ -24936,22 +24936,22 @@ var boxContent = (content, contentWidth, options2) => {
     const marginWidth = Math.max(columns - contentWidth - options2.margin.right - getBorderWidth(options2.borderStyle), 0);
     marginLeft = PAD.repeat(marginWidth);
   }
-  let result = "";
+  let result2 = "";
   if (options2.margin.top) {
-    result += NEWLINE.repeat(options2.margin.top);
+    result2 += NEWLINE.repeat(options2.margin.top);
   }
   if (options2.borderStyle !== NONE || options2.title) {
-    result += colorizeBorder(marginLeft + chars.topLeft + (options2.title ? makeTitle(options2.title, chars.top.repeat(contentWidth), options2.titleAlignment) : chars.top.repeat(contentWidth)) + chars.topRight) + NEWLINE;
+    result2 += colorizeBorder(marginLeft + chars.topLeft + (options2.title ? makeTitle(options2.title, chars.top.repeat(contentWidth), options2.titleAlignment) : chars.top.repeat(contentWidth)) + chars.topRight) + NEWLINE;
   }
   const lines = content.split(NEWLINE);
-  result += lines.map((line) => marginLeft + colorizeBorder(chars.left) + colorizeContent(line) + colorizeBorder(chars.right)).join(NEWLINE);
+  result2 += lines.map((line) => marginLeft + colorizeBorder(chars.left) + colorizeContent(line) + colorizeBorder(chars.right)).join(NEWLINE);
   if (options2.borderStyle !== NONE) {
-    result += NEWLINE + colorizeBorder(marginLeft + chars.bottomLeft + chars.bottom.repeat(contentWidth) + chars.bottomRight);
+    result2 += NEWLINE + colorizeBorder(marginLeft + chars.bottomLeft + chars.bottom.repeat(contentWidth) + chars.bottomRight);
   }
   if (options2.margin.bottom) {
-    result += NEWLINE.repeat(options2.margin.bottom);
+    result2 += NEWLINE.repeat(options2.margin.bottom);
   }
-  return result;
+  return result2;
 };
 var sanitizeOptions = (options2) => {
   if (options2.fullscreen && process9?.stdout) {
@@ -25297,7 +25297,7 @@ Run \`npm install ${pkg2}\` in ${root} and retry.`;
 }
 
 // src/server.ts
-import { exec as exec2 } from "child_process";
+import { exec as exec3 } from "child_process";
 
 // node_modules/zod/v3/external.js
 var external_exports = {};
@@ -25912,9 +25912,9 @@ var ParseInputLazyPath = class {
     return this._cachedPath;
   }
 };
-var handleResult = (ctx, result) => {
-  if (isValid(result)) {
-    return { success: true, data: result.value };
+var handleResult = (ctx, result2) => {
+  if (isValid(result2)) {
+    return { success: true, data: result2.value };
   } else {
     if (!ctx.common.issues.length) {
       throw new Error("Validation failed but no issues detected.");
@@ -25985,21 +25985,21 @@ var ZodType = class {
     };
   }
   _parseSync(input) {
-    const result = this._parse(input);
-    if (isAsync(result)) {
+    const result2 = this._parse(input);
+    if (isAsync(result2)) {
       throw new Error("Synchronous parse encountered promise.");
     }
-    return result;
+    return result2;
   }
   _parseAsync(input) {
-    const result = this._parse(input);
-    return Promise.resolve(result);
+    const result2 = this._parse(input);
+    return Promise.resolve(result2);
   }
   parse(data, params) {
-    const result = this.safeParse(data, params);
-    if (result.success)
-      return result.data;
-    throw result.error;
+    const result2 = this.safeParse(data, params);
+    if (result2.success)
+      return result2.data;
+    throw result2.error;
   }
   safeParse(data, params) {
     const ctx = {
@@ -26014,8 +26014,8 @@ var ZodType = class {
       data,
       parsedType: getParsedType(data)
     };
-    const result = this._parseSync({ data, path: ctx.path, parent: ctx });
-    return handleResult(ctx, result);
+    const result2 = this._parseSync({ data, path: ctx.path, parent: ctx });
+    return handleResult(ctx, result2);
   }
   "~validate"(data) {
     const ctx = {
@@ -26031,9 +26031,9 @@ var ZodType = class {
     };
     if (!this["~standard"].async) {
       try {
-        const result = this._parseSync({ data, path: [], parent: ctx });
-        return isValid(result) ? {
-          value: result.value
+        const result2 = this._parseSync({ data, path: [], parent: ctx });
+        return isValid(result2) ? {
+          value: result2.value
         } : {
           issues: ctx.common.issues
         };
@@ -26047,17 +26047,17 @@ var ZodType = class {
         };
       }
     }
-    return this._parseAsync({ data, path: [], parent: ctx }).then((result) => isValid(result) ? {
-      value: result.value
+    return this._parseAsync({ data, path: [], parent: ctx }).then((result2) => isValid(result2) ? {
+      value: result2.value
     } : {
       issues: ctx.common.issues
     });
   }
   async parseAsync(data, params) {
-    const result = await this.safeParseAsync(data, params);
-    if (result.success)
-      return result.data;
-    throw result.error;
+    const result2 = await this.safeParseAsync(data, params);
+    if (result2.success)
+      return result2.data;
+    throw result2.error;
   }
   async safeParseAsync(data, params) {
     const ctx = {
@@ -26073,8 +26073,8 @@ var ZodType = class {
       parsedType: getParsedType(data)
     };
     const maybeAsyncResult = this._parse({ data, path: ctx.path, parent: ctx });
-    const result = await (isAsync(maybeAsyncResult) ? maybeAsyncResult : Promise.resolve(maybeAsyncResult));
-    return handleResult(ctx, result);
+    const result2 = await (isAsync(maybeAsyncResult) ? maybeAsyncResult : Promise.resolve(maybeAsyncResult));
+    return handleResult(ctx, result2);
   }
   refine(check2, message) {
     const getIssueProperties = (val) => {
@@ -26087,13 +26087,13 @@ var ZodType = class {
       }
     };
     return this._refinement((val, ctx) => {
-      const result = check2(val);
+      const result2 = check2(val);
       const setError = () => ctx.addIssue({
         code: ZodIssueCode.custom,
         ...getIssueProperties(val)
       });
-      if (typeof Promise !== "undefined" && result instanceof Promise) {
-        return result.then((data) => {
+      if (typeof Promise !== "undefined" && result2 instanceof Promise) {
+        return result2.then((data) => {
           if (!data) {
             setError();
             return false;
@@ -26102,7 +26102,7 @@ var ZodType = class {
           }
         });
       }
-      if (!result) {
+      if (!result2) {
         setError();
         return false;
       } else {
@@ -27597,14 +27597,14 @@ var ZodArray = class _ZodArray extends ZodType {
     if (ctx.common.async) {
       return Promise.all([...ctx.data].map((item, i2) => {
         return def.type._parseAsync(new ParseInputLazyPath(ctx, item, ctx.path, i2));
-      })).then((result2) => {
-        return ParseStatus.mergeArray(status, result2);
+      })).then((result3) => {
+        return ParseStatus.mergeArray(status, result3);
       });
     }
-    const result = [...ctx.data].map((item, i2) => {
+    const result2 = [...ctx.data].map((item, i2) => {
       return def.type._parseSync(new ParseInputLazyPath(ctx, item, ctx.path, i2));
     });
-    return ParseStatus.mergeArray(status, result);
+    return ParseStatus.mergeArray(status, result2);
   }
   get element() {
     return this._def.type;
@@ -28010,18 +28010,18 @@ var ZodUnion = class extends ZodType {
     const { ctx } = this._processInputParams(input);
     const options2 = this._def.options;
     function handleResults(results) {
-      for (const result of results) {
-        if (result.result.status === "valid") {
-          return result.result;
+      for (const result2 of results) {
+        if (result2.result.status === "valid") {
+          return result2.result;
         }
       }
-      for (const result of results) {
-        if (result.result.status === "dirty") {
-          ctx.common.issues.push(...result.ctx.common.issues);
-          return result.result;
+      for (const result2 of results) {
+        if (result2.result.status === "dirty") {
+          ctx.common.issues.push(...result2.ctx.common.issues);
+          return result2.result;
         }
       }
-      const unionErrors = results.map((result) => new ZodError(result.ctx.common.issues));
+      const unionErrors = results.map((result2) => new ZodError(result2.ctx.common.issues));
       addIssueToContext(ctx, {
         code: ZodIssueCode.invalid_union,
         unionErrors
@@ -28059,15 +28059,15 @@ var ZodUnion = class extends ZodType {
           },
           parent: null
         };
-        const result = option._parseSync({
+        const result2 = option._parseSync({
           data: ctx.data,
           path: ctx.path,
           parent: childCtx
         });
-        if (result.status === "valid") {
-          return result;
-        } else if (result.status === "dirty" && !dirty) {
-          dirty = { result, ctx: childCtx };
+        if (result2.status === "valid") {
+          return result2;
+        } else if (result2.status === "dirty" && !dirty) {
+          dirty = { result: result2, ctx: childCtx };
         }
         if (childCtx.common.issues.length) {
           issues.push(childCtx.common.issues);
@@ -28612,9 +28612,9 @@ var ZodFunction = class _ZodFunction extends ZodType {
           error2.addIssue(makeArgsIssue(args2, e));
           throw error2;
         });
-        const result = await Reflect.apply(fn2, this, parsedArgs);
-        const parsedReturns = await me._def.returns._def.type.parseAsync(result, params).catch((e) => {
-          error2.addIssue(makeReturnsIssue(result, e));
+        const result2 = await Reflect.apply(fn2, this, parsedArgs);
+        const parsedReturns = await me._def.returns._def.type.parseAsync(result2, params).catch((e) => {
+          error2.addIssue(makeReturnsIssue(result2, e));
           throw error2;
         });
         return parsedReturns;
@@ -28626,10 +28626,10 @@ var ZodFunction = class _ZodFunction extends ZodType {
         if (!parsedArgs.success) {
           throw new ZodError([makeArgsIssue(args2, parsedArgs.error)]);
         }
-        const result = Reflect.apply(fn2, this, parsedArgs.data);
-        const parsedReturns = me._def.returns.safeParse(result, params);
+        const result2 = Reflect.apply(fn2, this, parsedArgs.data);
+        const parsedReturns = me._def.returns.safeParse(result2, params);
         if (!parsedReturns.success) {
-          throw new ZodError([makeReturnsIssue(result, parsedReturns.error)]);
+          throw new ZodError([makeReturnsIssue(result2, parsedReturns.error)]);
         }
         return parsedReturns.data;
       });
@@ -28881,43 +28881,43 @@ var ZodEffects = class extends ZodType {
         return Promise.resolve(processed).then(async (processed2) => {
           if (status.value === "aborted")
             return INVALID;
-          const result = await this._def.schema._parseAsync({
+          const result2 = await this._def.schema._parseAsync({
             data: processed2,
             path: ctx.path,
             parent: ctx
           });
-          if (result.status === "aborted")
+          if (result2.status === "aborted")
             return INVALID;
-          if (result.status === "dirty")
-            return DIRTY(result.value);
+          if (result2.status === "dirty")
+            return DIRTY(result2.value);
           if (status.value === "dirty")
-            return DIRTY(result.value);
-          return result;
+            return DIRTY(result2.value);
+          return result2;
         });
       } else {
         if (status.value === "aborted")
           return INVALID;
-        const result = this._def.schema._parseSync({
+        const result2 = this._def.schema._parseSync({
           data: processed,
           path: ctx.path,
           parent: ctx
         });
-        if (result.status === "aborted")
+        if (result2.status === "aborted")
           return INVALID;
-        if (result.status === "dirty")
-          return DIRTY(result.value);
+        if (result2.status === "dirty")
+          return DIRTY(result2.value);
         if (status.value === "dirty")
-          return DIRTY(result.value);
-        return result;
+          return DIRTY(result2.value);
+        return result2;
       }
     }
     if (effect.type === "refinement") {
       const executeRefinement = (acc) => {
-        const result = effect.refinement(acc, checkCtx);
+        const result2 = effect.refinement(acc, checkCtx);
         if (ctx.common.async) {
-          return Promise.resolve(result);
+          return Promise.resolve(result2);
         }
-        if (result instanceof Promise) {
+        if (result2 instanceof Promise) {
           throw new Error("Async refinement encountered during synchronous parse operation. Use .parseAsync instead.");
         }
         return acc;
@@ -28955,18 +28955,18 @@ var ZodEffects = class extends ZodType {
         });
         if (!isValid(base))
           return INVALID;
-        const result = effect.transform(base.value, checkCtx);
-        if (result instanceof Promise) {
+        const result2 = effect.transform(base.value, checkCtx);
+        if (result2 instanceof Promise) {
           throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
         }
-        return { status: status.value, value: result };
+        return { status: status.value, value: result2 };
       } else {
         return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((base) => {
           if (!isValid(base))
             return INVALID;
-          return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({
+          return Promise.resolve(effect.transform(base.value, checkCtx)).then((result2) => ({
             status: status.value,
-            value: result
+            value: result2
           }));
         });
       }
@@ -29063,18 +29063,18 @@ var ZodCatch = class extends ZodType {
         issues: []
       }
     };
-    const result = this._def.innerType._parse({
+    const result2 = this._def.innerType._parse({
       data: newCtx.data,
       path: newCtx.path,
       parent: {
         ...newCtx
       }
     });
-    if (isAsync(result)) {
-      return result.then((result2) => {
+    if (isAsync(result2)) {
+      return result2.then((result3) => {
         return {
           status: "valid",
-          value: result2.status === "valid" ? result2.value : this._def.catchValue({
+          value: result3.status === "valid" ? result3.value : this._def.catchValue({
             get error() {
               return new ZodError(newCtx.common.issues);
             },
@@ -29085,7 +29085,7 @@ var ZodCatch = class extends ZodType {
     } else {
       return {
         status: "valid",
-        value: result.status === "valid" ? result.value : this._def.catchValue({
+        value: result2.status === "valid" ? result2.value : this._def.catchValue({
           get error() {
             return new ZodError(newCtx.common.issues);
           },
@@ -29199,14 +29199,14 @@ var ZodPipeline = class _ZodPipeline extends ZodType {
 };
 var ZodReadonly = class extends ZodType {
   _parse(input) {
-    const result = this._def.innerType._parse(input);
+    const result2 = this._def.innerType._parse(input);
     const freeze = (data) => {
       if (isValid(data)) {
         data.value = Object.freeze(data.value);
       }
       return data;
     };
-    return isAsync(result) ? result.then((data) => freeze(data)) : freeze(result);
+    return isAsync(result2) ? result2.then((data) => freeze(data)) : freeze(result2);
   }
   unwrap() {
     return this._def.innerType;
@@ -29998,50 +29998,50 @@ function formatError(error2, _mapper) {
 // node_modules/zod/v4/core/parse.js
 var _parse = (_Err) => (schema, value, _ctx, _params) => {
   const ctx = _ctx ? Object.assign(_ctx, { async: false }) : { async: false };
-  const result = schema._zod.run({ value, issues: [] }, ctx);
-  if (result instanceof Promise) {
+  const result2 = schema._zod.run({ value, issues: [] }, ctx);
+  if (result2 instanceof Promise) {
     throw new $ZodAsyncError();
   }
-  if (result.issues.length) {
-    const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+  if (result2.issues.length) {
+    const e = new (_params?.Err ?? _Err)(result2.issues.map((iss) => finalizeIssue(iss, ctx, config())));
     captureStackTrace(e, _params?.callee);
     throw e;
   }
-  return result.value;
+  return result2.value;
 };
 var _parseAsync = (_Err) => async (schema, value, _ctx, params) => {
   const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
-  let result = schema._zod.run({ value, issues: [] }, ctx);
-  if (result instanceof Promise)
-    result = await result;
-  if (result.issues.length) {
-    const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+  let result2 = schema._zod.run({ value, issues: [] }, ctx);
+  if (result2 instanceof Promise)
+    result2 = await result2;
+  if (result2.issues.length) {
+    const e = new (params?.Err ?? _Err)(result2.issues.map((iss) => finalizeIssue(iss, ctx, config())));
     captureStackTrace(e, params?.callee);
     throw e;
   }
-  return result.value;
+  return result2.value;
 };
 var _safeParse = (_Err) => (schema, value, _ctx) => {
   const ctx = _ctx ? { ..._ctx, async: false } : { async: false };
-  const result = schema._zod.run({ value, issues: [] }, ctx);
-  if (result instanceof Promise) {
+  const result2 = schema._zod.run({ value, issues: [] }, ctx);
+  if (result2 instanceof Promise) {
     throw new $ZodAsyncError();
   }
-  return result.issues.length ? {
+  return result2.issues.length ? {
     success: false,
-    error: new (_Err ?? $ZodError)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
-  } : { success: true, data: result.value };
+    error: new (_Err ?? $ZodError)(result2.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+  } : { success: true, data: result2.value };
 };
 var safeParse = /* @__PURE__ */ _safeParse($ZodRealError);
 var _safeParseAsync = (_Err) => async (schema, value, _ctx) => {
   const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
-  let result = schema._zod.run({ value, issues: [] }, ctx);
-  if (result instanceof Promise)
-    result = await result;
-  return result.issues.length ? {
+  let result2 = schema._zod.run({ value, issues: [] }, ctx);
+  if (result2 instanceof Promise)
+    result2 = await result2;
+  return result2.issues.length ? {
     success: false,
-    error: new _Err(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
-  } : { success: true, data: result.value };
+    error: new _Err(result2.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+  } : { success: true, data: result2.value };
 };
 var safeParseAsync = /* @__PURE__ */ _safeParseAsync($ZodRealError);
 
@@ -30594,13 +30594,13 @@ var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
       return payload;
     };
     inst._zod.run = (payload, ctx) => {
-      const result = inst._zod.parse(payload, ctx);
-      if (result instanceof Promise) {
+      const result2 = inst._zod.parse(payload, ctx);
+      if (result2 instanceof Promise) {
         if (ctx.async === false)
           throw new $ZodAsyncError();
-        return result.then((result2) => runChecks(result2, checks, ctx));
+        return result2.then((result3) => runChecks(result3, checks, ctx));
       }
-      return runChecks(result, checks, ctx);
+      return runChecks(result2, checks, ctx);
     };
   }
   inst["~standard"] = {
@@ -30997,11 +30997,11 @@ var $ZodNever = /* @__PURE__ */ $constructor("$ZodNever", (inst, def) => {
     return payload;
   };
 });
-function handleArrayResult(result, final, index) {
-  if (result.issues.length) {
-    final.issues.push(...prefixIssues(index, result.issues));
+function handleArrayResult(result2, final, index) {
+  if (result2.issues.length) {
+    final.issues.push(...prefixIssues(index, result2.issues));
   }
-  final.value[index] = result.value;
+  final.value[index] = result2.value;
 }
 var $ZodArray = /* @__PURE__ */ $constructor("$ZodArray", (inst, def) => {
   $ZodType.init(inst, def);
@@ -31020,14 +31020,14 @@ var $ZodArray = /* @__PURE__ */ $constructor("$ZodArray", (inst, def) => {
     const proms = [];
     for (let i2 = 0; i2 < input.length; i2++) {
       const item = input[i2];
-      const result = def.element._zod.run({
+      const result2 = def.element._zod.run({
         value: item,
         issues: []
       }, ctx);
-      if (result instanceof Promise) {
-        proms.push(result.then((result2) => handleArrayResult(result2, payload, i2)));
+      if (result2 instanceof Promise) {
+        proms.push(result2.then((result3) => handleArrayResult(result3, payload, i2)));
       } else {
-        handleArrayResult(result, payload, i2);
+        handleArrayResult(result2, payload, i2);
       }
     }
     if (proms.length) {
@@ -31036,28 +31036,28 @@ var $ZodArray = /* @__PURE__ */ $constructor("$ZodArray", (inst, def) => {
     return payload;
   };
 });
-function handleObjectResult(result, final, key) {
-  if (result.issues.length) {
-    final.issues.push(...prefixIssues(key, result.issues));
+function handleObjectResult(result2, final, key) {
+  if (result2.issues.length) {
+    final.issues.push(...prefixIssues(key, result2.issues));
   }
-  final.value[key] = result.value;
+  final.value[key] = result2.value;
 }
-function handleOptionalObjectResult(result, final, key, input) {
-  if (result.issues.length) {
+function handleOptionalObjectResult(result2, final, key, input) {
+  if (result2.issues.length) {
     if (input[key] === void 0) {
       if (key in input) {
         final.value[key] = void 0;
       } else {
-        final.value[key] = result.value;
+        final.value[key] = result2.value;
       }
     } else {
-      final.issues.push(...prefixIssues(key, result.issues));
+      final.issues.push(...prefixIssues(key, result2.issues));
     }
-  } else if (result.value === void 0) {
+  } else if (result2.value === void 0) {
     if (key in input)
       final.value[key] = void 0;
   } else {
-    final.value[key] = result.value;
+    final.value[key] = result2.value;
   }
 }
 var $ZodObject = /* @__PURE__ */ $constructor("$ZodObject", (inst, def) => {
@@ -31223,9 +31223,9 @@ var $ZodObject = /* @__PURE__ */ $constructor("$ZodObject", (inst, def) => {
   };
 });
 function handleUnionResults(results, final, inst, ctx) {
-  for (const result of results) {
-    if (result.issues.length === 0) {
-      final.value = result.value;
+  for (const result2 of results) {
+    if (result2.issues.length === 0) {
+      final.value = result2.value;
       return final;
     }
   }
@@ -31233,7 +31233,7 @@ function handleUnionResults(results, final, inst, ctx) {
     code: "invalid_union",
     input: final.value,
     inst,
-    errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
+    errors: results.map((result2) => result2.issues.map((iss) => finalizeIssue(iss, ctx, config())))
   });
   return final;
 }
@@ -31258,17 +31258,17 @@ var $ZodUnion = /* @__PURE__ */ $constructor("$ZodUnion", (inst, def) => {
     let async = false;
     const results = [];
     for (const option of def.options) {
-      const result = option._zod.run({
+      const result2 = option._zod.run({
         value: payload.value,
         issues: []
       }, ctx);
-      if (result instanceof Promise) {
-        results.push(result);
+      if (result2 instanceof Promise) {
+        results.push(result2);
         async = true;
       } else {
-        if (result.issues.length === 0)
-          return result;
-        results.push(result);
+        if (result2.issues.length === 0)
+          return result2;
+        results.push(result2);
       }
     }
     if (!async)
@@ -31401,21 +31401,21 @@ function mergeValues2(a2, b) {
   }
   return { valid: false, mergeErrorPath: [] };
 }
-function handleIntersectionResults(result, left, right) {
+function handleIntersectionResults(result2, left, right) {
   if (left.issues.length) {
-    result.issues.push(...left.issues);
+    result2.issues.push(...left.issues);
   }
   if (right.issues.length) {
-    result.issues.push(...right.issues);
+    result2.issues.push(...right.issues);
   }
-  if (aborted(result))
-    return result;
+  if (aborted(result2))
+    return result2;
   const merged = mergeValues2(left.value, right.value);
   if (!merged.valid) {
     throw new Error(`Unmergable intersection. Error path: ${JSON.stringify(merged.mergeErrorPath)}`);
   }
-  result.value = merged.data;
-  return result;
+  result2.value = merged.data;
+  return result2;
 }
 var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
   $ZodType.init(inst, def);
@@ -31436,19 +31436,19 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
       payload.value = {};
       for (const key of values) {
         if (typeof key === "string" || typeof key === "number" || typeof key === "symbol") {
-          const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
-          if (result instanceof Promise) {
-            proms.push(result.then((result2) => {
-              if (result2.issues.length) {
-                payload.issues.push(...prefixIssues(key, result2.issues));
+          const result2 = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
+          if (result2 instanceof Promise) {
+            proms.push(result2.then((result3) => {
+              if (result3.issues.length) {
+                payload.issues.push(...prefixIssues(key, result3.issues));
               }
-              payload.value[key] = result2.value;
+              payload.value[key] = result3.value;
             }));
           } else {
-            if (result.issues.length) {
-              payload.issues.push(...prefixIssues(key, result.issues));
+            if (result2.issues.length) {
+              payload.issues.push(...prefixIssues(key, result2.issues));
             }
-            payload.value[key] = result.value;
+            payload.value[key] = result2.value;
           }
         }
       }
@@ -31488,19 +31488,19 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
           payload.value[keyResult.value] = keyResult.value;
           continue;
         }
-        const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
-        if (result instanceof Promise) {
-          proms.push(result.then((result2) => {
-            if (result2.issues.length) {
-              payload.issues.push(...prefixIssues(key, result2.issues));
+        const result2 = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
+        if (result2 instanceof Promise) {
+          proms.push(result2.then((result3) => {
+            if (result3.issues.length) {
+              payload.issues.push(...prefixIssues(key, result3.issues));
             }
-            payload.value[keyResult.value] = result2.value;
+            payload.value[keyResult.value] = result3.value;
           }));
         } else {
-          if (result.issues.length) {
-            payload.issues.push(...prefixIssues(key, result.issues));
+          if (result2.issues.length) {
+            payload.issues.push(...prefixIssues(key, result2.issues));
           }
-          payload.value[keyResult.value] = result.value;
+          payload.value[keyResult.value] = result2.value;
         }
       }
     }
@@ -31612,11 +31612,11 @@ var $ZodDefault = /* @__PURE__ */ $constructor("$ZodDefault", (inst, def) => {
       payload.value = def.defaultValue;
       return payload;
     }
-    const result = def.innerType._zod.run(payload, ctx);
-    if (result instanceof Promise) {
-      return result.then((result2) => handleDefaultResult(result2, def));
+    const result2 = def.innerType._zod.run(payload, ctx);
+    if (result2 instanceof Promise) {
+      return result2.then((result3) => handleDefaultResult(result3, def));
     }
-    return handleDefaultResult(result, def);
+    return handleDefaultResult(result2, def);
   };
 });
 function handleDefaultResult(payload, def) {
@@ -31643,11 +31643,11 @@ var $ZodNonOptional = /* @__PURE__ */ $constructor("$ZodNonOptional", (inst, def
     return v ? new Set([...v].filter((x) => x !== void 0)) : void 0;
   });
   inst._zod.parse = (payload, ctx) => {
-    const result = def.innerType._zod.run(payload, ctx);
-    if (result instanceof Promise) {
-      return result.then((result2) => handleNonOptionalResult(result2, inst));
+    const result2 = def.innerType._zod.run(payload, ctx);
+    if (result2 instanceof Promise) {
+      return result2.then((result3) => handleNonOptionalResult(result3, inst));
     }
-    return handleNonOptionalResult(result, inst);
+    return handleNonOptionalResult(result2, inst);
   };
 });
 function handleNonOptionalResult(payload, inst) {
@@ -31667,15 +31667,15 @@ var $ZodCatch = /* @__PURE__ */ $constructor("$ZodCatch", (inst, def) => {
   defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
   defineLazy(inst._zod, "values", () => def.innerType._zod.values);
   inst._zod.parse = (payload, ctx) => {
-    const result = def.innerType._zod.run(payload, ctx);
-    if (result instanceof Promise) {
-      return result.then((result2) => {
-        payload.value = result2.value;
-        if (result2.issues.length) {
+    const result2 = def.innerType._zod.run(payload, ctx);
+    if (result2 instanceof Promise) {
+      return result2.then((result3) => {
+        payload.value = result3.value;
+        if (result3.issues.length) {
           payload.value = def.catchValue({
             ...payload,
             error: {
-              issues: result2.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+              issues: result3.issues.map((iss) => finalizeIssue(iss, ctx, config()))
             },
             input: payload.value
           });
@@ -31684,12 +31684,12 @@ var $ZodCatch = /* @__PURE__ */ $constructor("$ZodCatch", (inst, def) => {
         return payload;
       });
     }
-    payload.value = result.value;
-    if (result.issues.length) {
+    payload.value = result2.value;
+    if (result2.issues.length) {
       payload.value = def.catchValue({
         ...payload,
         error: {
-          issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config()))
+          issues: result2.issues.map((iss) => finalizeIssue(iss, ctx, config()))
         },
         input: payload.value
       });
@@ -31724,11 +31724,11 @@ var $ZodReadonly = /* @__PURE__ */ $constructor("$ZodReadonly", (inst, def) => {
   defineLazy(inst._zod, "optin", () => def.innerType._zod.optin);
   defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
   inst._zod.parse = (payload, ctx) => {
-    const result = def.innerType._zod.run(payload, ctx);
-    if (result instanceof Promise) {
-      return result.then(handleReadonlyResult);
+    const result2 = def.innerType._zod.run(payload, ctx);
+    if (result2 instanceof Promise) {
+      return result2.then(handleReadonlyResult);
     }
-    return handleReadonlyResult(result);
+    return handleReadonlyResult(result2);
   };
 });
 function handleReadonlyResult(payload) {
@@ -31751,8 +31751,8 @@ var $ZodCustom = /* @__PURE__ */ $constructor("$ZodCustom", (inst, def) => {
     return;
   };
 });
-function handleRefineResult(result, payload, input, inst) {
-  if (!result) {
+function handleRefineResult(result2, payload, input, inst) {
+  if (!result2) {
     const _iss = {
       code: "custom",
       input,
@@ -32381,12 +32381,12 @@ function isZ4Schema(s) {
 }
 function safeParse2(schema, data) {
   if (isZ4Schema(schema)) {
-    const result2 = safeParse(schema, data);
-    return result2;
+    const result3 = safeParse(schema, data);
+    return result3;
   }
   const v3Schema = schema;
-  const result = v3Schema.safeParse(data);
-  return result;
+  const result2 = v3Schema.safeParse(data);
+  return result2;
 }
 function getObjectShape(schema) {
   if (!schema)
@@ -34673,11 +34673,11 @@ function getMethodLiteral(schema) {
   return value;
 }
 function parseWithCompat(schema, data) {
-  const result = safeParse2(schema, data);
-  if (!result.success) {
-    throw result.error;
+  const result2 = safeParse2(schema, data);
+  if (!result2.success) {
+    throw result2.error;
   }
-  return result.data;
+  return result2.data;
 }
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
@@ -34755,12 +34755,12 @@ var Protocol = class {
             return await handleTaskResult();
           }
           if (isTerminal(task.status)) {
-            const result = await this._taskStore.getTaskResult(taskId, extra.sessionId);
+            const result2 = await this._taskStore.getTaskResult(taskId, extra.sessionId);
             this._clearTaskQueue(taskId);
             return {
-              ...result,
+              ...result2,
               _meta: {
-                ...result._meta,
+                ...result2._meta,
                 [RELATED_TASK_META_KEY]: {
                   taskId
                 }
@@ -34985,12 +34985,12 @@ var Protocol = class {
       if (taskCreationParams) {
         this.assertTaskHandlerCapability(request.method);
       }
-    }).then(() => handler2(request, fullExtra)).then(async (result) => {
+    }).then(() => handler2(request, fullExtra)).then(async (result2) => {
       if (abortController.signal.aborted) {
         return;
       }
       const response = {
-        result,
+        result: result2,
         jsonrpc: "2.0",
         id: request.id
       };
@@ -35076,9 +35076,9 @@ var Protocol = class {
     this._cleanupTimeout(messageId);
     let isTaskResponse = false;
     if (isJSONRPCResultResponse(response) && response.result && typeof response.result === "object") {
-      const result = response.result;
-      if (result.task && typeof result.task === "object") {
-        const task = result.task;
+      const result2 = response.result;
+      if (result2.task && typeof result2.task === "object") {
+        const task = result2.task;
         if (typeof task.taskId === "string") {
           isTaskResponse = true;
           this._taskProgressTokens.set(task.taskId, messageId);
@@ -35135,8 +35135,8 @@ var Protocol = class {
     const { task } = options2 ?? {};
     if (!task) {
       try {
-        const result = await this.request(request, resultSchema, options2);
-        yield { type: "result", result };
+        const result2 = await this.request(request, resultSchema, options2);
+        yield { type: "result", result: result2 };
       } catch (error2) {
         yield {
           type: "error",
@@ -35159,8 +35159,8 @@ var Protocol = class {
         yield { type: "taskStatus", task: task2 };
         if (isTerminal(task2.status)) {
           if (task2.status === "completed") {
-            const result = await this.getTaskResult({ taskId }, resultSchema, options2);
-            yield { type: "result", result };
+            const result2 = await this.getTaskResult({ taskId }, resultSchema, options2);
+            yield { type: "result", result: result2 };
           } else if (task2.status === "failed") {
             yield {
               type: "error",
@@ -35175,12 +35175,12 @@ var Protocol = class {
           return;
         }
         if (task2.status === "input_required") {
-          const result = await this.getTaskResult({ taskId }, resultSchema, options2);
-          yield { type: "result", result };
+          const result2 = await this.getTaskResult({ taskId }, resultSchema, options2);
+          yield { type: "result", result: result2 };
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve5) => setTimeout(resolve5, pollInterval));
+        await new Promise((resolve6) => setTimeout(resolve6, pollInterval));
         options2?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -35197,7 +35197,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options2) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options2 ?? {};
-    return new Promise((resolve5, reject) => {
+    return new Promise((resolve6, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -35275,7 +35275,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve5(parseResult.data);
+            resolve6(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -35536,12 +35536,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve5, reject) => {
+    return new Promise((resolve6, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve5, interval);
+      const timeoutId = setTimeout(resolve6, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -35570,8 +35570,8 @@ var Protocol = class {
         }
         return task;
       },
-      storeTaskResult: async (taskId, status, result) => {
-        await taskStore.storeTaskResult(taskId, status, result, sessionId);
+      storeTaskResult: async (taskId, status, result2) => {
+        await taskStore.storeTaskResult(taskId, status, result2, sessionId);
         const task = await taskStore.getTask(taskId, sessionId);
         if (task) {
           const notification = TaskStatusNotificationSchema.parse({
@@ -35618,20 +35618,20 @@ function isPlainObject2(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 function mergeCapabilities(base, additional) {
-  const result = { ...base };
+  const result2 = { ...base };
   for (const key in additional) {
     const k = key;
     const addValue = additional[k];
     if (addValue === void 0)
       continue;
-    const baseValue = result[k];
+    const baseValue = result2[k];
     if (isPlainObject2(baseValue) && isPlainObject2(addValue)) {
-      result[k] = { ...baseValue, ...addValue };
+      result2[k] = { ...baseValue, ...addValue };
     } else {
-      result[k] = addValue;
+      result2[k] = addValue;
     }
   }
-  return result;
+  return result2;
 }
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
@@ -36029,16 +36029,16 @@ var Server = class extends Protocol {
           throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call request: ${errorMessage}`);
         }
         const { params } = validatedRequest.data;
-        const result = await Promise.resolve(handler2(request, extra));
+        const result2 = await Promise.resolve(handler2(request, extra));
         if (params.task) {
-          const taskValidationResult = safeParse2(CreateTaskResultSchema, result);
+          const taskValidationResult = safeParse2(CreateTaskResultSchema, result2);
           if (!taskValidationResult.success) {
             const errorMessage = taskValidationResult.error instanceof Error ? taskValidationResult.error.message : String(taskValidationResult.error);
             throw new McpError(ErrorCode.InvalidParams, `Invalid task creation result: ${errorMessage}`);
           }
           return taskValidationResult.data;
         }
-        const validationResult = safeParse2(CallToolResultSchema, result);
+        const validationResult = safeParse2(CallToolResultSchema, result2);
         if (!validationResult.success) {
           const errorMessage = validationResult.error instanceof Error ? validationResult.error.message : String(validationResult.error);
           throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call result: ${errorMessage}`);
@@ -36247,11 +36247,11 @@ var Server = class extends Protocol {
           throw new Error("Client does not support form elicitation.");
         }
         const formParams = params.mode === "form" ? params : { ...params, mode: "form" };
-        const result = await this.request({ method: "elicitation/create", params: formParams }, ElicitResultSchema, options2);
-        if (result.action === "accept" && result.content && formParams.requestedSchema) {
+        const result2 = await this.request({ method: "elicitation/create", params: formParams }, ElicitResultSchema, options2);
+        if (result2.action === "accept" && result2.content && formParams.requestedSchema) {
           try {
             const validator = this._jsonSchemaValidator.getValidator(formParams.requestedSchema);
-            const validationResult = validator(result.content);
+            const validationResult = validator(result2.content);
             if (!validationResult.valid) {
               throw new McpError(ErrorCode.InvalidParams, `Elicitation response content does not match requested schema: ${validationResult.errorMessage}`);
             }
@@ -36262,7 +36262,7 @@ var Server = class extends Protocol {
             throw new McpError(ErrorCode.InternalError, `Error validating elicitation response: ${error2 instanceof Error ? error2.message : String(error2)}`);
           }
         }
-        return result;
+        return result2;
       }
     }
   }
@@ -36417,12 +36417,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve5) => {
+    return new Promise((resolve6) => {
       const json = serializeMessage(message);
       if (this._stdout.write(json)) {
-        resolve5();
+        resolve6();
       } else {
-        this._stdout.once("drain", resolve5);
+        this._stdout.once("drain", resolve6);
       }
     });
   }
@@ -37088,10 +37088,10 @@ var Recorder = class {
     this.clearTimers();
     const finalStopReason = stopReason ?? this.stopReason;
     if (this.writeStream) {
-      await new Promise((resolve5, reject) => {
+      await new Promise((resolve6, reject) => {
         this.writeStream.end((err) => {
           if (err) reject(err);
-          else resolve5();
+          else resolve6();
         });
       });
     }
@@ -37913,7 +37913,7 @@ async function handleType(manager, args2) {
     if (enterSequence) {
       manager.write(enterSequence, parsed.sessionId);
     }
-    await new Promise((resolve5) => setTimeout(resolve5, 250));
+    await new Promise((resolve6) => setTimeout(resolve6, 250));
     const content = manager.getVisibleContent(parsed.sessionId);
     return {
       content: [
@@ -38018,8 +38018,8 @@ function formatMilliseconds(milliseconds) {
 }
 async function handleSleep(_manager, args2) {
   const parsed = sleepSchema.parse(args2 ?? {});
-  await new Promise((resolve5) => {
-    setTimeout(resolve5, parsed.milliseconds);
+  await new Promise((resolve6) => {
+    setTimeout(resolve6, parsed.milliseconds);
   });
   return {
     content: [
@@ -38070,8 +38070,8 @@ var getContentTool = {
 async function handleGetContent(manager, args2) {
   const parsed = getContentSchema.parse(args2 ?? {});
   if (parsed.delay > 0) {
-    await new Promise((resolve5) => {
-      setTimeout(resolve5, parsed.delay);
+    await new Promise((resolve6) => {
+      setTimeout(resolve6, parsed.delay);
     });
   }
   const useVisible = parsed.visibleOnly === true || parsed.visibleOnly === void 0 && parsed.maxLines === void 0;
@@ -38317,7 +38317,7 @@ function handleScreenshot(manager, args2) {
   if (format3 === "ansi") {
     const content = manager.getAnsiContent(true, parsed.sessionId);
     const buffer = manager.getTerminal(parsed.sessionId).buffer.active;
-    const result2 = {
+    const result3 = {
       content,
       cursor: { x: buffer.cursorX, y: buffer.cursorY },
       dimensions: {
@@ -38329,7 +38329,7 @@ function handleScreenshot(manager, args2) {
       content: [
         {
           type: "text",
-          text: JSON.stringify(result2, null, 2)
+          text: JSON.stringify(result3, null, 2)
         }
       ]
     };
@@ -38348,7 +38348,7 @@ function handleScreenshot(manager, args2) {
     };
   }
   const screenshot = manager.takeScreenshot(parsed.sessionId);
-  const result = {
+  const result2 = {
     content: screenshot.content,
     cursor: screenshot.cursor,
     dimensions: screenshot.dimensions
@@ -38357,7 +38357,7 @@ function handleScreenshot(manager, args2) {
     content: [
       {
         type: "text",
-        text: JSON.stringify(result, null, 2)
+        text: JSON.stringify(result2, null, 2)
       }
     ]
   };
@@ -38450,7 +38450,7 @@ function handleStartRecording(manager, args2) {
     timeoutParts.push(`${mins} minute${mins !== 1 ? "s" : ""} of inactivity`);
   }
   const timeoutMessage = timeoutParts.length > 0 ? `Recording will auto-stop after ${timeoutParts.join(" or ")}` : void 0;
-  const result = {
+  const result2 = {
     recordingId: recorder.id,
     path: recorder.getFinalPath(),
     format: parsed.format,
@@ -38463,7 +38463,7 @@ function handleStartRecording(manager, args2) {
     content: [
       {
         type: "text",
-        text: JSON.stringify(result, null, 2)
+        text: JSON.stringify(result2, null, 2)
       }
     ]
   };
@@ -38525,7 +38525,7 @@ async function handleStopRecording(manager, args2) {
       isError: true
     };
   }
-  const result = {
+  const result2 = {
     recordingId: metadata.id,
     path: metadata.path,
     durationMs: metadata.durationMs,
@@ -38538,7 +38538,7 @@ async function handleStopRecording(manager, args2) {
     content: [
       {
         type: "text",
-        text: JSON.stringify(result, null, 2)
+        text: JSON.stringify(result2, null, 2)
       }
     ]
   };
@@ -38597,12 +38597,12 @@ var listSessionsTool = {
   }
 };
 function handleListSessions(manager, _args) {
-  const result = manager.listSessions();
+  const result2 = manager.listSessions();
   return {
     content: [
       {
         type: "text",
-        text: JSON.stringify(result, null, 2)
+        text: JSON.stringify(result2, null, 2)
       }
     ]
   };
@@ -38628,15 +38628,15 @@ var destroySessionTool = {
 };
 function handleDestroySession(manager, args2) {
   const parsed = destroySessionSchema.parse(args2);
-  const result = manager.destroySession(parsed.sessionId);
+  const result2 = manager.destroySession(parsed.sessionId);
   return {
     content: [
       {
         type: "text",
-        text: result.message
+        text: result2.message
       }
     ],
-    isError: !result.success
+    isError: !result2.success
   };
 }
 
@@ -38917,7 +38917,7 @@ var Subsume = class _Subsume {
     if (ids && !Array.isArray(ids)) {
       throw new TypeError("IDs is supposed to be an array");
     }
-    const result = { data: /* @__PURE__ */ new Map(), rest: text };
+    const result2 = { data: /* @__PURE__ */ new Map(), rest: text };
     const idList = ids ? ids : _Subsume._extractIDs(text);
     if (!ids) {
       try {
@@ -38927,14 +38927,14 @@ var Subsume = class _Subsume {
       }
     }
     for (const id of idList) {
-      if (result.data.get(id)) {
+      if (result2.data.get(id)) {
         throw new Error("IDs aren't supposed to be repeated at the same level in a string");
       }
-      const parseResult = _Subsume.parse(result.rest, id);
-      result.data.set(id, parseResult.data);
-      result.rest = parseResult.rest;
+      const parseResult = _Subsume.parse(result2.rest, id);
+      result2.data.set(id, parseResult.data);
+      result2.rest = parseResult.rest;
     }
-    return result;
+    return result2;
   }
   static _extractIDs(text) {
     try {
@@ -39081,12 +39081,12 @@ ${input}
   return { input: script };
 };
 var handleOutput = (string3) => {
-  const result = subsume.parse(string3);
-  const log = result.rest.slice(0, -1);
+  const result2 = subsume.parse(string3);
+  const log = result2.rest.slice(0, -1);
   if (log.length > 0) {
     console.log(log);
   }
-  return result.data && JSON.parse(result.data).data;
+  return result2.data && JSON.parse(result2.data).data;
 };
 async function runJxa(input, arguments_) {
   assertMacOSVersionGreaterThanOrEqualTo("10.10");
@@ -39099,7 +39099,7 @@ async function hasClipboardImages() {
   if (process15.platform !== "darwin") {
     return false;
   }
-  const result = await runJxa(() => {
+  const result2 = await runJxa(() => {
     ObjC.import("AppKit");
     ObjC.import("Foundation");
     const pasteboard = $.NSPasteboard.generalPasteboard;
@@ -39119,13 +39119,13 @@ async function hasClipboardImages() {
     const objects = pasteboard.readObjectsForClassesOptions(classes, options2);
     return objects && objects.count > 0;
   });
-  return result;
+  return result2;
 }
 async function readClipboardImages() {
   if (process15.platform !== "darwin") {
     return [];
   }
-  const result = await runJxa(() => {
+  const result2 = await runJxa(() => {
     ObjC.import("AppKit");
     ObjC.import("Foundation");
     const pasteboard = $.NSPasteboard.generalPasteboard;
@@ -39201,7 +39201,7 @@ async function readClipboardImages() {
     }
     return resultPaths;
   });
-  return result;
+  return result2;
 }
 async function writeClipboardImages(filePaths) {
   if (process15.platform !== "darwin") {
@@ -39323,13 +39323,13 @@ var joinToUint8Array = (uint8ArraysOrStrings) => {
 };
 var stringsToUint8Arrays = (uint8ArraysOrStrings) => uint8ArraysOrStrings.map((uint8ArrayOrString) => typeof uint8ArrayOrString === "string" ? stringToUint8Array(uint8ArrayOrString) : uint8ArrayOrString);
 var concatUint8Arrays = (uint8Arrays) => {
-  const result = new Uint8Array(getJoinLength(uint8Arrays));
+  const result2 = new Uint8Array(getJoinLength(uint8Arrays));
   let index = 0;
   for (const uint8Array of uint8Arrays) {
-    result.set(uint8Array, index);
+    result2.set(uint8Array, index);
     index += uint8Array.length;
   }
-  return result;
+  return result2;
 };
 var getJoinLength = (uint8Arrays) => {
   let joinLength = 0;
@@ -39884,17 +39884,17 @@ var format2 = (open, close) => {
     if (index === -1) {
       return openCode + string3 + closeCode;
     }
-    let result = openCode;
+    let result2 = openCode;
     let lastIndex = 0;
     const reopenOnNestedClose = close === 22;
     const replaceCode = (reopenOnNestedClose ? closeCode : "") + openCode;
     while (index !== -1) {
-      result += string3.slice(lastIndex, index) + replaceCode;
+      result2 += string3.slice(lastIndex, index) + replaceCode;
       lastIndex = index + closeCode.length;
       index = string3.indexOf(closeCode, lastIndex);
     }
-    result += string3.slice(lastIndex) + closeCode;
-    return result;
+    result2 += string3.slice(lastIndex) + closeCode;
+    return result2;
   };
 };
 var reset = format2(0, 0);
@@ -40016,8 +40016,8 @@ var appendNewline = (printedLine) => printedLine.endsWith("\n") ? printedLine : 
 `;
 
 // node_modules/execa/lib/verbose/log.js
-var verboseLog = ({ type, verboseMessage, fdNumber, verboseInfo, result }) => {
-  const verboseObject = getVerboseObject({ type, result, verboseInfo });
+var verboseLog = ({ type, verboseMessage, fdNumber, verboseInfo, result: result2 }) => {
+  const verboseObject = getVerboseObject({ type, result: result2, verboseInfo });
   const printedLines = getPrintedLines(verboseMessage, verboseObject);
   const finalLines = applyVerboseOnLines(printedLines, verboseInfo, fdNumber);
   if (finalLines !== "") {
@@ -40026,7 +40026,7 @@ var verboseLog = ({ type, verboseMessage, fdNumber, verboseInfo, result }) => {
 };
 var getVerboseObject = ({
   type,
-  result,
+  result: result2,
   verboseInfo: { escapedCommand, commandId, rawOptions: { piped = false, ...options2 } }
 }) => ({
   type,
@@ -40034,7 +40034,7 @@ var getVerboseObject = ({
   commandId: `${commandId}`,
   timestamp: /* @__PURE__ */ new Date(),
   piped,
-  result,
+  result: result2,
   options: options2
 });
 var getPrintedLines = (verboseMessage, verboseObject) => verboseMessage.split("\n").map((message) => getPrintedLine({ ...verboseObject, message }));
@@ -40163,28 +40163,28 @@ var npmRunPath = ({
   addExecPath = true
 } = {}) => {
   const cwdPath = path14.resolve(toPath(cwd));
-  const result = [];
+  const result2 = [];
   const pathParts = pathOption.split(path14.delimiter);
   if (preferLocal) {
-    applyPreferLocal(result, pathParts, cwdPath);
+    applyPreferLocal(result2, pathParts, cwdPath);
   }
   if (addExecPath) {
-    applyExecPath(result, pathParts, execPath2, cwdPath);
+    applyExecPath(result2, pathParts, execPath2, cwdPath);
   }
-  return pathOption === "" || pathOption === path14.delimiter ? `${result.join(path14.delimiter)}${pathOption}` : [...result, pathOption].join(path14.delimiter);
+  return pathOption === "" || pathOption === path14.delimiter ? `${result2.join(path14.delimiter)}${pathOption}` : [...result2, pathOption].join(path14.delimiter);
 };
-var applyPreferLocal = (result, pathParts, cwdPath) => {
+var applyPreferLocal = (result2, pathParts, cwdPath) => {
   for (const directory of traversePathUp(cwdPath)) {
     const pathPart = path14.join(directory, "node_modules/.bin");
     if (!pathParts.includes(pathPart)) {
-      result.push(pathPart);
+      result2.push(pathPart);
     }
   }
 };
-var applyExecPath = (result, pathParts, execPath2, cwdPath) => {
+var applyExecPath = (result2, pathParts, execPath2, cwdPath) => {
   const pathPart = path14.resolve(cwdPath, toPath(execPath2), "..");
   if (!pathParts.includes(pathPart)) {
-    result.push(pathPart);
+    result2.push(pathPart);
   }
 };
 var npmRunPathEnv = ({ env: env5 = process18.env, ...options2 } = {}) => {
@@ -40814,8 +40814,8 @@ var disconnect = (anyProcess) => {
 // node_modules/execa/lib/utils/deferred.js
 var createDeferred = () => {
   const methods = {};
-  const promise = new Promise((resolve5, reject) => {
-    Object.assign(methods, { resolve: resolve5, reject });
+  const promise = new Promise((resolve6, reject) => {
+    Object.assign(methods, { resolve: resolve6, reject });
   });
   return Object.assign(promise, methods);
 };
@@ -42003,13 +42003,13 @@ var getMaxBufferInfo = (error2, maxBuffer) => {
   }
   return { streamName: getStreamName(fdNumber), threshold, unit };
 };
-var isMaxBufferSync = (resultError, output, maxBuffer) => resultError?.code === "ENOBUFS" && output !== null && output.some((result) => result !== null && result.length > getMaxBufferSync(maxBuffer));
-var truncateMaxBufferSync = (result, isMaxBuffer, maxBuffer) => {
+var isMaxBufferSync = (resultError, output, maxBuffer) => resultError?.code === "ENOBUFS" && output !== null && output.some((result2) => result2 !== null && result2.length > getMaxBufferSync(maxBuffer));
+var truncateMaxBufferSync = (result2, isMaxBuffer, maxBuffer) => {
   if (!isMaxBuffer) {
-    return result;
+    return result2;
   }
   const maxBufferValue = getMaxBufferSync(maxBuffer);
-  return result.length > maxBufferValue ? result.slice(0, maxBufferValue) : result;
+  return result2.length > maxBufferValue ? result2.slice(0, maxBufferValue) : result2;
 };
 var getMaxBufferSync = ([, stdoutMaxBuffer]) => stdoutMaxBuffer;
 
@@ -42296,7 +42296,7 @@ var getErrorProperties = ({
   ipcOutput,
   pipedFrom: []
 });
-var omitUndefinedProperties = (result) => Object.fromEntries(Object.entries(result).filter(([, value]) => value !== void 0));
+var omitUndefinedProperties = (result2) => Object.fromEntries(Object.entries(result2).filter(([, value]) => value !== void 0));
 var normalizeExitPayload = (rawExitCode, rawSignal) => {
   const exitCode = rawExitCode === null ? void 0 : rawExitCode;
   const signal = rawSignal === null ? void 0 : rawSignal;
@@ -42367,25 +42367,25 @@ function prettyMilliseconds(milliseconds, options2) {
     options2.secondsDecimalDigits = 0;
     options2.millisecondsDecimalDigits = 0;
   }
-  let result = [];
+  let result2 = [];
   const floorDecimals = (value, decimalDigits) => {
     const flooredInterimValue = Math.floor(value * 10 ** decimalDigits + SECOND_ROUNDING_EPSILON);
     const flooredValue = Math.round(flooredInterimValue) / 10 ** decimalDigits;
     return flooredValue.toFixed(decimalDigits);
   };
   const add = (value, long, short, valueString) => {
-    if ((result.length === 0 || !options2.colonNotation) && isZero(value) && !(options2.colonNotation && short === "m")) {
+    if ((result2.length === 0 || !options2.colonNotation) && isZero(value) && !(options2.colonNotation && short === "m")) {
       return;
     }
     valueString ??= String(value);
     if (options2.colonNotation) {
       const wholeDigits = valueString.includes(".") ? valueString.split(".")[0].length : valueString.length;
-      const minLength = result.length > 0 ? 2 : 1;
+      const minLength = result2.length > 0 ? 2 : 1;
       valueString = "0".repeat(Math.max(0, minLength - wholeDigits)) + valueString;
     } else {
       valueString += options2.verbose ? " " + pluralize(long, value) : short;
     }
-    result.push(valueString);
+    result2.push(valueString);
   };
   const parsed = parseMilliseconds(milliseconds);
   const days = BigInt(parsed.days);
@@ -42432,53 +42432,53 @@ function prettyMilliseconds(milliseconds, options2) {
       add(Number.parseFloat(secondsString), "second", "s", secondsString);
     }
   }
-  if (result.length === 0) {
+  if (result2.length === 0) {
     return sign + "0" + (options2.verbose ? " milliseconds" : "ms");
   }
   const separator = options2.colonNotation ? ":" : " ";
   if (typeof options2.unitCount === "number") {
-    result = result.slice(0, Math.max(options2.unitCount, 1));
+    result2 = result2.slice(0, Math.max(options2.unitCount, 1));
   }
-  return sign + result.join(separator);
+  return sign + result2.join(separator);
 }
 
 // node_modules/execa/lib/verbose/error.js
-var logError = (result, verboseInfo) => {
-  if (result.failed) {
+var logError = (result2, verboseInfo) => {
+  if (result2.failed) {
     verboseLog({
       type: "error",
-      verboseMessage: result.shortMessage,
+      verboseMessage: result2.shortMessage,
       verboseInfo,
-      result
+      result: result2
     });
   }
 };
 
 // node_modules/execa/lib/verbose/complete.js
-var logResult = (result, verboseInfo) => {
+var logResult = (result2, verboseInfo) => {
   if (!isVerbose(verboseInfo)) {
     return;
   }
-  logError(result, verboseInfo);
-  logDuration(result, verboseInfo);
+  logError(result2, verboseInfo);
+  logDuration(result2, verboseInfo);
 };
-var logDuration = (result, verboseInfo) => {
-  const verboseMessage = `(done in ${prettyMilliseconds(result.durationMs)})`;
+var logDuration = (result2, verboseInfo) => {
+  const verboseMessage = `(done in ${prettyMilliseconds(result2.durationMs)})`;
   verboseLog({
     type: "duration",
     verboseMessage,
     verboseInfo,
-    result
+    result: result2
   });
 };
 
 // node_modules/execa/lib/return/reject.js
-var handleResult2 = (result, verboseInfo, { reject }) => {
-  logResult(result, verboseInfo);
-  if (result.failed && reject) {
-    throw result;
+var handleResult2 = (result2, verboseInfo, { reject }) => {
+  logResult(result2, verboseInfo);
+  if (result2.failed && reject) {
+    throw result2;
   }
-  return result;
+  return result2;
 };
 
 // node_modules/execa/lib/stdio/handle-sync.js
@@ -43562,8 +43562,8 @@ var transformOutputSync = ({ fileDescriptors, syncResult: { output }, options: o
   }
   const state = {};
   const outputFiles = /* @__PURE__ */ new Set([]);
-  const transformedOutput = output.map((result, fdNumber) => transformOutputResultSync({
-    result,
+  const transformedOutput = output.map((result2, fdNumber) => transformOutputResultSync({
+    result: result2,
     fileDescriptors,
     fdNumber,
     state,
@@ -43573,11 +43573,11 @@ var transformOutputSync = ({ fileDescriptors, syncResult: { output }, options: o
   }, options2));
   return { output: transformedOutput, ...state };
 };
-var transformOutputResultSync = ({ result, fileDescriptors, fdNumber, state, outputFiles, isMaxBuffer, verboseInfo }, { buffer, encoding, lines, stripFinalNewline: stripFinalNewline2, maxBuffer }) => {
-  if (result === null) {
+var transformOutputResultSync = ({ result: result2, fileDescriptors, fdNumber, state, outputFiles, isMaxBuffer, verboseInfo }, { buffer, encoding, lines, stripFinalNewline: stripFinalNewline2, maxBuffer }) => {
+  if (result2 === null) {
     return;
   }
-  const truncatedResult = truncateMaxBufferSync(result, isMaxBuffer, maxBuffer);
+  const truncatedResult = truncateMaxBufferSync(result2, isMaxBuffer, maxBuffer);
   const uint8ArrayResult = bufferToUint8Array(truncatedResult);
   const { stdioItems, objectMode } = fileDescriptors[fdNumber];
   const chunks = runOutputGeneratorsSync([uint8ArrayResult], stdioItems, encoding, state);
@@ -43738,7 +43738,7 @@ var getResultError = (error2, exitCode, signal) => {
 // node_modules/execa/lib/methods/main-sync.js
 var execaCoreSync = (rawFile, rawArguments, rawOptions) => {
   const { file, commandArguments: commandArguments2, command, escapedCommand, startTime, verboseInfo, options: options2, fileDescriptors } = handleSyncArguments(rawFile, rawArguments, rawOptions);
-  const result = spawnSubprocessSync({
+  const result2 = spawnSubprocessSync({
     file,
     commandArguments: commandArguments2,
     options: options2,
@@ -43748,7 +43748,7 @@ var execaCoreSync = (rawFile, rawArguments, rawOptions) => {
     fileDescriptors,
     startTime
   });
-  return handleResult2(result, verboseInfo, options2);
+  return handleResult2(result2, verboseInfo, options2);
 };
 var handleSyncArguments = (rawFile, rawArguments, rawOptions) => {
   const { command, escapedCommand, startTime, verboseInfo } = handleCommand(rawFile, rawArguments, rawOptions);
@@ -45457,11 +45457,11 @@ var addConcurrentStream = (concurrentStreams, stream, waitName) => {
   const promises = weakMap.get(stream);
   const promise = createDeferred();
   promises.push(promise);
-  const resolve5 = promise.resolve.bind(promise);
-  return { resolve: resolve5, promises };
+  const resolve6 = promise.resolve.bind(promise);
+  return { resolve: resolve6, promises };
 };
-var waitForConcurrentStreams = async ({ resolve: resolve5, promises }, subprocess) => {
-  resolve5();
+var waitForConcurrentStreams = async ({ resolve: resolve6, promises }, subprocess) => {
+  resolve6();
   const [isSubprocessExit] = await Promise.race([
     Promise.allSettled([true, subprocess]),
     Promise.all([false, ...promises])
@@ -45884,7 +45884,7 @@ var handlePromise = async ({ subprocess, options: options2, startTime, verboseIn
   onInternalError.resolve();
   const stdio = stdioResults.map((stdioResult, fdNumber) => stripNewline(stdioResult, options2, fdNumber));
   const all = stripNewline(allResult, options2, "all");
-  const result = getAsyncResult({
+  const result2 = getAsyncResult({
     errorInfo,
     exitCode,
     signal,
@@ -45897,7 +45897,7 @@ var handlePromise = async ({ subprocess, options: options2, startTime, verboseIn
     escapedCommand,
     startTime
   });
-  return handleResult2(result, verboseInfo, options2);
+  return handleResult2(result2, verboseInfo, options2);
 };
 var getAsyncResult = ({ errorInfo, exitCode, signal, stdio, all, ipcOutput, context, options: options2, command, escapedCommand, startTime }) => "error" in errorInfo ? makeError({
   error: errorInfo.error,
@@ -46606,7 +46606,7 @@ var notifyTool = {
 async function handleNotify(_manager, args2) {
   const parsed = notifySchema.parse(args2);
   try {
-    await new Promise((resolve5, reject) => {
+    await new Promise((resolve6, reject) => {
       import_node_notifier.default.notify(
         {
           title: parsed.title,
@@ -46618,7 +46618,7 @@ async function handleNotify(_manager, args2) {
           if (error2) {
             reject(error2);
           } else {
-            resolve5();
+            resolve6();
           }
         }
       );
@@ -46644,6 +46644,78 @@ async function handleNotify(_manager, args2) {
   }
 }
 
+// src/tools/operators.ts
+import { exec as exec2 } from "node:child_process";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname as dirname2, resolve as resolve2 } from "node:path";
+import { promisify as promisify7 } from "node:util";
+var execAsync = promisify7(exec2);
+var operatorCwd = process.cwd();
+var readSchema = external_exports.object({ path: external_exports.string(), offset: external_exports.number().int().positive().optional(), limit: external_exports.number().int().positive().optional() });
+var writeSchema = external_exports.object({ path: external_exports.string(), content: external_exports.string() });
+var editSchema = external_exports.object({ path: external_exports.string(), edits: external_exports.array(external_exports.object({ oldText: external_exports.string(), newText: external_exports.string() })).min(1) });
+var bashSchema = external_exports.object({ command: external_exports.string(), timeout: external_exports.number().positive().optional() });
+var result = (value, isError = false) => ({ content: [{ type: "text", text: value }], ...isError ? { isError: true } : {} });
+var operatorToolDefinitions = [
+  { name: "read", description: "Read a text file. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
+  { name: "write", description: "Write a file, creating parent directories and overwriting it.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
+  { name: "edit", description: "Apply exact unique non-overlapping replacements against a file's original content.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
+  { name: "bash", description: "Execute one shell command in the terminal-mcp startup working directory.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
+];
+var localPath = (path27) => resolve2(operatorCwd, path27);
+async function handleOperatorTool(name, args2) {
+  switch (name) {
+    case "read": {
+      const parsed = readSchema.parse(args2);
+      const lines = (await readFile(localPath(parsed.path), "utf8")).split("\n");
+      const start = (parsed.offset ?? 1) - 1;
+      if (start >= lines.length) throw new Error(`Offset ${parsed.offset} is beyond end of file`);
+      return result(lines.slice(start, parsed.limit === void 0 ? void 0 : start + parsed.limit).join("\n"));
+    }
+    case "write": {
+      const parsed = writeSchema.parse(args2);
+      const target = localPath(parsed.path);
+      await mkdir(dirname2(target), { recursive: true });
+      await writeFile(target, parsed.content, "utf8");
+      return result(`Wrote ${parsed.path}`);
+    }
+    case "edit": {
+      const parsed = editSchema.parse(args2);
+      const target = localPath(parsed.path);
+      const original = await readFile(target, "utf8");
+      const ranges = [];
+      for (const edit of parsed.edits) {
+        if (!edit.oldText) throw new Error("Each oldText must be non-empty");
+        const first = original.indexOf(edit.oldText);
+        if (first < 0) throw new Error(`oldText was not found in ${parsed.path}`);
+        if (first !== original.lastIndexOf(edit.oldText)) throw new Error(`oldText must match exactly once in ${parsed.path}`);
+        ranges.push({ start: first, end: first + edit.oldText.length, newText: edit.newText });
+      }
+      ranges.sort((a2, b) => a2.start - b.start);
+      for (let i2 = 1; i2 < ranges.length; i2++) if (ranges[i2 - 1].end > ranges[i2].start) throw new Error("Edits must not overlap");
+      let updated = original;
+      for (const edit of [...ranges].reverse()) updated = updated.slice(0, edit.start) + edit.newText + updated.slice(edit.end);
+      await writeFile(target, updated, "utf8");
+      return result(`Edited ${parsed.path}`);
+    }
+    case "bash": {
+      const parsed = bashSchema.parse(args2);
+      try {
+        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell: "/bin/sh" });
+        return result(`${output.stdout}${output.stderr}`);
+      } catch (error2) {
+        const failure = error2;
+        const output = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
+        const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;
+        return result(output ? `${output}
+${suffix}` : suffix, true);
+      }
+    }
+    default:
+      throw new Error(`Unknown operator tool: ${name}`);
+  }
+}
+
 // src/tools/definitions.ts
 var toolDefinitions = [
   typeTool,
@@ -46662,19 +46734,28 @@ var toolDefinitions = [
   setClipboardTool,
   notifyTool
 ];
+function getToolDefinitions(piOperators = false) {
+  return piOperators ? [...toolDefinitions, ...operatorToolDefinitions] : toolDefinitions;
+}
 function getToolNames() {
   return toolDefinitions.map((t) => t.name);
 }
 
 // src/tools/index.ts
-function registerTools(server, manager) {
+function registerTools(server, manager, piOperators = false) {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: toolDefinitions
+    tools: getToolDefinitions(piOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
     try {
       switch (name) {
+        case "read":
+        case "write":
+        case "edit":
+        case "bash":
+          if (!piOperators) throw new Error(`Unknown tool: ${name}`);
+          return await handleOperatorTool(name, args2);
         case "type":
           return await handleType(manager, args2);
         case "sendKey":
@@ -46937,7 +47018,7 @@ inspect cursor position and TUI state.
 Multi-session: omit sessionId to drive the default session, or call createSession to
 get a new isolated PTY for parallel work (e.g. a build in one session, diagnostics in
 another). The default session cannot be destroyed.`;
-function createServerWithManager(manager) {
+function createServerWithManager(manager, piOperators = false) {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -46951,7 +47032,7 @@ function createServerWithManager(manager) {
       instructions: SERVER_INSTRUCTIONS
     }
   );
-  registerTools(server, manager);
+  registerTools(server, manager, piOperators);
   registerPrompts(server);
   return server;
 }
@@ -46964,7 +47045,7 @@ function createServer(options2 = {}) {
     maxSessions: options2.maxSessions,
     sessionIdleTimeout: options2.sessionIdleTimeout
   });
-  const server = createServerWithManager(manager);
+  const server = createServerWithManager(manager, options2.piOperators);
   return { server, manager };
 }
 async function startServer(options2 = {}) {
@@ -46986,7 +47067,7 @@ async function startServer(options2 = {}) {
         session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName} \\; if-shell 'tmux select-window -t ${tmuxName}:${tmuxName}' '' 'new-window -n ${tmuxName}'
 `);
         setTimeout(() => {
-          exec2(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' \u{1F514} terminal-mcp (${tmuxName}) connected'; done`);
+          exec3(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' \u{1F514} terminal-mcp (${tmuxName}) connected'; done`);
         }, 1e3);
       } else {
         console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
@@ -47009,7 +47090,10 @@ async function startServer(options2 = {}) {
 // src/client.ts
 import * as net from "net";
 async function notifyClientConnected(sendRequest, options2) {
-  const params = options2.title === void 0 ? void 0 : { title: options2.title };
+  const params = options2.title === void 0 && options2.piOperators === void 0 ? void 0 : {
+    ...options2.title === void 0 ? {} : { title: options2.title },
+    ...options2.piOperators === void 0 ? {} : { piOperators: options2.piOperators }
+  };
   await sendRequest("clientConnected", params);
 }
 async function startMcpClientMode(socketPath, options2 = {}) {
@@ -47069,8 +47153,8 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   async function sendRequest(method, params) {
     const id = ++requestId;
     const request = { id, method, params };
-    return new Promise((resolve5, reject) => {
-      pendingRequests.set(id, { resolve: resolve5, reject });
+    return new Promise((resolve6, reject) => {
+      pendingRequests.set(id, { resolve: resolve6, reject });
       socket.write(JSON.stringify(request) + "\n", (error2) => {
         if (error2) {
           pendingRequests.delete(id);
@@ -47080,13 +47164,13 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     });
   }
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: toolDefinitions
+    tools: getToolDefinitions(options2.piOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
     try {
-      const result = await sendRequest(name, args2);
-      return result;
+      const result2 = await sendRequest(name, args2);
+      return result2;
     } catch (error2) {
       const message = error2 instanceof Error ? error2.message : String(error2);
       return {
@@ -47102,14 +47186,14 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   });
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  void notifyClientConnected(sendRequest, { title: options2.title }).catch((error2) => {
+  void notifyClientConnected(sendRequest, { title: options2.title, piOperators: options2.piOperators }).catch((error2) => {
     console.error("Warning: Failed to notify interactive terminal about client connection:", error2);
   });
 }
 function connectToSocket(socketPath) {
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     const socket = net.createConnection(socketPath, () => {
-      resolve5(socket);
+      resolve6(socket);
     });
     socket.on("error", (error2) => {
       if (error2.code === "ENOENT") {
@@ -47214,15 +47298,17 @@ function getStats() {
 
 // src/transport/socket.ts
 var clientConnectedSchema = external_exports.object({
-  title: external_exports.string().optional()
+  title: external_exports.string().optional(),
+  piOperators: external_exports.boolean().optional()
 });
-function createToolProxyServer(socketPath, manager, onClientConnected) {
+function createToolProxyServer(socketPath, manager, onClientConnected, piOperators = false) {
   try {
     fs15.unlinkSync(socketPath);
   } catch {
   }
   const server = new NetServer((socket) => {
     let buffer = "";
+    let clientPiOperators = piOperators;
     socket.on("data", async (data) => {
       buffer += data.toString();
       const lines = buffer.split("\n");
@@ -47231,7 +47317,9 @@ function createToolProxyServer(socketPath, manager, onClientConnected) {
         if (line.trim()) {
           try {
             const request = JSON.parse(line);
-            const response = await handleToolRequest(manager, request, onClientConnected);
+            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, (enabled) => {
+              clientPiOperators = clientPiOperators || enabled;
+            });
             socket.write(JSON.stringify(response) + "\n");
           } catch (error2) {
             const errorMessage = error2 instanceof Error ? error2.message : String(error2);
@@ -47251,76 +47339,84 @@ function createToolProxyServer(socketPath, manager, onClientConnected) {
   server.listen(socketPath);
   return server;
 }
-async function handleToolRequest(manager, request, onClientConnected) {
+async function handleToolRequest(manager, request, onClientConnected, piOperators = false, setClientPiOperators) {
   const { id, method, params } = request;
   const stats = getStats();
   try {
-    let result;
+    let result2;
     switch (method) {
+      case "read":
+      case "write":
+      case "edit":
+      case "bash":
+        if (!piOperators) throw new Error(`Unknown tool: ${method}`);
+        result2 = await handleOperatorTool(method, params);
+        break;
       case "type":
         stats.recordToolCall("type");
-        result = await handleType(manager, params);
+        result2 = await handleType(manager, params);
         break;
       case "sendKey":
         stats.recordToolCall("sendKey");
-        result = handleSendKey(manager, params);
+        result2 = handleSendKey(manager, params);
         break;
       case "sleep":
         stats.recordToolCall("sleep");
-        result = await handleSleep(manager, params);
+        result2 = await handleSleep(manager, params);
         break;
       case "getContent":
         stats.recordToolCall("getContent");
-        result = await handleGetContent(manager, params);
+        result2 = await handleGetContent(manager, params);
         break;
       case "getBufferInfo":
         stats.recordToolCall("getBufferInfo");
-        result = handleGetBufferInfo(manager, params);
+        result2 = handleGetBufferInfo(manager, params);
         break;
       case "takeScreenshot":
         stats.recordToolCall("takeScreenshot");
-        result = handleScreenshot(manager, params);
+        result2 = handleScreenshot(manager, params);
         break;
       case "startRecording":
         stats.recordToolCall("startRecording");
-        result = handleStartRecording(manager, params);
+        result2 = handleStartRecording(manager, params);
         break;
       case "stopRecording":
         stats.recordToolCall("stopRecording");
-        result = await handleStopRecording(manager, params);
+        result2 = await handleStopRecording(manager, params);
         break;
       case "createSession":
         stats.recordToolCall("createSession");
-        result = await handleCreateSession(manager, params);
+        result2 = await handleCreateSession(manager, params);
         break;
       case "listSessions":
         stats.recordToolCall("listSessions");
-        result = handleListSessions(manager, params);
+        result2 = handleListSessions(manager, params);
         break;
       case "destroySession":
         stats.recordToolCall("destroySession");
-        result = handleDestroySession(manager, params);
+        result2 = handleDestroySession(manager, params);
         break;
       case "resize":
         stats.recordToolCall("resize");
-        result = handleResize(manager, params);
+        result2 = handleResize(manager, params);
         break;
       case "getClipboard":
         stats.recordToolCall("getClipboard");
-        result = await handleGetClipboard(manager, params);
+        result2 = await handleGetClipboard(manager, params);
         break;
       case "setClipboard":
         stats.recordToolCall("setClipboard");
-        result = await handleSetClipboard(manager, params);
+        result2 = await handleSetClipboard(manager, params);
         break;
       case "notify":
         stats.recordToolCall("notify");
-        result = await handleNotify(manager, params);
+        result2 = await handleNotify(manager, params);
         break;
       case "clientConnected": {
         const parsed = clientConnectedSchema.parse(params ?? {});
+        setClientPiOperators?.(parsed.piOperators === true);
         onClientConnected?.(parsed);
-        result = { ok: true };
+        result2 = { ok: true };
         break;
       }
       default:
@@ -47329,7 +47425,7 @@ async function handleToolRequest(manager, request, onClientConnected) {
           error: { message: `Unknown method: ${method}` }
         };
     }
-    return { id, result };
+    return { id, result: result2 };
   } catch (error2) {
     const message = error2 instanceof Error ? error2.message : String(error2);
     return {
@@ -47612,7 +47708,7 @@ function validateConfig(config3) {
     throw new Error("Sandbox config must be an object");
   }
   const obj = config3;
-  const result = {
+  const result2 = {
     filesystem: {
       readWrite: [],
       readOnly: [],
@@ -47625,17 +47721,17 @@ function validateConfig(config3) {
   if (obj.filesystem && typeof obj.filesystem === "object") {
     const fs25 = obj.filesystem;
     if (Array.isArray(fs25.readWrite)) {
-      result.filesystem.readWrite = fs25.readWrite.filter(
+      result2.filesystem.readWrite = fs25.readWrite.filter(
         (p) => typeof p === "string"
       );
     }
     if (Array.isArray(fs25.readOnly)) {
-      result.filesystem.readOnly = fs25.readOnly.filter(
+      result2.filesystem.readOnly = fs25.readOnly.filter(
         (p) => typeof p === "string"
       );
     }
     if (Array.isArray(fs25.blocked)) {
-      result.filesystem.blocked = fs25.blocked.filter(
+      result2.filesystem.blocked = fs25.blocked.filter(
         (p) => typeof p === "string"
       );
     }
@@ -47643,15 +47739,15 @@ function validateConfig(config3) {
   if (obj.network && typeof obj.network === "object") {
     const net2 = obj.network;
     if (net2.mode === "all" || net2.mode === "none" || net2.mode === "allowlist") {
-      result.network.mode = net2.mode;
+      result2.network.mode = net2.mode;
     }
     if (Array.isArray(net2.allowedDomains)) {
-      result.network.allowedDomains = net2.allowedDomains.filter(
+      result2.network.allowedDomains = net2.allowedDomains.filter(
         (d) => typeof d === "string"
       );
     }
   }
-  return result;
+  return result2;
 }
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/http-proxy.js
@@ -47903,12 +47999,12 @@ function createSocksProxyServer(options2) {
       return void 0;
     },
     listen(port, hostname2) {
-      return new Promise((resolve5, reject) => {
+      return new Promise((resolve6, reject) => {
         const listeningCallback = () => {
           const actualPort = this.getPort();
           if (actualPort) {
             logForDebugging(`SOCKS proxy listening on ${hostname2}:${actualPort}`);
-            resolve5(actualPort);
+            resolve6(actualPort);
           } else {
             reject(new Error("Failed to get SOCKS proxy server port"));
           }
@@ -47917,7 +48013,7 @@ function createSocksProxyServer(options2) {
       });
     },
     async close() {
-      return new Promise((resolve5, reject) => {
+      return new Promise((resolve6, reject) => {
         socksServer.close((error2) => {
           if (error2) {
             const errorMessage = error2.message?.toLowerCase() || "";
@@ -47927,7 +48023,7 @@ function createSocksProxyServer(options2) {
               return;
             }
           }
-          resolve5();
+          resolve6();
         });
       });
     },
@@ -47969,7 +48065,7 @@ function getRawTag(value) {
     var unmasked = true;
   } catch (e) {
   }
-  var result = nativeObjectToString.call(value);
+  var result2 = nativeObjectToString.call(value);
   if (unmasked) {
     if (isOwn) {
       value[symToStringTag] = tag;
@@ -47977,7 +48073,7 @@ function getRawTag(value) {
       delete value[symToStringTag];
     }
   }
-  return result;
+  return result2;
 }
 var getRawTag_default = getRawTag;
 
@@ -48113,9 +48209,9 @@ var baseCreate = /* @__PURE__ */ (function() {
       return objectCreate(proto2);
     }
     object3.prototype = proto2;
-    var result = new object3();
+    var result2 = new object3();
     object3.prototype = void 0;
-    return result;
+    return result2;
   };
 })();
 var baseCreate_default = baseCreate;
@@ -48240,11 +48336,11 @@ var isPrototype_default = isPrototype;
 
 // node_modules/lodash-es/_baseTimes.js
 function baseTimes(n2, iteratee) {
-  var index = -1, result = Array(n2);
+  var index = -1, result2 = Array(n2);
   while (++index < n2) {
-    result[index] = iteratee(index);
+    result2[index] = iteratee(index);
   }
-  return result;
+  return result2;
 }
 var baseTimes_default = baseTimes;
 
@@ -48348,17 +48444,17 @@ var isTypedArray_default = isTypedArray;
 var objectProto7 = Object.prototype;
 var hasOwnProperty5 = objectProto7.hasOwnProperty;
 function arrayLikeKeys(value, inherited) {
-  var isArr = isArray_default(value), isArg = !isArr && isArguments_default(value), isBuff = !isArr && !isArg && isBuffer_default(value), isType = !isArr && !isArg && !isBuff && isTypedArray_default(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? baseTimes_default(value.length, String) : [], length = result.length;
+  var isArr = isArray_default(value), isArg = !isArr && isArguments_default(value), isBuff = !isArr && !isArg && isBuffer_default(value), isType = !isArr && !isArg && !isBuff && isTypedArray_default(value), skipIndexes = isArr || isArg || isBuff || isType, result2 = skipIndexes ? baseTimes_default(value.length, String) : [], length = result2.length;
   for (var key in value) {
     if ((inherited || hasOwnProperty5.call(value, key)) && !(skipIndexes && // Safari 9 has enumerable `arguments.length` in strict mode.
     (key == "length" || // Node.js 0.10 has enumerable non-index properties on buffers.
     isBuff && (key == "offset" || key == "parent") || // PhantomJS 2 has enumerable non-index properties on typed arrays.
     isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || // Skip index properties.
     isIndex_default(key, length)))) {
-      result.push(key);
+      result2.push(key);
     }
   }
-  return result;
+  return result2;
 }
 var arrayLikeKeys_default = arrayLikeKeys;
 
@@ -48381,13 +48477,13 @@ function baseKeys(object3) {
   if (!isPrototype_default(object3)) {
     return nativeKeys_default(object3);
   }
-  var result = [];
+  var result2 = [];
   for (var key in Object(object3)) {
     if (hasOwnProperty6.call(object3, key) && key != "constructor") {
-      result.push(key);
+      result2.push(key);
     }
   }
-  return result;
+  return result2;
 }
 var baseKeys_default = baseKeys;
 
@@ -48399,13 +48495,13 @@ var keys_default = keys;
 
 // node_modules/lodash-es/_nativeKeysIn.js
 function nativeKeysIn(object3) {
-  var result = [];
+  var result2 = [];
   if (object3 != null) {
     for (var key in Object(object3)) {
-      result.push(key);
+      result2.push(key);
     }
   }
-  return result;
+  return result2;
 }
 var nativeKeysIn_default = nativeKeysIn;
 
@@ -48416,13 +48512,13 @@ function baseKeysIn(object3) {
   if (!isObject_default(object3)) {
     return nativeKeysIn_default(object3);
   }
-  var isProto = isPrototype_default(object3), result = [];
+  var isProto = isPrototype_default(object3), result2 = [];
   for (var key in object3) {
     if (!(key == "constructor" && (isProto || !hasOwnProperty7.call(object3, key)))) {
-      result.push(key);
+      result2.push(key);
     }
   }
-  return result;
+  return result2;
 }
 var baseKeysIn_default = baseKeysIn;
 
@@ -48445,9 +48541,9 @@ var hashClear_default = hashClear;
 
 // node_modules/lodash-es/_hashDelete.js
 function hashDelete(key) {
-  var result = this.has(key) && delete this.__data__[key];
-  this.size -= result ? 1 : 0;
-  return result;
+  var result2 = this.has(key) && delete this.__data__[key];
+  this.size -= result2 ? 1 : 0;
+  return result2;
 }
 var hashDelete_default = hashDelete;
 
@@ -48458,8 +48554,8 @@ var hasOwnProperty8 = objectProto10.hasOwnProperty;
 function hashGet(key) {
   var data = this.__data__;
   if (nativeCreate_default) {
-    var result = data[key];
-    return result === HASH_UNDEFINED ? void 0 : result;
+    var result2 = data[key];
+    return result2 === HASH_UNDEFINED ? void 0 : result2;
   }
   return hasOwnProperty8.call(data, key) ? data[key] : void 0;
 }
@@ -48611,9 +48707,9 @@ var getMapData_default = getMapData;
 
 // node_modules/lodash-es/_mapCacheDelete.js
 function mapCacheDelete(key) {
-  var result = getMapData_default(this, key)["delete"](key);
-  this.size -= result ? 1 : 0;
-  return result;
+  var result2 = getMapData_default(this, key)["delete"](key);
+  this.size -= result2 ? 1 : 0;
+  return result2;
 }
 var mapCacheDelete_default = mapCacheDelete;
 
@@ -48677,9 +48773,9 @@ var stackClear_default = stackClear;
 
 // node_modules/lodash-es/_stackDelete.js
 function stackDelete(key) {
-  var data = this.__data__, result = data["delete"](key);
+  var data = this.__data__, result2 = data["delete"](key);
   this.size = data.size;
-  return result;
+  return result2;
 }
 var stackDelete_default = stackDelete;
 
@@ -48748,22 +48844,22 @@ function cloneBuffer(buffer, isDeep) {
   if (isDeep) {
     return buffer.slice();
   }
-  var length = buffer.length, result = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
-  buffer.copy(result);
-  return result;
+  var length = buffer.length, result2 = allocUnsafe ? allocUnsafe(length) : new buffer.constructor(length);
+  buffer.copy(result2);
+  return result2;
 }
 var cloneBuffer_default = cloneBuffer;
 
 // node_modules/lodash-es/_arrayFilter.js
 function arrayFilter(array2, predicate) {
-  var index = -1, length = array2 == null ? 0 : array2.length, resIndex = 0, result = [];
+  var index = -1, length = array2 == null ? 0 : array2.length, resIndex = 0, result2 = [];
   while (++index < length) {
     var value = array2[index];
     if (predicate(value, index, array2)) {
-      result[resIndex++] = value;
+      result2[resIndex++] = value;
     }
   }
-  return result;
+  return result2;
 }
 var arrayFilter_default = arrayFilter;
 
@@ -48797,12 +48893,12 @@ var copySymbols_default = copySymbols;
 // node_modules/lodash-es/_getSymbolsIn.js
 var nativeGetSymbols2 = Object.getOwnPropertySymbols;
 var getSymbolsIn = !nativeGetSymbols2 ? stubArray_default : function(object3) {
-  var result = [];
+  var result2 = [];
   while (object3) {
-    arrayPush_default(result, getSymbols_default(object3));
+    arrayPush_default(result2, getSymbols_default(object3));
     object3 = getPrototype_default(object3);
   }
-  return result;
+  return result2;
 };
 var getSymbolsIn_default = getSymbolsIn;
 
@@ -48814,8 +48910,8 @@ var copySymbolsIn_default = copySymbolsIn;
 
 // node_modules/lodash-es/_baseGetAllKeys.js
 function baseGetAllKeys(object3, keysFunc, symbolsFunc) {
-  var result = keysFunc(object3);
-  return isArray_default(object3) ? result : arrayPush_default(result, symbolsFunc(object3));
+  var result2 = keysFunc(object3);
+  return isArray_default(object3) ? result2 : arrayPush_default(result2, symbolsFunc(object3));
 }
 var baseGetAllKeys_default = baseGetAllKeys;
 
@@ -48858,7 +48954,7 @@ var weakMapCtorString = toSource_default(WeakMap_default);
 var getTag = baseGetTag_default;
 if (DataView_default && getTag(new DataView_default(new ArrayBuffer(1))) != dataViewTag2 || Map_default && getTag(new Map_default()) != mapTag2 || Promise_default && getTag(Promise_default.resolve()) != promiseTag || Set_default && getTag(new Set_default()) != setTag2 || WeakMap_default && getTag(new WeakMap_default()) != weakMapTag2) {
   getTag = function(value) {
-    var result = baseGetTag_default(value), Ctor = result == objectTag2 ? value.constructor : void 0, ctorString = Ctor ? toSource_default(Ctor) : "";
+    var result2 = baseGetTag_default(value), Ctor = result2 == objectTag2 ? value.constructor : void 0, ctorString = Ctor ? toSource_default(Ctor) : "";
     if (ctorString) {
       switch (ctorString) {
         case dataViewCtorString:
@@ -48873,7 +48969,7 @@ if (DataView_default && getTag(new DataView_default(new ArrayBuffer(1))) != data
           return weakMapTag2;
       }
     }
-    return result;
+    return result2;
   };
 }
 var getTag_default = getTag;
@@ -48882,12 +48978,12 @@ var getTag_default = getTag;
 var objectProto13 = Object.prototype;
 var hasOwnProperty10 = objectProto13.hasOwnProperty;
 function initCloneArray(array2) {
-  var length = array2.length, result = new array2.constructor(length);
+  var length = array2.length, result2 = new array2.constructor(length);
   if (length && typeof array2[0] == "string" && hasOwnProperty10.call(array2, "index")) {
-    result.index = array2.index;
-    result.input = array2.input;
+    result2.index = array2.index;
+    result2.input = array2.input;
   }
-  return result;
+  return result2;
 }
 var initCloneArray_default = initCloneArray;
 
@@ -48897,9 +48993,9 @@ var Uint8Array_default = Uint8Array2;
 
 // node_modules/lodash-es/_cloneArrayBuffer.js
 function cloneArrayBuffer(arrayBuffer) {
-  var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
-  new Uint8Array_default(result).set(new Uint8Array_default(arrayBuffer));
-  return result;
+  var result2 = new arrayBuffer.constructor(arrayBuffer.byteLength);
+  new Uint8Array_default(result2).set(new Uint8Array_default(arrayBuffer));
+  return result2;
 }
 var cloneArrayBuffer_default = cloneArrayBuffer;
 
@@ -48913,9 +49009,9 @@ var cloneDataView_default = cloneDataView;
 // node_modules/lodash-es/_cloneRegExp.js
 var reFlags = /\w*$/;
 function cloneRegExp(regexp) {
-  var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
-  result.lastIndex = regexp.lastIndex;
-  return result;
+  var result2 = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+  result2.lastIndex = regexp.lastIndex;
+  return result2;
 }
 var cloneRegExp_default = cloneRegExp;
 
@@ -49053,21 +49149,21 @@ var cloneableTags = {};
 cloneableTags[argsTag3] = cloneableTags[arrayTag2] = cloneableTags[arrayBufferTag3] = cloneableTags[dataViewTag4] = cloneableTags[boolTag3] = cloneableTags[dateTag3] = cloneableTags[float32Tag3] = cloneableTags[float64Tag3] = cloneableTags[int8Tag3] = cloneableTags[int16Tag3] = cloneableTags[int32Tag3] = cloneableTags[mapTag5] = cloneableTags[numberTag3] = cloneableTags[objectTag3] = cloneableTags[regexpTag3] = cloneableTags[setTag5] = cloneableTags[stringTag3] = cloneableTags[symbolTag2] = cloneableTags[uint8Tag3] = cloneableTags[uint8ClampedTag3] = cloneableTags[uint16Tag3] = cloneableTags[uint32Tag3] = true;
 cloneableTags[errorTag2] = cloneableTags[funcTag3] = cloneableTags[weakMapTag3] = false;
 function baseClone(value, bitmask, customizer, key, object3, stack) {
-  var result, isDeep = bitmask & CLONE_DEEP_FLAG, isFlat = bitmask & CLONE_FLAT_FLAG, isFull = bitmask & CLONE_SYMBOLS_FLAG;
+  var result2, isDeep = bitmask & CLONE_DEEP_FLAG, isFlat = bitmask & CLONE_FLAT_FLAG, isFull = bitmask & CLONE_SYMBOLS_FLAG;
   if (customizer) {
-    result = object3 ? customizer(value, key, object3, stack) : customizer(value);
+    result2 = object3 ? customizer(value, key, object3, stack) : customizer(value);
   }
-  if (result !== void 0) {
-    return result;
+  if (result2 !== void 0) {
+    return result2;
   }
   if (!isObject_default(value)) {
     return value;
   }
   var isArr = isArray_default(value);
   if (isArr) {
-    result = initCloneArray_default(value);
+    result2 = initCloneArray_default(value);
     if (!isDeep) {
-      return copyArray_default(value, result);
+      return copyArray_default(value, result2);
     }
   } else {
     var tag = getTag_default(value), isFunc = tag == funcTag3 || tag == genTag2;
@@ -49075,15 +49171,15 @@ function baseClone(value, bitmask, customizer, key, object3, stack) {
       return cloneBuffer_default(value, isDeep);
     }
     if (tag == objectTag3 || tag == argsTag3 || isFunc && !object3) {
-      result = isFlat || isFunc ? {} : initCloneObject_default(value);
+      result2 = isFlat || isFunc ? {} : initCloneObject_default(value);
       if (!isDeep) {
-        return isFlat ? copySymbolsIn_default(value, baseAssignIn_default(result, value)) : copySymbols_default(value, baseAssign_default(result, value));
+        return isFlat ? copySymbolsIn_default(value, baseAssignIn_default(result2, value)) : copySymbols_default(value, baseAssign_default(result2, value));
       }
     } else {
       if (!cloneableTags[tag]) {
         return object3 ? value : {};
       }
-      result = initCloneByTag_default(value, tag, isDeep);
+      result2 = initCloneByTag_default(value, tag, isDeep);
     }
   }
   stack || (stack = new Stack_default());
@@ -49091,14 +49187,14 @@ function baseClone(value, bitmask, customizer, key, object3, stack) {
   if (stacked) {
     return stacked;
   }
-  stack.set(value, result);
+  stack.set(value, result2);
   if (isSet_default(value)) {
     value.forEach(function(subValue) {
-      result.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
+      result2.add(baseClone(subValue, bitmask, customizer, subValue, value, stack));
     });
   } else if (isMap_default(value)) {
     value.forEach(function(subValue, key2) {
-      result.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
+      result2.set(key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
     });
   }
   var keysFunc = isFull ? isFlat ? getAllKeysIn_default : getAllKeys_default : isFlat ? keysIn_default : keys_default;
@@ -49108,9 +49204,9 @@ function baseClone(value, bitmask, customizer, key, object3, stack) {
       key2 = subValue;
       subValue = value[key2];
     }
-    assignValue_default(result, key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
+    assignValue_default(result2, key2, baseClone(subValue, bitmask, customizer, key2, value, stack));
   });
-  return result;
+  return result2;
 }
 var baseClone_default = baseClone;
 
@@ -49171,7 +49267,7 @@ import path23, { join as join8 } from "node:path";
 import { execFile as execFile2 } from "child_process";
 async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) {
   const { command, args: commandArgs = [] } = config3;
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     execFile2(command, [...commandArgs, ...args2, target], {
       maxBuffer: 2e7,
       // 20MB
@@ -49180,11 +49276,11 @@ async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) 
       // 10 second timeout
     }, (error2, stdout, stderr) => {
       if (!error2) {
-        resolve5(stdout.trim().split("\n").filter(Boolean));
+        resolve6(stdout.trim().split("\n").filter(Boolean));
         return;
       }
       if (error2.code === 1) {
-        resolve5([]);
+        resolve6([]);
         return;
       }
       reject(new Error(`ripgrep failed with exit code ${error2.code}: ${stderr || error2.message}`));
@@ -49382,7 +49478,7 @@ function decodeSandboxedCommand(encodedCommand) {
 }
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/generate-seccomp-filter.js
-import { join as join7, dirname as dirname3 } from "node:path";
+import { join as join7, dirname as dirname4 } from "node:path";
 import { fileURLToPath as fileURLToPath9 } from "node:url";
 import * as fs19 from "node:fs";
 import { execSync as execSync2 } from "node:child_process";
@@ -49437,7 +49533,7 @@ function getLocalSeccompPaths(filename) {
   const arch = getVendorArchitecture();
   if (!arch)
     return [];
-  const baseDir = dirname3(fileURLToPath9(import.meta.url));
+  const baseDir = dirname4(fileURLToPath9(import.meta.url));
   const relativePath = join7("vendor", "seccomp", arch, filename);
   return [
     join7(baseDir, relativePath),
@@ -49453,9 +49549,9 @@ function getPreGeneratedBpfPath(seccompBinaryPath) {
   if (bpfPathCache.has(cacheKey)) {
     return bpfPathCache.get(cacheKey);
   }
-  const result = findBpfPath(seccompBinaryPath);
-  bpfPathCache.set(cacheKey, result);
-  return result;
+  const result2 = findBpfPath(seccompBinaryPath);
+  bpfPathCache.set(cacheKey, result2);
+  return result2;
 }
 function findBpfPath(seccompBinaryPath) {
   if (seccompBinaryPath) {
@@ -49492,9 +49588,9 @@ function getApplySeccompBinaryPath(seccompBinaryPath) {
   if (applySeccompPathCache.has(cacheKey)) {
     return applySeccompPathCache.get(cacheKey);
   }
-  const result = findApplySeccompPath(seccompBinaryPath);
-  applySeccompPathCache.set(cacheKey, result);
-  return result;
+  const result2 = findApplySeccompPath(seccompBinaryPath);
+  applySeccompPathCache.set(cacheKey, result2);
+  return result2;
 }
 function findApplySeccompPath(seccompBinaryPath) {
   if (seccompBinaryPath) {
@@ -49757,7 +49853,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
       }
       throw new Error(`Failed to create bridge sockets after ${maxAttempts} attempts`);
     }
-    await new Promise((resolve5) => setTimeout(resolve5, i2 * 100));
+    await new Promise((resolve6) => setTimeout(resolve6, i2 * 100));
   }
   return {
     httpSocketPath,
@@ -50574,7 +50670,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback),
     getMitmSocketPath
   });
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     if (!httpProxyServer) {
       reject(new Error("HTTP proxy server undefined before listen"));
       return;
@@ -50586,7 +50682,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
       if (address && typeof address === "object") {
         server.unref();
         logForDebugging(`HTTP proxy listening on localhost:${address.port}`);
-        resolve5(address.port);
+        resolve6(address.port);
       } else {
         reject(new Error("Failed to get proxy server address"));
       }
@@ -50598,14 +50694,14 @@ async function startSocksProxyServer(sandboxAskCallback) {
   socksProxyServer = createSocksProxyServer({
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback)
   });
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     if (!socksProxyServer) {
       reject(new Error("SOCKS proxy server undefined before listen"));
       return;
     }
     socksProxyServer.listen(0, "127.0.0.1").then((port) => {
       socksProxyServer?.unref();
-      resolve5(port);
+      resolve6(port);
     }).catch(reject);
   });
 }
@@ -50878,10 +50974,10 @@ async function reset2() {
       try {
         process.kill(httpBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to HTTP bridge process");
-        exitPromises.push(new Promise((resolve5) => {
+        exitPromises.push(new Promise((resolve6) => {
           httpBridgeProcess.once("exit", () => {
             logForDebugging("HTTP bridge process exited");
-            resolve5();
+            resolve6();
           });
           setTimeout(() => {
             if (!httpBridgeProcess.killed) {
@@ -50895,7 +50991,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve5();
+            resolve6();
           }, 5e3);
         }));
       } catch (err) {
@@ -50910,10 +51006,10 @@ async function reset2() {
       try {
         process.kill(socksBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to SOCKS bridge process");
-        exitPromises.push(new Promise((resolve5) => {
+        exitPromises.push(new Promise((resolve6) => {
           socksBridgeProcess.once("exit", () => {
             logForDebugging("SOCKS bridge process exited");
-            resolve5();
+            resolve6();
           });
           setTimeout(() => {
             if (!socksBridgeProcess.killed) {
@@ -50927,7 +51023,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve5();
+            resolve6();
           }, 5e3);
         }));
       } catch (err) {
@@ -50963,14 +51059,14 @@ async function reset2() {
   const closePromises = [];
   if (httpProxyServer) {
     const server = httpProxyServer;
-    const httpClose = new Promise((resolve5) => {
+    const httpClose = new Promise((resolve6) => {
       server.close((error2) => {
         if (error2 && error2.message !== "Server is not running.") {
           logForDebugging(`Error closing HTTP proxy server: ${error2.message}`, {
             level: "error"
           });
         }
-        resolve5();
+        resolve6();
       });
     });
     closePromises.push(httpClose);
@@ -51342,7 +51438,7 @@ async function promptForPermissions() {
   let inputBuffer = "";
   let inputAccessLevel = "blocked";
   const getSelectableIndices = () => items.map((item, i2) => isSelectable(item) ? i2 : -1).filter((i2) => i2 >= 0);
-  return new Promise((resolve5, reject) => {
+  return new Promise((resolve6, reject) => {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding("utf8");
@@ -51576,7 +51672,7 @@ async function promptForPermissions() {
           const permissions = getDefaultFromItems(items);
           console.log(`${GREEN}Sandbox configured.${RESET2}
 `);
-          resolve5(permissions);
+          resolve6(permissions);
           return;
         }
       } else if (key === "q" || key === "") {
@@ -51716,6 +51812,9 @@ for (let i2 = 0; i2 < args.length; i2++) {
     case "--mcp":
       options.useMcp = true;
       break;
+    case "--pi-operators":
+      options.piOperators = true;
+      break;
     case "--cols":
       if (next) {
         options.cols = parseInt(next, 10);
@@ -51843,6 +51942,7 @@ Options:
                          instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
+  --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)
   --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
@@ -51955,7 +52055,7 @@ async function main() {
         if (options.tmux) {
           console.error("[terminal-mcp] Note: --tmux ignored when connecting to existing session.");
         }
-        await startMcpClientMode(socketPath, { title: options.title });
+        await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
         return;
       } catch {
         console.error("[terminal-mcp] Failed to connect to existing session, creating new PTY...");
@@ -51969,7 +52069,8 @@ async function main() {
       shell: options.shell,
       login: options.login,
       tmux: options.tmux,
-      title: options.title
+      title: options.title,
+      piOperators: options.piOperators
     });
     return;
   }
@@ -51989,12 +52090,13 @@ async function main() {
       tmux: options.tmux,
       title: options.title,
       maxSessions: options.maxSessions,
-      sessionIdleTimeout: options.sessionIdleTimeout
+      sessionIdleTimeout: options.sessionIdleTimeout,
+      piOperators: options.piOperators
     });
   } else if (isInteractive) {
     await startInteractiveMode(socketPath);
   } else {
-    await startMcpClientMode(socketPath, { title: options.title });
+    await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
   }
 }
 async function startInteractiveMode(socketPath) {
@@ -52136,7 +52238,7 @@ async function startInteractiveMode(socketPath) {
     if (title) {
       manager.setTitle(title);
     }
-  });
+  }, options.piOperators);
   function cleanup() {
     manager.dispose();
     socketServer.close();

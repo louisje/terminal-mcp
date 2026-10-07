@@ -4,7 +4,8 @@ import {
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { TerminalManager } from "../terminal/index.js";
-import { toolDefinitions } from "./definitions.js";
+import { getToolDefinitions } from "./definitions.js";
+import { handleOperatorTool } from "./operators.js";
 
 import { handleType } from "./type.js";
 import { handleSendKey } from "./sendKey.js";
@@ -22,10 +23,10 @@ import { handleGetClipboard } from "./getClipboard.js";
 import { handleSetClipboard } from "./setClipboard.js";
 import { handleNotify } from "./notify.js";
 
-export function registerTools(server: Server, manager: TerminalManager): void {
+export function registerTools(server: Server, manager: TerminalManager, piOperators = false): void {
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: toolDefinitions,
+    tools: getToolDefinitions(piOperators),
   }));
 
   // Register call tool handler
@@ -34,6 +35,12 @@ export function registerTools(server: Server, manager: TerminalManager): void {
 
     try {
       switch (name) {
+        case "read":
+        case "write":
+        case "edit":
+        case "bash":
+          if (!piOperators) throw new Error(`Unknown tool: ${name}`);
+          return await handleOperatorTool(name, args);
         case "type":
           return await handleType(manager, args);
 
