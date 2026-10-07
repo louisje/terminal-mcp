@@ -1,5 +1,7 @@
 # NOTE
 
+- [ ] `--no-session-operators`
+
 近期尚未完成、值得後續追蹤的事項。
 
 ## Pi `bash` 應沿用 Terminal MCP 的 configured shell
