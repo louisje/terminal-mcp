@@ -24,6 +24,7 @@ interface SocketResponse {
 interface McpClientModeOptions {
   title?: string;
   piOperators?: boolean;
+  piExtraOperators?: boolean;
 }
 
 type SocketRequestSender = (
@@ -32,13 +33,14 @@ type SocketRequestSender = (
 ) => Promise<unknown>;
 export async function notifyClientConnected(
   sendRequest: SocketRequestSender,
-  options: { title?: string; piOperators?: boolean }
+  options: { title?: string; piOperators?: boolean; piExtraOperators?: boolean }
 ): Promise<void> {
-  const params = options.title === undefined && options.piOperators === undefined
+  const params = options.title === undefined && options.piOperators === undefined && options.piExtraOperators === undefined
     ? undefined
     : {
         ...(options.title === undefined ? {} : { title: options.title }),
         ...(options.piOperators === undefined ? {} : { piOperators: options.piOperators }),
+        ...(options.piExtraOperators === undefined ? {} : { piExtraOperators: options.piExtraOperators }),
       };
   await sendRequest("clientConnected", params);
 }
@@ -154,7 +156,7 @@ export async function startMcpClientMode(
 
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(options.piOperators),
+    tools: getToolDefinitions(options.piOperators, options.piExtraOperators),
   }));
 
   // Register call tool handler - proxy to socket
@@ -186,7 +188,7 @@ export async function startMcpClientMode(
   await server.connect(transport);
 
   // Notify the interactive terminal without blocking MCP startup.
-  void notifyClientConnected(sendRequest, { title: options.title, piOperators: options.piOperators }).catch((error) => {
+  void notifyClientConnected(sendRequest, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators }).catch((error) => {
     console.error("Warning: Failed to notify interactive terminal about client connection:", error);
   });
 }

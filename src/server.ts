@@ -18,6 +18,7 @@ export interface ServerOptions {
   maxSessions?: number;
   sessionIdleTimeout?: number;
   piOperators?: boolean;
+  piExtraOperators?: boolean;
 }
 
 /**
@@ -57,7 +58,9 @@ command finishes, so it does not require the PTY type/sendKey/getContent workflo
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
 shell state across calls, interactive input, TTY behavior, or live observability.`;
 
-export function createServerWithManager(manager: TerminalManager, piOperators = false): Server {
+const PI_EXTRA_OPERATOR_INSTRUCTIONS = `\n\nPi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
+
+export function createServerWithManager(manager: TerminalManager, piOperators = false, piExtraOperators = false): Server {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -68,11 +71,11 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
         tools: {},
         prompts: {},
       },
-      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : ""),
+      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : ""),
     }
   );
 
-  registerTools(server, manager, piOperators);
+  registerTools(server, manager, piOperators, piExtraOperators);
   registerPrompts(server);
 
   return server;
@@ -94,7 +97,7 @@ export function createServer(options: ServerOptions = {}): {
     sessionIdleTimeout: options.sessionIdleTimeout,
   });
 
-  const server = createServerWithManager(manager, options.piOperators);
+  const server = createServerWithManager(manager, options.piOperators, options.piExtraOperators);
 
   return { server, manager };
 }

@@ -92,6 +92,7 @@ const options: {
   maxSessions?: number;
   sessionIdleTimeout?: number;
   piOperators?: boolean;
+  piExtraOperators?: boolean;
 } = {};
 
 for (let i = 0; i < args.length; i++) {
@@ -101,6 +102,9 @@ for (let i = 0; i < args.length; i++) {
   switch (arg) {
     case "--mcp":
       options.useMcp = true;
+      break;
+    case "--pi-extra-operators":
+      options.piExtraOperators = true;
       break;
     case "--pi-operators":
       options.piOperators = true;
@@ -236,6 +240,7 @@ Options:
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
+  --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)
   --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
@@ -355,7 +360,7 @@ async function main() {
         if (options.tmux) {
           console.error('[terminal-mcp] Note: --tmux ignored when connecting to existing session.');
         }
-          await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
+          await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
         return;
       } catch {
         // If connection fails, fall through to create new PTY
@@ -373,7 +378,7 @@ async function main() {
       login: options.login,
         tmux: options.tmux,
         title: options.title,
-        piOperators: options.piOperators,
+        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators,
     });
     return;
   }
@@ -401,14 +406,14 @@ async function main() {
       title: options.title,
       maxSessions: options.maxSessions,
         sessionIdleTimeout: options.sessionIdleTimeout,
-        piOperators: options.piOperators,
+        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators,
     });
   } else if (isInteractive) {
     // Interactive mode: Shell on stdin/stdout, tool proxy on Unix socket
       await startInteractiveMode(socketPath);
   } else {
     // MCP client mode: Connect to socket, serve MCP over stdio
-      await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
+      await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
   }
 }
 
@@ -601,7 +606,7 @@ async function startInteractiveMode(socketPath: string): Promise<void> {
     if (title) {
       manager.setTitle(title);
     }
-    }, options.piOperators);
+    }, options.piOperators, options.piExtraOperators);
 
   // Cleanup function (sync version for exit handler)
   function cleanup() {

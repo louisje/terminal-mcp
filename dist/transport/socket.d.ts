@@ -6,12 +6,15 @@ import { TerminalManager } from "../terminal/index.js";
 declare const clientConnectedSchema: z.ZodObject<{
     title: z.ZodOptional<z.ZodString>;
     piOperators: z.ZodOptional<z.ZodBoolean>;
+    piExtraOperators: z.ZodOptional<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
     piOperators?: boolean | undefined;
+    piExtraOperators?: boolean | undefined;
 }, {
     title?: string | undefined;
     piOperators?: boolean | undefined;
+    piExtraOperators?: boolean | undefined;
 }>;
 export type ClientConnectedParams = z.infer<typeof clientConnectedSchema>;
 /**
@@ -38,6 +41,6 @@ export declare function createSocketServer(socketPath: string, onConnection: (tr
  * Create a simple request/response socket server for tool proxying
  * This is the protocol used between interactive mode and MCP client mode
  */
-export declare function createToolProxyServer(socketPath: string, manager: TerminalManager, onClientConnected?: (params: ClientConnectedParams) => void, piOperators?: boolean): NetServer;
+export declare function createToolProxyServer(socketPath: string, manager: TerminalManager, onClientConnected?: (params: ClientConnectedParams) => void, piOperators?: boolean, piExtraOperators?: boolean): NetServer;
 export {};
 //# sourceMappingURL=socket.d.ts.map

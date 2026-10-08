@@ -6,6 +6,7 @@ import {
 import { TerminalManager } from "../terminal/index.js";
 import { getToolDefinitions } from "./definitions.js";
 import { handleOperatorTool } from "./operators.js";
+import { handleExtraOperatorTool } from "./extra-operators.js";
 
 import { handleType } from "./type.js";
 import { handleSendKey } from "./sendKey.js";
@@ -23,10 +24,10 @@ import { handleGetClipboard } from "./getClipboard.js";
 import { handleSetClipboard } from "./setClipboard.js";
 import { handleNotify } from "./notify.js";
 
-export function registerTools(server: Server, manager: TerminalManager, piOperators = false): void {
+export function registerTools(server: Server, manager: TerminalManager, piOperators = false, piExtraOperators = false): void {
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(piOperators),
+    tools: getToolDefinitions(piOperators, piExtraOperators),
   }));
 
   // Register call tool handler
@@ -35,6 +36,11 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
 
     try {
       switch (name) {
+        case "ls":
+        case "grep":
+        case "find":
+          if (!piExtraOperators) throw new Error("Unknown tool: " + name);
+          return await handleExtraOperatorTool(name, args);
         case "read":
         case "write":
         case "edit":

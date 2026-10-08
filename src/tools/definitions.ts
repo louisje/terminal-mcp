@@ -19,6 +19,7 @@ import { getClipboardTool } from "./getClipboard.js";
 import { setClipboardTool } from "./setClipboard.js";
 import { notifyTool } from "./notify.js";
 import { operatorToolDefinitions } from "./operators.js";
+import { extraOperatorToolDefinitions } from "./extra-operators.js";
 
 export interface ToolDefinition {
   name: string;
@@ -48,8 +49,8 @@ export const toolDefinitions: ToolDefinition[] = [
   notifyTool,
 ];
 
-export function getToolDefinitions(piOperators = false): ToolDefinition[] {
-  return piOperators ? [...toolDefinitions, ...operatorToolDefinitions] : toolDefinitions;
+export function getToolDefinitions(piOperators = false, piExtraOperators = false): ToolDefinition[] {
+  return [...toolDefinitions, ...(piOperators ? operatorToolDefinitions : []), ...(piExtraOperators ? extraOperatorToolDefinitions : [])];
 }
 
 /**

@@ -23,6 +23,7 @@ import { handleGetClipboard } from "../tools/getClipboard.js";
 import { handleSetClipboard } from "../tools/setClipboard.js";
 import { handleNotify } from "../tools/notify.js";
 import { handleOperatorTool } from "../tools/operators.js";
+import { handleExtraOperatorTool } from "../tools/extra-operators.js";
 
 interface SocketRequest {
   id: number;
@@ -39,6 +40,7 @@ interface SocketResponse {
 const clientConnectedSchema = z.object({
   title: z.string().optional(),
   piOperators: z.boolean().optional(),
+  piExtraOperators: z.boolean().optional(),
 });
 
 export type ClientConnectedParams = z.infer<typeof clientConnectedSchema>;
@@ -142,7 +144,8 @@ export function createToolProxyServer(
   socketPath: string,
   manager: TerminalManager,
   onClientConnected?: (params: ClientConnectedParams) => void,
-  piOperators = false
+  piOperators = false,
+  piExtraOperators = false
 ): NetServer {
   // Remove existing socket file if it exists
   try {
@@ -154,6 +157,7 @@ export function createToolProxyServer(
   const server = new NetServer((socket) => {
     let buffer = "";
     let clientPiOperators = piOperators;
+    let clientPiExtraOperators = piExtraOperators;
 
     socket.on("data", async (data) => {
       buffer += data.toString();
@@ -164,9 +168,9 @@ export function createToolProxyServer(
         if (line.trim()) {
           try {
             const request = JSON.parse(line) as SocketRequest;
-            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, (enabled) => {
+            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, clientPiExtraOperators, (enabled) => {
               clientPiOperators = clientPiOperators || enabled;
-            });
+            }, (enabled) => { clientPiExtraOperators = clientPiExtraOperators || enabled; });
             socket.write(JSON.stringify(response) + "\n");
           } catch (error) {
             const errorMessage =
@@ -200,7 +204,9 @@ async function handleToolRequest(
   request: SocketRequest,
   onClientConnected?: (params: ClientConnectedParams) => void,
   piOperators = false,
-  setClientPiOperators?: (enabled: boolean) => void
+  piExtraOperators = false,
+  setClientPiOperators?: (enabled: boolean) => void,
+  setClientPiExtraOperators?: (enabled: boolean) => void
 ): Promise<SocketResponse> {
   const { id, method, params } = request;
   const stats = getStats();
@@ -209,6 +215,12 @@ async function handleToolRequest(
     let result: unknown;
 
     switch (method) {
+      case "ls":
+      case "grep":
+      case "find":
+        if (!piExtraOperators) throw new Error("Unknown tool: " + method);
+        result = await handleExtraOperatorTool(method, params);
+        break;
       case "read":
       case "write":
       case "edit":
@@ -294,6 +306,7 @@ async function handleToolRequest(
       case "clientConnected": {
         const parsed = clientConnectedSchema.parse(params ?? {});
         setClientPiOperators?.(parsed.piOperators === true);
+        setClientPiExtraOperators?.(parsed.piExtraOperators === true);
         onClientConnected?.(parsed);
         result = { ok: true };
         break;

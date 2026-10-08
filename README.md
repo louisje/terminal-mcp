@@ -133,6 +133,7 @@ terminal-mcp [OPTIONS]
 Options:
   --mcp                  Use MCP mode (connects to existing session or creates new PTY)
   --pi-operators         Also expose read, write, edit, and bash (19 tools total; default is 15)
+  --pi-extra-operators   Also expose ls, grep, and find (18 tools total; 22 with both flags)
   --title <label>        Set the interactive terminal title when connecting as a client
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
   --rows <number>        Terminal height in rows (default: $TERMINAL_MCP_ROWS or 40)
@@ -172,6 +173,11 @@ returns stdout/stderr when it finishes, and accepts an optional timeout in secon
 operators for routine file operations and one-shot non-interactive commands; use the PTY tools
 when you need persistent shell state, interactive/TTY behavior, or live observability. The flag
 applies consistently to direct MCP, headless MCP, and socket/client mode.
+
+### Pi extra operators
+
+The optional --pi-extra-operators flag independently exposes ls, grep, and find. It does not enable read, write, edit, or bash. The two flags may be combined for 22 tools. ls uses Node.js; grep requires rg and find requires fd or fdfind on PATH. Dependencies are never installed automatically; missing tools return installation guidance.
+
 
 Environment variables:
 

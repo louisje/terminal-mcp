@@ -59,12 +59,12 @@ var require_polyfills = __commonJS({
   "node_modules/graceful-fs/polyfills.js"(exports2, module2) {
     var constants4 = __require("constants");
     var origCwd = process.cwd;
-    var cwd = null;
+    var cwd2 = null;
     var platform2 = process.env.GRACEFUL_FS_PLATFORM || process.platform;
     process.cwd = function() {
-      if (!cwd)
-        cwd = origCwd.call(process);
-      return cwd;
+      if (!cwd2)
+        cwd2 = origCwd.call(process);
+      return cwd2;
     };
     try {
       process.cwd();
@@ -73,7 +73,7 @@ var require_polyfills = __commonJS({
     if (typeof process.chdir === "function") {
       chdir = process.chdir;
       process.chdir = function(d) {
-        cwd = null;
+        cwd2 = null;
         chdir.call(process, d);
       };
       if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
@@ -618,9 +618,9 @@ var require_graceful_fs = __commonJS({
         }
       }
       var fs$readdir = fs26.readdir;
-      fs26.readdir = readdir;
+      fs26.readdir = readdir2;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path27, options2, cb) {
+      function readdir2(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path28, options3, cb2, startTime) {
@@ -2033,12 +2033,12 @@ var require_polyfills2 = __commonJS({
   "node_modules/@pnpm/network.ca-file/node_modules/graceful-fs/polyfills.js"(exports2, module2) {
     var constants4 = __require("constants");
     var origCwd = process.cwd;
-    var cwd = null;
+    var cwd2 = null;
     var platform2 = process.env.GRACEFUL_FS_PLATFORM || process.platform;
     process.cwd = function() {
-      if (!cwd)
-        cwd = origCwd.call(process);
-      return cwd;
+      if (!cwd2)
+        cwd2 = origCwd.call(process);
+      return cwd2;
     };
     try {
       process.cwd();
@@ -2047,7 +2047,7 @@ var require_polyfills2 = __commonJS({
     if (typeof process.chdir === "function") {
       chdir = process.chdir;
       process.chdir = function(d) {
-        cwd = null;
+        cwd2 = null;
         chdir.call(process, d);
       };
       if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir);
@@ -2592,9 +2592,9 @@ var require_graceful_fs2 = __commonJS({
         }
       }
       var fs$readdir = fs26.readdir;
-      fs26.readdir = readdir;
+      fs26.readdir = readdir2;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path27, options2, cb) {
+      function readdir2(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path28, options3, cb2, startTime) {
@@ -2819,8 +2819,8 @@ var require_ca_file = __commonJS({
       try {
         const contents = graceful_fs_1.default.readFileSync(filePath, "utf8");
         const delim = "-----END CERTIFICATE-----";
-        const output = contents.split(delim).filter((ca) => Boolean(ca.trim())).map((ca) => `${ca.trimLeft()}${delim}`);
-        return output;
+        const output2 = contents.split(delim).filter((ca) => Boolean(ca.trim())).map((ca) => `${ca.trimLeft()}${delim}`);
+        return output2;
       } catch (err) {
         if (err.code === "ENOENT")
           return void 0;
@@ -9004,7 +9004,7 @@ var require_compile = __commonJS({
       const schOrFunc = root3.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve6.call(this, root3, ref);
+      let _sch = resolve7.call(this, root3, ref);
       if (_sch === void 0) {
         const schema = (_a = root3.localRefs) === null || _a === void 0 ? void 0 : _a[ref];
         const { schemaId } = this.opts;
@@ -9031,7 +9031,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve6(root3, ref) {
+    function resolve7(root3, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -9161,13 +9161,13 @@ var require_utils2 = __commonJS({
       buffer.length = 0;
       return true;
     }
-    function consumeHextets(buffer, address, output) {
+    function consumeHextets(buffer, address, output2) {
       if (buffer.length) {
         const hex = stringArrayToHexStripped(buffer);
         if (hex !== "") {
           address.push(hex);
         } else {
-          output.error = true;
+          output2.error = true;
           return false;
         }
         buffer.length = 0;
@@ -9176,7 +9176,7 @@ var require_utils2 = __commonJS({
     }
     function getIPV6(input) {
       let tokenCount = 0;
-      const output = { error: false, address: "", zone: "" };
+      const output2 = { error: false, address: "", zone: "" };
       const address = [];
       const buffer = [];
       let endipv6Encountered = false;
@@ -9191,11 +9191,11 @@ var require_utils2 = __commonJS({
           if (endipv6Encountered === true) {
             endIpv6 = true;
           }
-          if (!consume(buffer, address, output)) {
+          if (!consume(buffer, address, output2)) {
             break;
           }
           if (++tokenCount > 7) {
-            output.error = true;
+            output2.error = true;
             break;
           }
           if (i2 > 0 && input[i2 - 1] === ":") {
@@ -9204,7 +9204,7 @@ var require_utils2 = __commonJS({
           address.push(":");
           continue;
         } else if (cursor === "%") {
-          if (!consume(buffer, address, output)) {
+          if (!consume(buffer, address, output2)) {
             break;
           }
           consume = consumeIsZone;
@@ -9215,15 +9215,15 @@ var require_utils2 = __commonJS({
       }
       if (buffer.length) {
         if (consume === consumeIsZone) {
-          output.zone = buffer.join("");
+          output2.zone = buffer.join("");
         } else if (endIpv6) {
           address.push(buffer.join(""));
         } else {
           address.push(stringArrayToHexStripped(buffer));
         }
       }
-      output.address = address.join("");
-      return output;
+      output2.address = address.join("");
+      return output2;
     }
     function normalizeIPv6(host) {
       if (findToken(host, ":") < 2) {
@@ -9251,7 +9251,7 @@ var require_utils2 = __commonJS({
     }
     function removeDotSegments(path27) {
       let input = path27;
-      const output = [];
+      const output2 = [];
       let nextSlash = -1;
       let len = 0;
       while (len = input.length) {
@@ -9259,10 +9259,10 @@ var require_utils2 = __commonJS({
           if (input === ".") {
             break;
           } else if (input === "/") {
-            output.push("/");
+            output2.push("/");
             break;
           } else {
-            output.push(input);
+            output2.push(input);
             break;
           }
         } else if (len === 2) {
@@ -9275,16 +9275,16 @@ var require_utils2 = __commonJS({
             }
           } else if (input[0] === "/") {
             if (input[1] === "." || input[1] === "/") {
-              output.push("/");
+              output2.push("/");
               break;
             }
           }
         } else if (len === 3) {
           if (input === "/..") {
-            if (output.length !== 0) {
-              output.pop();
+            if (output2.length !== 0) {
+              output2.pop();
             }
-            output.push("/");
+            output2.push("/");
             break;
           }
         }
@@ -9306,8 +9306,8 @@ var require_utils2 = __commonJS({
             } else if (input[2] === ".") {
               if (input[3] === "/") {
                 input = input.slice(3);
-                if (output.length !== 0) {
-                  output.pop();
+                if (output2.length !== 0) {
+                  output2.pop();
                 }
                 continue;
               }
@@ -9315,14 +9315,14 @@ var require_utils2 = __commonJS({
           }
         }
         if ((nextSlash = input.indexOf("/", 1)) === -1) {
-          output.push(input);
+          output2.push(input);
           break;
         } else {
-          output.push(input.slice(0, nextSlash));
+          output2.push(input.slice(0, nextSlash));
           input = input.slice(nextSlash);
         }
       }
-      return output.join("");
+      return output2.join("");
     }
     var HOST_DELIMS = { "@": "%40", "/": "%2F", "?": "%3F", "#": "%23", ":": "%3A" };
     var HOST_DELIM_RE = /[@/?#:]/g;
@@ -9336,7 +9336,7 @@ var require_utils2 = __commonJS({
       if (input.indexOf("%") === -1) {
         return input;
       }
-      let output = "";
+      let output2 = "";
       for (let i2 = 0; i2 < input.length; i2++) {
         if (input[i2] === "%" && i2 + 2 < input.length) {
           const hex = input.slice(i2 + 1, i2 + 3);
@@ -9344,20 +9344,20 @@ var require_utils2 = __commonJS({
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decodeUnreserved && isUnreserved(decoded)) {
-              output += decoded;
+              output2 += decoded;
             } else {
-              output += "%" + normalizedHex;
+              output2 += "%" + normalizedHex;
             }
             i2 += 2;
             continue;
           }
         }
-        output += input[i2];
+        output2 += input[i2];
       }
-      return output;
+      return output2;
     }
     function normalizePathEncoding(input) {
-      let output = "";
+      let output2 = "";
       for (let i2 = 0; i2 < input.length; i2++) {
         if (input[i2] === "%" && i2 + 2 < input.length) {
           const hex = input.slice(i2 + 1, i2 + 3);
@@ -9365,36 +9365,36 @@ var require_utils2 = __commonJS({
             const normalizedHex = hex.toUpperCase();
             const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
             if (decoded !== "." && isUnreserved(decoded)) {
-              output += decoded;
+              output2 += decoded;
             } else {
-              output += "%" + normalizedHex;
+              output2 += "%" + normalizedHex;
             }
             i2 += 2;
             continue;
           }
         }
         if (isPathCharacter(input[i2])) {
-          output += input[i2];
+          output2 += input[i2];
         } else {
-          output += escape(input[i2]);
+          output2 += escape(input[i2]);
         }
       }
-      return output;
+      return output2;
     }
     function escapePreservingEscapes(input) {
-      let output = "";
+      let output2 = "";
       for (let i2 = 0; i2 < input.length; i2++) {
         if (input[i2] === "%" && i2 + 2 < input.length) {
           const hex = input.slice(i2 + 1, i2 + 3);
           if (isHexPair(hex)) {
-            output += "%" + hex.toUpperCase();
+            output2 += "%" + hex.toUpperCase();
             i2 += 2;
             continue;
           }
         }
-        output += escape(input[i2]);
+        output2 += escape(input[i2]);
       }
-      return output;
+      return output2;
     }
     function recomposeAuthority(component) {
       const uriTokens = [];
@@ -9662,7 +9662,7 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve6(baseURI, relativeURI, options2) {
+    function resolve7(baseURI, relativeURI, options2) {
       const schemelessOptions = options2 ? Object.assign({ scheme: "null" }, options2) : { scheme: "null" };
       const { parsed: baseParsed, malformedAuthorityOrPort: baseMalformed } = parseWithStatus(baseURI, schemelessOptions);
       const { parsed: relativeParsed, malformedAuthorityOrPort: relativeMalformed } = parseWithStatus(relativeURI, schemelessOptions);
@@ -9673,49 +9673,49 @@ var require_fast_uri = __commonJS({
       schemelessOptions.skipEscape = true;
       return serialize2(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative, options2, skipNormalization) {
+    function resolveComponent(base, relative2, options2, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse5(serialize2(base, options2), options2);
-        relative = parse5(serialize2(relative, options2), options2);
+        relative2 = parse5(serialize2(relative2, options2), options2);
       }
       options2 = options2 || {};
-      if (!options2.tolerant && relative.scheme) {
-        target.scheme = relative.scheme;
-        target.userinfo = relative.userinfo;
-        target.host = relative.host;
-        target.port = relative.port;
-        target.path = removeDotSegments(relative.path || "");
-        target.query = relative.query;
+      if (!options2.tolerant && relative2.scheme) {
+        target.scheme = relative2.scheme;
+        target.userinfo = relative2.userinfo;
+        target.host = relative2.host;
+        target.port = relative2.port;
+        target.path = removeDotSegments(relative2.path || "");
+        target.query = relative2.query;
       } else {
-        if (relative.userinfo !== void 0 || relative.host !== void 0 || relative.port !== void 0) {
-          target.userinfo = relative.userinfo;
-          target.host = relative.host;
-          target.port = relative.port;
-          target.path = removeDotSegments(relative.path || "");
-          target.query = relative.query;
+        if (relative2.userinfo !== void 0 || relative2.host !== void 0 || relative2.port !== void 0) {
+          target.userinfo = relative2.userinfo;
+          target.host = relative2.host;
+          target.port = relative2.port;
+          target.path = removeDotSegments(relative2.path || "");
+          target.query = relative2.query;
         } else {
-          if (!relative.path) {
+          if (!relative2.path) {
             target.path = base.path;
-            if (relative.query !== void 0) {
-              target.query = relative.query;
+            if (relative2.query !== void 0) {
+              target.query = relative2.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative.path[0] === "/") {
-              target.path = removeDotSegments(relative.path);
+            if (relative2.path[0] === "/") {
+              target.path = removeDotSegments(relative2.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative.path;
+                target.path = "/" + relative2.path;
               } else if (!base.path) {
-                target.path = relative.path;
+                target.path = relative2.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative2.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative.query;
+            target.query = relative2.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -9723,7 +9723,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative.fragment;
+      target.fragment = relative2.fragment;
       return target;
     }
     function equal(uriA, uriB, options2) {
@@ -9946,7 +9946,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize: normalize2,
-      resolve: resolve6,
+      resolve: resolve7,
       resolveComponent,
       equal,
       serialize: serialize2,
@@ -16420,12 +16420,12 @@ var require_isexe = __commonJS({
         if (typeof Promise !== "function") {
           throw new TypeError("callback not provided");
         }
-        return new Promise(function(resolve6, reject) {
+        return new Promise(function(resolve7, reject) {
           isexe(path27, options2 || {}, function(er, is) {
             if (er) {
               reject(er);
             } else {
-              resolve6(is);
+              resolve7(is);
             }
           });
         });
@@ -16491,27 +16491,27 @@ var require_which = __commonJS({
         opt = {};
       const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
       const found = [];
-      const step = (i2) => new Promise((resolve6, reject) => {
+      const step = (i2) => new Promise((resolve7, reject) => {
         if (i2 === pathEnv.length)
-          return opt.all && found.length ? resolve6(found) : reject(getNotFoundError(cmd));
+          return opt.all && found.length ? resolve7(found) : reject(getNotFoundError(cmd));
         const ppRaw = pathEnv[i2];
         const pathPart = /^".*"$/.test(ppRaw) ? ppRaw.slice(1, -1) : ppRaw;
         const pCmd = path27.join(pathPart, cmd);
         const p = !pathPart && /^\.[\\\/]/.test(cmd) ? cmd.slice(0, 2) + pCmd : pCmd;
-        resolve6(subStep(p, i2, 0));
+        resolve7(subStep(p, i2, 0));
       });
-      const subStep = (p, i2, ii) => new Promise((resolve6, reject) => {
+      const subStep = (p, i2, ii) => new Promise((resolve7, reject) => {
         if (ii === pathExt.length)
-          return resolve6(step(i2 + 1));
+          return resolve7(step(i2 + 1));
         const ext = pathExt[ii];
         isexe(p + ext, { pathExt: pathExtExe }, (er, is) => {
           if (!er && is) {
             if (opt.all)
               found.push(p + ext);
             else
-              return resolve6(p + ext);
+              return resolve7(p + ext);
           }
-          return resolve6(subStep(p, i2, ii + 1));
+          return resolve7(subStep(p, i2, ii + 1));
         });
       });
       return cb ? step(0).then((res) => cb(null, res), cb) : step(0);
@@ -16576,7 +16576,7 @@ var require_resolveCommand = __commonJS({
     var getPathKey = require_path_key();
     function resolveCommandAttempt(parsed, withoutPathExt) {
       const env5 = parsed.options.env || process.env;
-      const cwd = process.cwd();
+      const cwd2 = process.cwd();
       const hasCustomCwd = parsed.options.cwd != null;
       const shouldSwitchCwd = hasCustomCwd && process.chdir !== void 0 && !process.chdir.disabled;
       if (shouldSwitchCwd) {
@@ -16594,7 +16594,7 @@ var require_resolveCommand = __commonJS({
       } catch (e) {
       } finally {
         if (shouldSwitchCwd) {
-          process.chdir(cwd);
+          process.chdir(cwd2);
         }
       }
       if (resolved) {
@@ -16803,21 +16803,21 @@ var require_cross_spawn = __commonJS({
     var cp = __require("child_process");
     var parse5 = require_parse2();
     var enoent = require_enoent();
-    function spawn5(command, args2, options2) {
+    function spawn6(command, args2, options2) {
       const parsed = parse5(command, args2, options2);
       const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
       enoent.hookChildProcess(spawned, parsed);
       return spawned;
     }
-    function spawnSync5(command, args2, options2) {
+    function spawnSync6(command, args2, options2) {
       const parsed = parse5(command, args2, options2);
       const result2 = cp.spawnSync(parsed.command, parsed.args, parsed.options);
       result2.error = result2.error || enoent.verifyENOENTSync(result2.status, parsed);
       return result2;
     }
-    module2.exports = spawn5;
-    module2.exports.spawn = spawn5;
-    module2.exports.sync = spawnSync5;
+    module2.exports = spawn6;
+    module2.exports.spawn = spawn6;
+    module2.exports.sync = spawnSync6;
     module2.exports._parse = parse5;
     module2.exports._enoent = enoent;
   }
@@ -17702,7 +17702,7 @@ var require_kill = __commonJS({
         return spawnedPromise;
       }
       let timeoutId;
-      const timeoutPromise = new Promise((resolve6, reject) => {
+      const timeoutPromise = new Promise((resolve7, reject) => {
         timeoutId = setTimeout(() => {
           timeoutKill(spawned, killSignal, reject);
         }, timeout2);
@@ -17821,7 +17821,7 @@ var require_get_stream = __commonJS({
       };
       const { maxBuffer } = options2;
       const stream2 = bufferStream(options2);
-      await new Promise((resolve6, reject) => {
+      await new Promise((resolve7, reject) => {
         const rejectPromise = (error2) => {
           if (error2 && stream2.getBufferedLength() <= BufferConstants.MAX_LENGTH) {
             error2.bufferedData = stream2.getBufferedValue();
@@ -17831,7 +17831,7 @@ var require_get_stream = __commonJS({
         (async () => {
           try {
             await streamPipelinePromisified(inputStream, stream2);
-            resolve6();
+            resolve7();
           } catch (error2) {
             rejectPromise(error2);
           }
@@ -17858,13 +17858,13 @@ var require_merge_stream = __commonJS({
     var { PassThrough: PassThrough2 } = __require("stream");
     module2.exports = function() {
       var sources = [];
-      var output = new PassThrough2({ objectMode: true });
-      output.setMaxListeners(0);
-      output.add = add;
-      output.isEmpty = isEmpty;
-      output.on("unpipe", remove);
+      var output2 = new PassThrough2({ objectMode: true });
+      output2.setMaxListeners(0);
+      output2.add = add;
+      output2.isEmpty = isEmpty;
+      output2.on("unpipe", remove);
       Array.prototype.slice.call(arguments).forEach(add);
-      return output;
+      return output2;
       function add(source) {
         if (Array.isArray(source)) {
           source.forEach(add);
@@ -17872,8 +17872,8 @@ var require_merge_stream = __commonJS({
         }
         sources.push(source);
         source.once("end", remove.bind(null, source));
-        source.once("error", output.emit.bind(output, "error"));
-        source.pipe(output, { end: false });
+        source.once("error", output2.emit.bind(output2, "error"));
+        source.pipe(output2, { end: false });
         return this;
       }
       function isEmpty() {
@@ -17883,8 +17883,8 @@ var require_merge_stream = __commonJS({
         sources = sources.filter(function(it) {
           return it !== source;
         });
-        if (!sources.length && output.readable) {
-          output.end();
+        if (!sources.length && output2.readable) {
+          output2.end();
         }
       }
     };
@@ -17988,9 +17988,9 @@ var require_promise = __commonJS({
       return spawned;
     };
     var getSpawnedPromise = (spawned) => {
-      return new Promise((resolve6, reject) => {
+      return new Promise((resolve7, reject) => {
         spawned.on("exit", (exitCode, signal) => {
-          resolve6({ exitCode, signal });
+          resolve7({ exitCode, signal });
         });
         spawned.on("error", (error2) => {
           reject(error2);
@@ -18826,7 +18826,7 @@ var require_utils3 = __commonJS({
     }
     module2.exports.createNamedPipe = (server) => {
       const buf = Buffer.alloc(BUFFER_SIZE);
-      return new Promise((resolve6) => {
+      return new Promise((resolve7) => {
         server.instance = net2.createServer((stream) => {
           stream.on("data", (c3) => {
             buf.write(c3.toString());
@@ -18836,7 +18836,7 @@ var require_utils3 = __commonJS({
           });
         });
         server.instance.listen(server.namedPipe, () => {
-          resolve6(buf);
+          resolve7(buf);
         });
       });
     };
@@ -19995,7 +19995,7 @@ var require_dist4 = __commonJS({
         this.handleGreeting();
       }
       readBytes(len) {
-        return new Promise((resolve6) => {
+        return new Promise((resolve7) => {
           let buf = Buffer.allocUnsafe(len);
           let offset = 0;
           const dataListener = (chunk) => {
@@ -20005,7 +20005,7 @@ var require_dist4 = __commonJS({
             if (offset < len) return;
             this.socket.removeListener("data", dataListener);
             this.socket.push(chunk.subarray(readAmount));
-            resolve6(buf);
+            resolve7(buf);
             this.socket.pause();
           };
           this.socket.on("data", dataListener);
@@ -21980,7 +21980,7 @@ var retryifyAsync = (fn2, options2) => {
           throw error2;
         const delay2 = Math.round(interval * Math.random());
         if (delay2 > 0) {
-          const delayPromise = new Promise((resolve6) => setTimeout(resolve6, delay2));
+          const delayPromise = new Promise((resolve7) => setTimeout(resolve7, delay2));
           return delayPromise.then(() => attempt.apply(void 0, args2));
         } else {
           return attempt.apply(void 0, args2);
@@ -23546,14 +23546,14 @@ var TimeoutError = class extends Error {
 
 // node_modules/ky/distribution/utils/timeout.js
 async function timeout(request, init, abortController, options2) {
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     const timeoutId = setTimeout(() => {
       if (abortController) {
         abortController.abort();
       }
       reject(new TimeoutError(request));
     }, options2.timeout);
-    void options2.fetch(request, init).then(resolve6).catch(reject).then(() => {
+    void options2.fetch(request, init).then(resolve7).catch(reject).then(() => {
       clearTimeout(timeoutId);
     });
   });
@@ -23561,7 +23561,7 @@ async function timeout(request, init, abortController, options2) {
 
 // node_modules/ky/distribution/utils/delay.js
 async function delay(ms, { signal }) {
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     if (signal) {
       signal.throwIfAborted();
       signal.addEventListener("abort", abortHandler, { once: true });
@@ -23572,7 +23572,7 @@ async function delay(ms, { signal }) {
     }
     const timeoutId = setTimeout(() => {
       signal?.removeEventListener("abort", abortHandler);
-      resolve6();
+      resolve7();
     }, ms);
   });
 }
@@ -25047,11 +25047,11 @@ function htmlEscape(strings, ...values) {
   if (typeof strings === "string") {
     return _htmlEscape(strings);
   }
-  let output = strings[0];
+  let output2 = strings[0];
   for (const [index, value] of values.entries()) {
-    output = output + _htmlEscape(String(value)) + strings[index + 1];
+    output2 = output2 + _htmlEscape(String(value)) + strings[index + 1];
   }
-  return output;
+  return output2;
 }
 
 // node_modules/pupa/index.js
@@ -31552,9 +31552,9 @@ var $ZodTransform = /* @__PURE__ */ $constructor("$ZodTransform", (inst, def) =>
   inst._zod.parse = (payload, _ctx) => {
     const _out = def.transform(payload.value, payload);
     if (_ctx.async) {
-      const output = _out instanceof Promise ? _out : Promise.resolve(_out);
-      return output.then((output2) => {
-        payload.value = output2;
+      const output2 = _out instanceof Promise ? _out : Promise.resolve(_out);
+      return output2.then((output3) => {
+        payload.value = output3;
         return payload;
       });
     }
@@ -32970,14 +32970,14 @@ var ZodTransform = /* @__PURE__ */ $constructor("ZodTransform", (inst, def) => {
         payload.issues.push(util_exports.issue(_issue));
       }
     };
-    const output = def.transform(payload.value, payload);
-    if (output instanceof Promise) {
-      return output.then((output2) => {
-        payload.value = output2;
+    const output2 = def.transform(payload.value, payload);
+    if (output2 instanceof Promise) {
+      return output2.then((output3) => {
+        payload.value = output3;
         return payload;
       });
     }
-    payload.value = output;
+    payload.value = output2;
     return payload;
   };
 });
@@ -35180,7 +35180,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve6) => setTimeout(resolve6, pollInterval));
+        await new Promise((resolve7) => setTimeout(resolve7, pollInterval));
         options2?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -35197,7 +35197,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options2) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options2 ?? {};
-    return new Promise((resolve6, reject) => {
+    return new Promise((resolve7, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -35275,7 +35275,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve6(parseResult.data);
+            resolve7(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -35536,12 +35536,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve6, reject) => {
+    return new Promise((resolve7, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve6, interval);
+      const timeoutId = setTimeout(resolve7, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -36417,12 +36417,12 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve6) => {
+    return new Promise((resolve7) => {
       const json = serializeMessage(message);
       if (this._stdout.write(json)) {
-        resolve6();
+        resolve7();
       } else {
-        this._stdout.once("drain", resolve6);
+        this._stdout.once("drain", resolve7);
       }
     });
   }
@@ -37088,10 +37088,10 @@ var Recorder = class {
     this.clearTimers();
     const finalStopReason = stopReason ?? this.stopReason;
     if (this.writeStream) {
-      await new Promise((resolve6, reject) => {
+      await new Promise((resolve7, reject) => {
         this.writeStream.end((err) => {
           if (err) reject(err);
-          else resolve6();
+          else resolve7();
         });
       });
     }
@@ -37913,7 +37913,7 @@ async function handleType(manager, args2) {
     if (enterSequence) {
       manager.write(enterSequence, parsed.sessionId);
     }
-    await new Promise((resolve6) => setTimeout(resolve6, 250));
+    await new Promise((resolve7) => setTimeout(resolve7, 250));
     const content = manager.getVisibleContent(parsed.sessionId);
     return {
       content: [
@@ -38018,8 +38018,8 @@ function formatMilliseconds(milliseconds) {
 }
 async function handleSleep(_manager, args2) {
   const parsed = sleepSchema.parse(args2 ?? {});
-  await new Promise((resolve6) => {
-    setTimeout(resolve6, parsed.milliseconds);
+  await new Promise((resolve7) => {
+    setTimeout(resolve7, parsed.milliseconds);
   });
   return {
     content: [
@@ -38070,8 +38070,8 @@ var getContentTool = {
 async function handleGetContent(manager, args2) {
   const parsed = getContentSchema.parse(args2 ?? {});
   if (parsed.delay > 0) {
-    await new Promise((resolve6) => {
-      setTimeout(resolve6, parsed.delay);
+    await new Promise((resolve7) => {
+      setTimeout(resolve7, parsed.delay);
     });
   }
   const useVisible = parsed.visibleOnly === true || parsed.visibleOnly === void 0 && parsed.maxLines === void 0;
@@ -39076,8 +39076,8 @@ ${input}
   const functionString = typeof input === "function" ? input.toString() : stringTemplate;
   const argsString = (arguments_ || []).map((argument) => JSON.stringify(argument)).join(",");
   const functionCall = `(${functionString})(${argsString})`;
-  const output = `JSON.stringify({data: ${functionCall}})`;
-  const script = `console.log('${subsume.prefix}' + ${output} + '${subsume.postfix}');`;
+  const output2 = `JSON.stringify({data: ${functionCall}})`;
+  const script = `console.log('${subsume.prefix}' + ${output2} + '${subsume.postfix}');`;
   return { input: script };
 };
 var handleOutput = (string3) => {
@@ -40156,13 +40156,13 @@ var TEN_MEGABYTES_IN_BYTES = 10 * 1024 * 1024;
 
 // node_modules/npm-run-path/index.js
 var npmRunPath = ({
-  cwd = process18.cwd(),
+  cwd: cwd2 = process18.cwd(),
   path: pathOption = process18.env[pathKey()],
   preferLocal = true,
   execPath: execPath2 = process18.execPath,
   addExecPath = true
 } = {}) => {
-  const cwdPath = path14.resolve(toPath(cwd));
+  const cwdPath = path14.resolve(toPath(cwd2));
   const result2 = [];
   const pathParts = pathOption.split(path14.delimiter);
   if (preferLocal) {
@@ -40814,8 +40814,8 @@ var disconnect = (anyProcess) => {
 // node_modules/execa/lib/utils/deferred.js
 var createDeferred = () => {
   const methods = {};
-  const promise = new Promise((resolve6, reject) => {
-    Object.assign(methods, { resolve: resolve6, reject });
+  const promise = new Promise((resolve7, reject) => {
+    Object.assign(methods, { resolve: resolve7, reject });
   });
   return Object.assign(promise, methods);
 };
@@ -41348,7 +41348,7 @@ var handleNodeOption = (file, commandArguments2, {
   node: shouldHandleNode = false,
   nodePath = execPath,
   nodeOptions = execArgv.filter((nodeOption) => !nodeOption.startsWith("--inspect")),
-  cwd,
+  cwd: cwd2,
   execPath: formerNodePath,
   ...options2
 }) => {
@@ -41356,12 +41356,12 @@ var handleNodeOption = (file, commandArguments2, {
     throw new TypeError('The "execPath" option has been removed. Please use the "nodePath" option instead.');
   }
   const normalizedNodePath = safeNormalizeFileUrl(nodePath, 'The "nodePath" option');
-  const resolvedNodePath = path15.resolve(cwd, normalizedNodePath);
+  const resolvedNodePath = path15.resolve(cwd2, normalizedNodePath);
   const newOptions = {
     ...options2,
     nodePath: resolvedNodePath,
     node: shouldHandleNode,
-    cwd
+    cwd: cwd2
   };
   if (!shouldHandleNode) {
     return [file, commandArguments2, newOptions];
@@ -41458,8 +41458,8 @@ var serializeEncoding = (encoding) => typeof encoding === "string" ? `"${encodin
 import { statSync as statSync2 } from "node:fs";
 import path16 from "node:path";
 import process19 from "node:process";
-var normalizeCwd = (cwd = getDefaultCwd()) => {
-  const cwdString = safeNormalizeFileUrl(cwd, 'The "cwd" option');
+var normalizeCwd = (cwd2 = getDefaultCwd()) => {
+  const cwdString = safeNormalizeFileUrl(cwd2, 'The "cwd" option');
   return path16.resolve(cwdString);
 };
 var getDefaultCwd = () => {
@@ -41471,20 +41471,20 @@ ${error2.message}`;
     throw error2;
   }
 };
-var fixCwdError = (originalMessage, cwd) => {
-  if (cwd === getDefaultCwd()) {
+var fixCwdError = (originalMessage, cwd2) => {
+  if (cwd2 === getDefaultCwd()) {
     return originalMessage;
   }
   let cwdStat;
   try {
-    cwdStat = statSync2(cwd);
+    cwdStat = statSync2(cwd2);
   } catch (error2) {
-    return `The "cwd" option is invalid: ${cwd}.
+    return `The "cwd" option is invalid: ${cwd2}.
 ${error2.message}
 ${originalMessage}`;
   }
   if (!cwdStat.isDirectory()) {
-    return `The "cwd" option is not a directory: ${cwd}.
+    return `The "cwd" option is not a directory: ${cwd2}.
 ${originalMessage}`;
   }
   return originalMessage;
@@ -41515,8 +41515,8 @@ var normalizeOptions = (filePath, rawArguments, rawOptions) => {
 var addDefaultOptions = ({
   extendEnv = true,
   preferLocal = false,
-  cwd,
-  localDir: localDirectory = cwd,
+  cwd: cwd2,
+  localDir: localDirectory = cwd2,
   encoding = "utf8",
   reject = true,
   cleanup = true,
@@ -41533,7 +41533,7 @@ var addDefaultOptions = ({
   ...options2,
   extendEnv,
   preferLocal,
-  cwd,
+  cwd: cwd2,
   localDirectory,
   encoding,
   reject,
@@ -42003,7 +42003,7 @@ var getMaxBufferInfo = (error2, maxBuffer) => {
   }
   return { streamName: getStreamName(fdNumber), threshold, unit };
 };
-var isMaxBufferSync = (resultError, output, maxBuffer) => resultError?.code === "ENOBUFS" && output !== null && output.some((result2) => result2 !== null && result2.length > getMaxBufferSync(maxBuffer));
+var isMaxBufferSync = (resultError, output2, maxBuffer) => resultError?.code === "ENOBUFS" && output2 !== null && output2.some((result2) => result2 !== null && result2.length > getMaxBufferSync(maxBuffer));
 var truncateMaxBufferSync = (result2, isMaxBuffer, maxBuffer) => {
   if (!isMaxBuffer) {
     return result2;
@@ -42032,7 +42032,7 @@ var createMessages = ({
   killSignal,
   maxBuffer,
   timeout: timeout2,
-  cwd
+  cwd: cwd2
 }) => {
   const errorCode = originalError?.code;
   const prefix = getErrorPrefix({
@@ -42051,7 +42051,7 @@ var createMessages = ({
     forceKillAfterDelay,
     killSignal
   });
-  const originalMessage = getOriginalMessage(originalError, cwd);
+  const originalMessage = getOriginalMessage(originalError, cwd2);
   const suffix = originalMessage === void 0 ? "" : `
 ${originalMessage}`;
   const shortMessage = `${prefix}: ${escapedCommand}${suffix}`;
@@ -42111,12 +42111,12 @@ var getErrorPrefix = ({
   return "Command failed";
 };
 var getForcefulSuffix = (isForcefullyTerminated, forceKillAfterDelay) => isForcefullyTerminated ? ` and was forcefully terminated after ${forceKillAfterDelay} milliseconds` : "";
-var getOriginalMessage = (originalError, cwd) => {
+var getOriginalMessage = (originalError, cwd2) => {
   if (originalError instanceof DiscardedError) {
     return;
   }
   const originalMessage = isExecaError(originalError) ? originalError.originalMessage : String(originalError?.message ?? originalError);
-  const escapedOriginalMessage = escapeLines(fixCwdError(originalMessage, cwd));
+  const escapedOriginalMessage = escapeLines(fixCwdError(originalMessage, cwd2));
   return escapedOriginalMessage === "" ? void 0 : escapedOriginalMessage;
 };
 var serializeIpcMessage = (ipcMessage) => typeof ipcMessage === "string" ? ipcMessage : inspect2(ipcMessage);
@@ -42138,12 +42138,12 @@ var makeSuccessResult = ({
   stdio,
   all,
   ipcOutput,
-  options: { cwd },
+  options: { cwd: cwd2 },
   startTime
 }) => omitUndefinedProperties({
   command,
   escapedCommand,
-  cwd,
+  cwd: cwd2,
   durationMs: getDurationMs(startTime),
   failed: false,
   timedOut: false,
@@ -42203,7 +42203,7 @@ var makeError = ({
     timeout: timeout2 = timeoutDuration,
     forceKillAfterDelay,
     killSignal,
-    cwd,
+    cwd: cwd2,
     maxBuffer
   },
   isSync
@@ -42227,7 +42227,7 @@ var makeError = ({
     killSignal,
     maxBuffer,
     timeout: timeout2,
-    cwd
+    cwd: cwd2
   });
   const error2 = getFinalError(originalError, message, isSync);
   Object.assign(error2, getErrorProperties({
@@ -42246,7 +42246,7 @@ var makeError = ({
     stdio,
     all,
     ipcOutput,
-    cwd,
+    cwd: cwd2,
     originalMessage,
     shortMessage
   }));
@@ -42268,7 +42268,7 @@ var getErrorProperties = ({
   stdio,
   all,
   ipcOutput,
-  cwd,
+  cwd: cwd2,
   originalMessage,
   shortMessage
 }) => omitUndefinedProperties({
@@ -42276,7 +42276,7 @@ var getErrorProperties = ({
   originalMessage,
   command,
   escapedCommand,
-  cwd,
+  cwd: cwd2,
   durationMs: getDurationMs(startTime),
   failed: true,
   timedOut,
@@ -43556,13 +43556,13 @@ var logLine = (line, fdNumber, verboseInfo) => {
 };
 
 // node_modules/execa/lib/io/output-sync.js
-var transformOutputSync = ({ fileDescriptors, syncResult: { output }, options: options2, isMaxBuffer, verboseInfo }) => {
-  if (output === null) {
+var transformOutputSync = ({ fileDescriptors, syncResult: { output: output2 }, options: options2, isMaxBuffer, verboseInfo }) => {
+  if (output2 === null) {
     return { output: Array.from({ length: 3 }) };
   }
   const state = {};
   const outputFiles = /* @__PURE__ */ new Set([]);
-  const transformedOutput = output.map((result2, fdNumber) => transformOutputResultSync({
+  const transformedOutput = output2.map((result2, fdNumber) => transformOutputResultSync({
     result: result2,
     fileDescriptors,
     fdNumber,
@@ -43716,10 +43716,10 @@ var isSubprocessErrorExit = (exitCode, signal) => exitCode === void 0 && signal 
 var isFailedExit = (exitCode, signal) => exitCode !== 0 || signal !== null;
 
 // node_modules/execa/lib/resolve/exit-sync.js
-var getExitResultSync = ({ error: error2, status: exitCode, signal, output }, { maxBuffer }) => {
+var getExitResultSync = ({ error: error2, status: exitCode, signal, output: output2 }, { maxBuffer }) => {
   const resultError = getResultError(error2, exitCode, signal);
   const timedOut = resultError?.code === "ETIMEDOUT";
-  const isMaxBuffer = isMaxBufferSync(resultError, output, maxBuffer);
+  const isMaxBuffer = isMaxBufferSync(resultError, output2, maxBuffer);
   return {
     resultError,
     exitCode,
@@ -43799,15 +43799,15 @@ var spawnSubprocessSync = ({ file, commandArguments: commandArguments2, options:
     return syncResult;
   }
   const { resultError, exitCode, signal, timedOut, isMaxBuffer } = getExitResultSync(syncResult, options2);
-  const { output, error: error2 = resultError } = transformOutputSync({
+  const { output: output2, error: error2 = resultError } = transformOutputSync({
     fileDescriptors,
     syncResult,
     options: options2,
     isMaxBuffer,
     verboseInfo
   });
-  const stdio = output.map((stdioOutput, fdNumber) => stripNewline(stdioOutput, options2, fdNumber));
-  const all = stripNewline(getAllSync(output, options2), options2, "all");
+  const stdio = output2.map((stdioOutput, fdNumber) => stripNewline(stdioOutput, options2, fdNumber));
+  const all = stripNewline(getAllSync(output2, options2), options2, "all");
   return getSyncResult({
     error: error2,
     exitCode,
@@ -45085,7 +45085,7 @@ var getStreamOutput = async ({ stream, onStreamEnd, fdNumber, encoding, buffer, 
     stripFinalNewline: stripFinalNewlineValue,
     allMixed
   });
-  const [output] = await Promise.all([
+  const [output2] = await Promise.all([
     getStreamContents2({
       stream,
       iterable,
@@ -45096,7 +45096,7 @@ var getStreamOutput = async ({ stream, onStreamEnd, fdNumber, encoding, buffer, 
     }),
     logPromise
   ]);
-  return output;
+  return output2;
 };
 var logOutputAsync = async ({ stream, onStreamEnd, fdNumber, encoding, allMixed, verboseInfo, streamInfo: { fileDescriptors } }) => {
   if (!shouldLogOutput({
@@ -45227,7 +45227,7 @@ var waitForSubprocessStream = async ({ stream, fdNumber, encoding, buffer, maxBu
     await onStreamEnd;
     return;
   }
-  const [output] = await Promise.all([
+  const [output2] = await Promise.all([
     getStreamOutput({
       stream,
       onStreamEnd,
@@ -45243,7 +45243,7 @@ var waitForSubprocessStream = async ({ stream, fdNumber, encoding, buffer, maxBu
     }),
     onStreamEnd
   ]);
-  return output;
+  return output2;
 };
 
 // node_modules/execa/lib/resolve/all-async.js
@@ -45457,11 +45457,11 @@ var addConcurrentStream = (concurrentStreams, stream, waitName) => {
   const promises = weakMap.get(stream);
   const promise = createDeferred();
   promises.push(promise);
-  const resolve6 = promise.resolve.bind(promise);
-  return { resolve: resolve6, promises };
+  const resolve7 = promise.resolve.bind(promise);
+  return { resolve: resolve7, promises };
 };
-var waitForConcurrentStreams = async ({ resolve: resolve6, promises }, subprocess) => {
-  resolve6();
+var waitForConcurrentStreams = async ({ resolve: resolve7, promises }, subprocess) => {
+  resolve7();
   const [isSubprocessExit] = await Promise.race([
     Promise.allSettled([true, subprocess]),
     Promise.all([false, ...promises])
@@ -46606,7 +46606,7 @@ var notifyTool = {
 async function handleNotify(_manager, args2) {
   const parsed = notifySchema.parse(args2);
   try {
-    await new Promise((resolve6, reject) => {
+    await new Promise((resolve7, reject) => {
       import_node_notifier.default.notify(
         {
           title: parsed.title,
@@ -46618,7 +46618,7 @@ async function handleNotify(_manager, args2) {
           if (error2) {
             reject(error2);
           } else {
-            resolve6();
+            resolve7();
           }
         }
       );
@@ -46701,19 +46701,117 @@ async function handleOperatorTool(name, args2) {
     case "bash": {
       const parsed = bashSchema.parse(args2);
       try {
-        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell: "/bin/sh" });
-        return result(`${output.stdout}${output.stderr}`);
+        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell: "/bin/sh" });
+        return result(`${output2.stdout}${output2.stderr}`);
       } catch (error2) {
         const failure = error2;
-        const output = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
+        const output2 = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
         const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;
-        return result(output ? `${output}
+        return result(output2 ? `${output2}
 ${suffix}` : suffix, true);
       }
     }
     default:
       throw new Error(`Unknown operator tool: ${name}`);
   }
+}
+
+// src/tools/extra-operators.ts
+import { spawn as spawn3, spawnSync as spawnSync2 } from "node:child_process";
+import { readdir, lstat } from "node:fs/promises";
+import { resolve as resolve3, relative } from "node:path";
+var cwd = process.cwd();
+var output = (value) => ({ content: [{ type: "text", text: value }] });
+var executable = (names) => names.find((name) => !spawnSync2(name, ["--version"], { stdio: "ignore" }).error);
+var hint = (name) => new Error((name === "fd" ? "fd/fdfind" : name) + " not found on PATH. Install manually: macOS: brew install " + (name === "rg" ? "ripgrep" : "fd") + "; Ubuntu/Debian: sudo apt install " + (name === "rg" ? "ripgrep" : "fd-find") + "; Termux: pkg install " + (name === "rg" ? "ripgrep" : "fd"));
+var capped = (value) => Buffer.byteLength(value) > 51200 ? Buffer.from(value).subarray(0, 51200).toString("utf8") + "\n[50KB limit reached]" : value;
+async function run(binary, args2, empty, allowNoMatch = false, rawOutput = false) {
+  return new Promise((done, fail) => {
+    const child = spawn3(binary, args2, { cwd, stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    let outputBytes = 0;
+    child.stdout.on("data", (data) => {
+      outputBytes += data.length;
+      if (outputBytes > 8 * 1024 * 1024) {
+        child.kill();
+        return;
+      }
+      stdout += data.toString();
+    });
+    child.stderr.on("data", (data) => {
+      if (stderr.length < 8192) stderr += data.toString();
+    });
+    child.on("error", fail);
+    child.on("close", (code) => outputBytes > 8 * 1024 * 1024 ? fail(new Error("Search output exceeded 8MB processing limit; narrow the search")) : code === 0 || allowNoMatch && code === 1 ? done(rawOutput ? stdout.trimEnd() || empty : capped(stdout.trimEnd() || empty)) : fail(new Error(stderr.trim() || binary + " exited with code " + code)));
+  });
+}
+var lsSchema = external_exports.object({ path: external_exports.string().optional(), limit: external_exports.number().int().positive().optional() });
+var findSchema = external_exports.object({ pattern: external_exports.string(), path: external_exports.string().optional(), limit: external_exports.number().int().positive().optional() });
+var grepSchema = external_exports.object({ pattern: external_exports.string(), path: external_exports.string().optional(), glob: external_exports.string().optional(), ignoreCase: external_exports.boolean().optional(), literal: external_exports.boolean().optional(), context: external_exports.number().int().nonnegative().optional(), limit: external_exports.number().int().positive().optional() });
+var extraOperatorToolDefinitions = [
+  { name: "ls", description: "List directory entries alphabetically, including dotfiles, with / for directories (default 500 entries).", inputSchema: { type: "object", properties: { path: { type: "string" }, limit: { type: "integer", minimum: 1 } } } },
+  { name: "grep", description: "Search text with rg, respecting .gitignore; requires system ripgrep, never installs it.", inputSchema: { type: "object", properties: { pattern: { type: "string" }, path: { type: "string" }, glob: { type: "string" }, ignoreCase: { type: "boolean" }, literal: { type: "boolean" }, context: { type: "integer", minimum: 0 }, limit: { type: "integer", minimum: 1 } }, required: ["pattern"] } },
+  { name: "find", description: "Find files by glob using fd or fdfind, respecting .gitignore; never installs dependencies.", inputSchema: { type: "object", properties: { pattern: { type: "string" }, path: { type: "string" }, limit: { type: "integer", minimum: 1 } }, required: ["pattern"] } }
+];
+async function handleExtraOperatorTool(name, args2) {
+  if (name === "ls") {
+    const params = lsSchema.parse(args2);
+    const dir = resolve3(cwd, params.path || ".");
+    const entries = (await readdir(dir)).sort();
+    const limit = params.limit ?? 500;
+    const lines = await Promise.all(entries.slice(0, limit).map(async (entry) => entry + ((await lstat(resolve3(dir, entry))).isDirectory() ? "/" : "")));
+    return output(capped(lines.join("\n") + (entries.length > limit ? "\n[" + limit + " entries limit reached]" : "")));
+  }
+  if (name === "find") {
+    const params = findSchema.parse(args2);
+    const binary = executable(["fd", "fdfind"]);
+    if (!binary) throw hint("fd");
+    const target = resolve3(cwd, params.path || ".");
+    const commandArgs = ["--glob", "--color=never", "--hidden", "--max-results", String(params.limit ?? 1e3)];
+    let pattern = params.pattern;
+    if (pattern.includes("/")) {
+      commandArgs.push("--full-path");
+      if (!pattern.startsWith("/") && !pattern.startsWith("**/")) pattern = "**/" + pattern;
+    }
+    commandArgs.push("--", pattern, target);
+    const raw = await run(binary, commandArgs, "No files found matching pattern", false, true);
+    if (raw === "No files found matching pattern") return output(raw);
+    return output(capped(raw.split("\n").map((line) => line.startsWith(target) ? relative(target, line) : line).join("\n")));
+  }
+  if (name === "grep") {
+    const params = grepSchema.parse(args2);
+    const binary = executable(["rg"]);
+    if (!binary) throw hint("rg");
+    const commandArgs = ["--json", "--color=never", "--hidden"];
+    if (params.ignoreCase) commandArgs.push("--ignore-case");
+    if (params.literal) commandArgs.push("--fixed-strings");
+    if (params.context !== void 0) commandArgs.push("--context", String(params.context));
+    if (params.glob) commandArgs.push("--glob", params.glob);
+    commandArgs.push("--", params.pattern, resolve3(cwd, params.path || "."));
+    const raw = await run(binary, commandArgs, "No matches found", true, true);
+    if (raw === "No matches found") return output(raw);
+    const limit = params.limit ?? 100;
+    const lines = [];
+    let matches = 0;
+    for (const line of raw.split("\n")) {
+      if (!line) continue;
+      const event = JSON.parse(line);
+      if (event.type !== "match" && event.type !== "context") continue;
+      if (event.type === "match") {
+        if (matches >= limit) break;
+        matches++;
+      }
+      const file = event.data?.path?.text ?? "";
+      const relativePath = relative(resolve3(cwd, params.path || "."), file) || file;
+      const lineNumber = event.data?.line_number ?? 0;
+      const content = (event.data?.lines?.text ?? "").replace(/\r?\n$/, "");
+      lines.push(relativePath + (event.type === "match" ? ":" : "-") + lineNumber + ":" + content);
+    }
+    if (matches === 0) return output("No matches found");
+    return output(capped(lines.join("\n") + (matches >= limit ? "\n[" + limit + " matches limit reached]" : "")));
+  }
+  throw new Error("Unknown extra operator tool: " + name);
 }
 
 // src/tools/definitions.ts
@@ -46734,22 +46832,27 @@ var toolDefinitions = [
   setClipboardTool,
   notifyTool
 ];
-function getToolDefinitions(piOperators = false) {
-  return piOperators ? [...toolDefinitions, ...operatorToolDefinitions] : toolDefinitions;
+function getToolDefinitions(piOperators = false, piExtraOperators = false) {
+  return [...toolDefinitions, ...piOperators ? operatorToolDefinitions : [], ...piExtraOperators ? extraOperatorToolDefinitions : []];
 }
 function getToolNames() {
   return toolDefinitions.map((t) => t.name);
 }
 
 // src/tools/index.ts
-function registerTools(server, manager, piOperators = false) {
+function registerTools(server, manager, piOperators = false, piExtraOperators = false) {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(piOperators)
+    tools: getToolDefinitions(piOperators, piExtraOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
     try {
       switch (name) {
+        case "ls":
+        case "grep":
+        case "find":
+          if (!piExtraOperators) throw new Error("Unknown tool: " + name);
+          return await handleExtraOperatorTool(name, args2);
         case "read":
         case "write":
         case "edit":
@@ -47029,7 +47132,10 @@ For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fr
 command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
 shell state across calls, interactive input, TTY behavior, or live observability.`;
-function createServerWithManager(manager, piOperators = false) {
+var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
+
+Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
+function createServerWithManager(manager, piOperators = false, piExtraOperators = false) {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -47040,10 +47146,10 @@ function createServerWithManager(manager, piOperators = false) {
         tools: {},
         prompts: {}
       },
-      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "")
+      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "")
     }
   );
-  registerTools(server, manager, piOperators);
+  registerTools(server, manager, piOperators, piExtraOperators);
   registerPrompts(server);
   return server;
 }
@@ -47056,7 +47162,7 @@ function createServer(options2 = {}) {
     maxSessions: options2.maxSessions,
     sessionIdleTimeout: options2.sessionIdleTimeout
   });
-  const server = createServerWithManager(manager, options2.piOperators);
+  const server = createServerWithManager(manager, options2.piOperators, options2.piExtraOperators);
   return { server, manager };
 }
 async function startServer(options2 = {}) {
@@ -47101,9 +47207,10 @@ async function startServer(options2 = {}) {
 // src/client.ts
 import * as net from "net";
 async function notifyClientConnected(sendRequest, options2) {
-  const params = options2.title === void 0 && options2.piOperators === void 0 ? void 0 : {
+  const params = options2.title === void 0 && options2.piOperators === void 0 && options2.piExtraOperators === void 0 ? void 0 : {
     ...options2.title === void 0 ? {} : { title: options2.title },
-    ...options2.piOperators === void 0 ? {} : { piOperators: options2.piOperators }
+    ...options2.piOperators === void 0 ? {} : { piOperators: options2.piOperators },
+    ...options2.piExtraOperators === void 0 ? {} : { piExtraOperators: options2.piExtraOperators }
   };
   await sendRequest("clientConnected", params);
 }
@@ -47164,8 +47271,8 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   async function sendRequest(method, params) {
     const id = ++requestId;
     const request = { id, method, params };
-    return new Promise((resolve6, reject) => {
-      pendingRequests.set(id, { resolve: resolve6, reject });
+    return new Promise((resolve7, reject) => {
+      pendingRequests.set(id, { resolve: resolve7, reject });
       socket.write(JSON.stringify(request) + "\n", (error2) => {
         if (error2) {
           pendingRequests.delete(id);
@@ -47175,7 +47282,7 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     });
   }
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(options2.piOperators)
+    tools: getToolDefinitions(options2.piOperators, options2.piExtraOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
@@ -47197,14 +47304,14 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   });
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  void notifyClientConnected(sendRequest, { title: options2.title, piOperators: options2.piOperators }).catch((error2) => {
+  void notifyClientConnected(sendRequest, { title: options2.title, piOperators: options2.piOperators, piExtraOperators: options2.piExtraOperators }).catch((error2) => {
     console.error("Warning: Failed to notify interactive terminal about client connection:", error2);
   });
 }
 function connectToSocket(socketPath) {
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     const socket = net.createConnection(socketPath, () => {
-      resolve6(socket);
+      resolve7(socket);
     });
     socket.on("error", (error2) => {
       if (error2.code === "ENOENT") {
@@ -47310,9 +47417,10 @@ function getStats() {
 // src/transport/socket.ts
 var clientConnectedSchema = external_exports.object({
   title: external_exports.string().optional(),
-  piOperators: external_exports.boolean().optional()
+  piOperators: external_exports.boolean().optional(),
+  piExtraOperators: external_exports.boolean().optional()
 });
-function createToolProxyServer(socketPath, manager, onClientConnected, piOperators = false) {
+function createToolProxyServer(socketPath, manager, onClientConnected, piOperators = false, piExtraOperators = false) {
   try {
     fs15.unlinkSync(socketPath);
   } catch {
@@ -47320,6 +47428,7 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
   const server = new NetServer((socket) => {
     let buffer = "";
     let clientPiOperators = piOperators;
+    let clientPiExtraOperators = piExtraOperators;
     socket.on("data", async (data) => {
       buffer += data.toString();
       const lines = buffer.split("\n");
@@ -47328,8 +47437,10 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
         if (line.trim()) {
           try {
             const request = JSON.parse(line);
-            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, (enabled) => {
+            const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, clientPiExtraOperators, (enabled) => {
               clientPiOperators = clientPiOperators || enabled;
+            }, (enabled) => {
+              clientPiExtraOperators = clientPiExtraOperators || enabled;
             });
             socket.write(JSON.stringify(response) + "\n");
           } catch (error2) {
@@ -47350,12 +47461,18 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
   server.listen(socketPath);
   return server;
 }
-async function handleToolRequest(manager, request, onClientConnected, piOperators = false, setClientPiOperators) {
+async function handleToolRequest(manager, request, onClientConnected, piOperators = false, piExtraOperators = false, setClientPiOperators, setClientPiExtraOperators) {
   const { id, method, params } = request;
   const stats = getStats();
   try {
     let result2;
     switch (method) {
+      case "ls":
+      case "grep":
+      case "find":
+        if (!piExtraOperators) throw new Error("Unknown tool: " + method);
+        result2 = await handleExtraOperatorTool(method, params);
+        break;
       case "read":
       case "write":
       case "edit":
@@ -47426,6 +47543,7 @@ async function handleToolRequest(manager, request, onClientConnected, piOperator
       case "clientConnected": {
         const parsed = clientConnectedSchema.parse(params ?? {});
         setClientPiOperators?.(parsed.piOperators === true);
+        setClientPiExtraOperators?.(parsed.piExtraOperators === true);
         onClientConnected?.(parsed);
         result2 = { ok: true };
         break;
@@ -48010,12 +48128,12 @@ function createSocksProxyServer(options2) {
       return void 0;
     },
     listen(port, hostname2) {
-      return new Promise((resolve6, reject) => {
+      return new Promise((resolve7, reject) => {
         const listeningCallback = () => {
           const actualPort = this.getPort();
           if (actualPort) {
             logForDebugging(`SOCKS proxy listening on ${hostname2}:${actualPort}`);
-            resolve6(actualPort);
+            resolve7(actualPort);
           } else {
             reject(new Error("Failed to get SOCKS proxy server port"));
           }
@@ -48024,7 +48142,7 @@ function createSocksProxyServer(options2) {
       });
     },
     async close() {
-      return new Promise((resolve6, reject) => {
+      return new Promise((resolve7, reject) => {
         socksServer.close((error2) => {
           if (error2) {
             const errorMessage = error2.message?.toLowerCase() || "";
@@ -48034,7 +48152,7 @@ function createSocksProxyServer(options2) {
               return;
             }
           }
-          resolve6();
+          resolve7();
         });
       });
     },
@@ -49264,13 +49382,13 @@ function getPlatform() {
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/sandbox-manager.js
 import * as fs21 from "fs";
-import { spawnSync as spawnSync4 } from "child_process";
+import { spawnSync as spawnSync5 } from "child_process";
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/linux-sandbox-utils.js
 var import_shell_quote = __toESM(require_shell_quote(), 1);
 import { randomBytes as randomBytes3 } from "node:crypto";
 import * as fs20 from "fs";
-import { spawn as spawn3, spawnSync as spawnSync2 } from "node:child_process";
+import { spawn as spawn4, spawnSync as spawnSync3 } from "node:child_process";
 import { tmpdir as tmpdir4 } from "node:os";
 import path23, { join as join8 } from "node:path";
 
@@ -49278,7 +49396,7 @@ import path23, { join as join8 } from "node:path";
 import { execFile as execFile2 } from "child_process";
 async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) {
   const { command, args: commandArgs = [] } = config3;
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     execFile2(command, [...commandArgs, ...args2, target], {
       maxBuffer: 2e7,
       // 20MB
@@ -49287,11 +49405,11 @@ async function ripGrep(args2, target, abortSignal, config3 = { command: "rg" }) 
       // 10 second timeout
     }, (error2, stdout, stderr) => {
       if (!error2) {
-        resolve6(stdout.trim().split("\n").filter(Boolean));
+        resolve7(stdout.trim().split("\n").filter(Boolean));
         return;
       }
       if (error2.code === 1) {
-        resolve6([]);
+        resolve7([]);
         return;
       }
       reject(new Error(`ripgrep failed with exit code ${error2.code}: ${stderr || error2.message}`));
@@ -49378,16 +49496,16 @@ function isSymlinkOutsideBoundary(originalPath, resolvedPath) {
   return false;
 }
 function normalizePathForSandbox(pathPattern) {
-  const cwd = process.cwd();
+  const cwd2 = process.cwd();
   let normalizedPath = pathPattern;
   if (pathPattern === "~") {
     normalizedPath = homedir5();
   } else if (pathPattern.startsWith("~/")) {
     normalizedPath = homedir5() + pathPattern.slice(1);
   } else if (pathPattern.startsWith("./") || pathPattern.startsWith("../")) {
-    normalizedPath = path22.resolve(cwd, pathPattern);
+    normalizedPath = path22.resolve(cwd2, pathPattern);
   } else if (!path22.isAbsolute(pathPattern)) {
-    normalizedPath = path22.resolve(cwd, pathPattern);
+    normalizedPath = path22.resolve(cwd2, pathPattern);
   }
   if (containsGlobChars(normalizedPath)) {
     const staticPrefix = normalizedPath.split(/[*?[\]]/)[0];
@@ -49684,20 +49802,20 @@ function findFirstNonExistentComponent(targetPath) {
   return targetPath;
 }
 async function linuxGetMandatoryDenyPaths(ripgrepConfig = { command: "rg" }, maxDepth = DEFAULT_MANDATORY_DENY_SEARCH_DEPTH, allowGitConfig = false, abortSignal) {
-  const cwd = process.cwd();
+  const cwd2 = process.cwd();
   const fallbackController = new AbortController();
   const signal = abortSignal ?? fallbackController.signal;
   const dangerousDirectories = getDangerousDirectories();
   const denyPaths = [
     // Dangerous files in CWD
-    ...DANGEROUS_FILES.map((f) => path23.resolve(cwd, f)),
+    ...DANGEROUS_FILES.map((f) => path23.resolve(cwd2, f)),
     // Dangerous directories in CWD
-    ...dangerousDirectories.map((d) => path23.resolve(cwd, d)),
+    ...dangerousDirectories.map((d) => path23.resolve(cwd2, d)),
     // Git hooks always blocked for security
-    path23.resolve(cwd, ".git/hooks")
+    path23.resolve(cwd2, ".git/hooks")
   ];
   if (!allowGitConfig) {
-    denyPaths.push(path23.resolve(cwd, ".git/config"));
+    denyPaths.push(path23.resolve(cwd2, ".git/config"));
   }
   const iglobArgs = [];
   for (const fileName of DANGEROUS_FILES) {
@@ -49720,12 +49838,12 @@ async function linuxGetMandatoryDenyPaths(ripgrepConfig = { command: "rg" }, max
       ...iglobArgs,
       "-g",
       "!**/node_modules/**"
-    ], cwd, signal, ripgrepConfig);
+    ], cwd2, signal, ripgrepConfig);
   } catch (error2) {
     logForDebugging(`[Sandbox] ripgrep scan failed: ${error2}`);
   }
   for (const match of matches) {
-    const absolutePath = path23.resolve(cwd, match);
+    const absolutePath = path23.resolve(cwd2, match);
     let foundDir = false;
     for (const dirName of [...dangerousDirectories, ".git"]) {
       const normalizedDirName = normalizeCaseForComparison(dirName);
@@ -49771,11 +49889,11 @@ function registerSeccompCleanupHandler() {
 function checkLinuxDependencies(seccompConfig) {
   const errors = [];
   const warnings = [];
-  const bwrap = spawnSync2("which", ["bwrap"], {
+  const bwrap = spawnSync3("which", ["bwrap"], {
     stdio: "ignore",
     timeout: 1e3
   });
-  const socat = spawnSync2("which", ["socat"], {
+  const socat = spawnSync3("which", ["socat"], {
     stdio: "ignore",
     timeout: 1e3
   });
@@ -49799,7 +49917,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
     `TCP:localhost:${httpProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting HTTP bridge: socat ${httpSocatArgs.join(" ")}`);
-  const httpBridgeProcess = spawn3("socat", httpSocatArgs, {
+  const httpBridgeProcess = spawn4("socat", httpSocatArgs, {
     stdio: "ignore"
   });
   if (!httpBridgeProcess.pid) {
@@ -49816,7 +49934,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
     `TCP:localhost:${socksProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting SOCKS bridge: socat ${socksSocatArgs.join(" ")}`);
-  const socksBridgeProcess = spawn3("socat", socksSocatArgs, {
+  const socksBridgeProcess = spawn4("socat", socksSocatArgs, {
     stdio: "ignore"
   });
   if (!socksBridgeProcess.pid) {
@@ -49864,7 +49982,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
       }
       throw new Error(`Failed to create bridge sockets after ${maxAttempts} attempts`);
     }
-    await new Promise((resolve6) => setTimeout(resolve6, i2 * 100));
+    await new Promise((resolve7) => setTimeout(resolve7, i2 * 100));
   }
   return {
     httpSocketPath,
@@ -50046,7 +50164,7 @@ async function wrapCommandWithSandboxLinux(params) {
       bwrapArgs.push("--proc", "/proc");
     }
     const shellName = binShell || "bash";
-    const shellPathResult = spawnSync2("which", [shellName], {
+    const shellPathResult = spawnSync3("which", [shellName], {
       encoding: "utf8"
     });
     if (shellPathResult.status !== 0) {
@@ -50098,23 +50216,23 @@ async function wrapCommandWithSandboxLinux(params) {
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/macos-sandbox-utils.js
 var import_shell_quote2 = __toESM(require_shell_quote(), 1);
-import { spawn as spawn4, spawnSync as spawnSync3 } from "child_process";
+import { spawn as spawn5, spawnSync as spawnSync4 } from "child_process";
 import * as path24 from "path";
 function macGetMandatoryDenyPatterns(allowGitConfig = false) {
-  const cwd = process.cwd();
+  const cwd2 = process.cwd();
   const denyPaths = [];
   for (const fileName of DANGEROUS_FILES) {
-    denyPaths.push(path24.resolve(cwd, fileName));
+    denyPaths.push(path24.resolve(cwd2, fileName));
     denyPaths.push(`**/${fileName}`);
   }
   for (const dirName of getDangerousDirectories()) {
-    denyPaths.push(path24.resolve(cwd, dirName));
+    denyPaths.push(path24.resolve(cwd2, dirName));
     denyPaths.push(`**/${dirName}/**`);
   }
-  denyPaths.push(path24.resolve(cwd, ".git/hooks"));
+  denyPaths.push(path24.resolve(cwd2, ".git/hooks"));
   denyPaths.push("**/.git/hooks/**");
   if (!allowGitConfig) {
-    denyPaths.push(path24.resolve(cwd, ".git/config"));
+    denyPaths.push(path24.resolve(cwd2, ".git/config"));
     denyPaths.push("**/.git/config");
   }
   return [...new Set(denyPaths)];
@@ -50453,7 +50571,7 @@ function wrapCommandWithSandboxMacOS(params) {
   });
   const proxyEnvArgs = generateProxyEnvVars(httpProxyPort, socksProxyPort);
   const shellName = binShell || "bash";
-  const shellPathResult = spawnSync3("which", [shellName], { encoding: "utf8" });
+  const shellPathResult = spawnSync4("which", [shellName], { encoding: "utf8" });
   if (shellPathResult.status !== 0) {
     throw new Error(`Shell '${shellName}' not found in PATH`);
   }
@@ -50476,7 +50594,7 @@ function startMacOSSandboxLogMonitor(callback, ignoreViolations) {
   const sandboxExtractRegex = /Sandbox:\s+(.+)$/;
   const wildcardPaths = ignoreViolations?.["*"] || [];
   const commandPatterns = ignoreViolations ? Object.entries(ignoreViolations).filter(([pattern]) => pattern !== "*") : [];
-  const logProcess = spawn4("log", [
+  const logProcess = spawn5("log", [
     "stream",
     "--predicate",
     `(eventMessage ENDSWITH "${sessionSuffix}")`,
@@ -50681,7 +50799,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback),
     getMitmSocketPath
   });
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     if (!httpProxyServer) {
       reject(new Error("HTTP proxy server undefined before listen"));
       return;
@@ -50693,7 +50811,7 @@ async function startHttpProxyServer(sandboxAskCallback) {
       if (address && typeof address === "object") {
         server.unref();
         logForDebugging(`HTTP proxy listening on localhost:${address.port}`);
-        resolve6(address.port);
+        resolve7(address.port);
       } else {
         reject(new Error("Failed to get proxy server address"));
       }
@@ -50705,14 +50823,14 @@ async function startSocksProxyServer(sandboxAskCallback) {
   socksProxyServer = createSocksProxyServer({
     filter: (port, host) => filterNetworkRequest(port, host, sandboxAskCallback)
   });
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     if (!socksProxyServer) {
       reject(new Error("SOCKS proxy server undefined before listen"));
       return;
     }
     socksProxyServer.listen(0, "127.0.0.1").then((port) => {
       socksProxyServer?.unref();
-      resolve6(port);
+      resolve7(port);
     }).catch(reject);
   });
 }
@@ -50789,7 +50907,7 @@ function checkDependencies(ripgrepConfig) {
   const errors = [];
   const warnings = [];
   const rgToCheck = ripgrepConfig ?? config2?.ripgrep ?? { command: "rg" };
-  const rgResult = spawnSync4("which", [rgToCheck.command], {
+  const rgResult = spawnSync5("which", [rgToCheck.command], {
     stdio: "ignore",
     timeout: 1e3
   });
@@ -50985,10 +51103,10 @@ async function reset2() {
       try {
         process.kill(httpBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to HTTP bridge process");
-        exitPromises.push(new Promise((resolve6) => {
+        exitPromises.push(new Promise((resolve7) => {
           httpBridgeProcess.once("exit", () => {
             logForDebugging("HTTP bridge process exited");
-            resolve6();
+            resolve7();
           });
           setTimeout(() => {
             if (!httpBridgeProcess.killed) {
@@ -51002,7 +51120,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve6();
+            resolve7();
           }, 5e3);
         }));
       } catch (err) {
@@ -51017,10 +51135,10 @@ async function reset2() {
       try {
         process.kill(socksBridgeProcess.pid, "SIGTERM");
         logForDebugging("Sent SIGTERM to SOCKS bridge process");
-        exitPromises.push(new Promise((resolve6) => {
+        exitPromises.push(new Promise((resolve7) => {
           socksBridgeProcess.once("exit", () => {
             logForDebugging("SOCKS bridge process exited");
-            resolve6();
+            resolve7();
           });
           setTimeout(() => {
             if (!socksBridgeProcess.killed) {
@@ -51034,7 +51152,7 @@ async function reset2() {
               } catch {
               }
             }
-            resolve6();
+            resolve7();
           }, 5e3);
         }));
       } catch (err) {
@@ -51070,14 +51188,14 @@ async function reset2() {
   const closePromises = [];
   if (httpProxyServer) {
     const server = httpProxyServer;
-    const httpClose = new Promise((resolve6) => {
+    const httpClose = new Promise((resolve7) => {
       server.close((error2) => {
         if (error2 && error2.message !== "Server is not running.") {
           logForDebugging(`Error closing HTTP proxy server: ${error2.message}`, {
             level: "error"
           });
         }
-        resolve6();
+        resolve7();
       });
     });
     closePromises.push(httpClose);
@@ -51449,7 +51567,7 @@ async function promptForPermissions() {
   let inputBuffer = "";
   let inputAccessLevel = "blocked";
   const getSelectableIndices = () => items.map((item, i2) => isSelectable(item) ? i2 : -1).filter((i2) => i2 >= 0);
-  return new Promise((resolve6, reject) => {
+  return new Promise((resolve7, reject) => {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding("utf8");
@@ -51564,30 +51682,30 @@ async function promptForPermissions() {
         }
         lines.push("");
       }
-      const output = drawBox(lines, inputMode ? "Add Custom Path" : "Sandbox Permissions", boxWidth);
-      const outputWithNewlines = "\n" + output + "\n";
+      const output2 = drawBox(lines, inputMode ? "Add Custom Path" : "Sandbox Permissions", boxWidth);
+      const outputWithNewlines = "\n" + output2 + "\n";
       lastOutputLineCount = outputWithNewlines.split("\n").length - 1;
       process.stdout.write(outputWithNewlines);
     };
     const drawBox = (lines, title, width) => {
-      const output = [];
+      const output2 = [];
       const titleText = ` ${title} `;
       const leftPad = Math.floor((width - 2 - titleText.length) / 2);
       const rightPad = width - 2 - leftPad - titleText.length;
-      output.push(
+      output2.push(
         `${YELLOW}${BOX.topLeft}${BOX.horizontal.repeat(leftPad)}${WHITE}${BOLD}${titleText}${RESET2}${YELLOW}${BOX.horizontal.repeat(rightPad)}${BOX.topRight}${RESET2}`
       );
       for (const line of lines) {
         const plainText = line.replace(/\x1b\[[0-9;]*m/g, "");
         const padding = width - 2 - plainText.length;
-        output.push(
+        output2.push(
           `${YELLOW}${BOX.vertical}${RESET2}${line}${" ".repeat(Math.max(0, padding))}${YELLOW}${BOX.vertical}${RESET2}`
         );
       }
-      output.push(
+      output2.push(
         `${YELLOW}${BOX.bottomLeft}${BOX.horizontal.repeat(width - 2)}${BOX.bottomRight}${RESET2}`
       );
-      return output.join("\n");
+      return output2.join("\n");
     };
     const cleanup = () => {
       process.stdin.setRawMode(false);
@@ -51683,7 +51801,7 @@ async function promptForPermissions() {
           const permissions = getDefaultFromItems(items);
           console.log(`${GREEN}Sandbox configured.${RESET2}
 `);
-          resolve6(permissions);
+          resolve7(permissions);
           return;
         }
       } else if (key === "q" || key === "") {
@@ -51823,6 +51941,9 @@ for (let i2 = 0; i2 < args.length; i2++) {
     case "--mcp":
       options.useMcp = true;
       break;
+    case "--pi-extra-operators":
+      options.piExtraOperators = true;
+      break;
     case "--pi-operators":
       options.piOperators = true;
       break;
@@ -51954,6 +52075,7 @@ Options:
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
+  --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)
   --tmux [session]       Auto-connect to tmux (implies --headless; default target session: 0)
@@ -52066,7 +52188,7 @@ async function main() {
         if (options.tmux) {
           console.error("[terminal-mcp] Note: --tmux ignored when connecting to existing session.");
         }
-        await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
+        await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
         return;
       } catch {
         console.error("[terminal-mcp] Failed to connect to existing session, creating new PTY...");
@@ -52081,7 +52203,8 @@ async function main() {
       login: options.login,
       tmux: options.tmux,
       title: options.title,
-      piOperators: options.piOperators
+      piOperators: options.piOperators,
+      piExtraOperators: options.piExtraOperators
     });
     return;
   }
@@ -52102,12 +52225,13 @@ async function main() {
       title: options.title,
       maxSessions: options.maxSessions,
       sessionIdleTimeout: options.sessionIdleTimeout,
-      piOperators: options.piOperators
+      piOperators: options.piOperators,
+      piExtraOperators: options.piExtraOperators
     });
   } else if (isInteractive) {
     await startInteractiveMode(socketPath);
   } else {
-    await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators });
+    await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
   }
 }
 async function startInteractiveMode(socketPath) {
@@ -52249,7 +52373,7 @@ async function startInteractiveMode(socketPath) {
     if (title) {
       manager.setTitle(title);
     }
-  }, options.piOperators);
+  }, options.piOperators, options.piExtraOperators);
   function cleanup() {
     manager.dispose();
     socketServer.close();

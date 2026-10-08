@@ -61,3 +61,49 @@ test("createToolProxyServer forwards clientConnected notifications to the intera
     await fs.unlink(socketPath).catch(() => undefined);
   }
 });
+test("socket extra operators require independent per-connection opt-in", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "terminal-extra-socket-"));
+  const socketPath = path.join(dir, "proxy.sock");
+  const server = createToolProxyServer(socketPath, {} as TerminalManager);
+  const clients: net.Socket[] = [];
+  try {
+    if (!server.listening) await once(server, "listening");
+    async function connect() {
+      const socket = net.createConnection(socketPath);
+      clients.push(socket);
+      await once(socket, "connect");
+      let buffer = "";
+      const pending = new Map<number, (value: any) => void>();
+      socket.on("data", (data) => {
+        buffer += data.toString();
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) if (line) {
+          const response = JSON.parse(line);
+          pending.get(response.id)?.(response);
+          pending.delete(response.id);
+        }
+      });
+      return (id: number, method: string, params: Record<string, unknown> = {}) => new Promise<any>((resolve) => {
+        pending.set(id, resolve);
+        socket.write(JSON.stringify({ id, method, params }) + "\n");
+      });
+    }
+    const a = await connect();
+    const b = await connect();
+    assert.match((await a(1, "ls", { path: dir })).error.message, /Unknown tool/);
+    assert.deepEqual((await a(2, "clientConnected", { piExtraOperators: true })).result, { ok: true });
+    assert.ok((await a(3, "ls", { path: dir })).result);
+    assert.match((await a(4, "read", { path: socketPath })).error.message, /Unknown tool/);
+    assert.match((await b(5, "ls", { path: dir })).error.message, /Unknown tool/);
+    await b(6, "clientConnected", { piOperators: true });
+    assert.match((await b(7, "ls", { path: dir })).error.message, /Unknown tool/);
+    assert.ok((await b(8, "read", { path: path.join(dir, "missing") })).error);
+    await b(9, "clientConnected", { piExtraOperators: true });
+    assert.ok((await b(10, "ls", { path: dir })).result);
+  } finally {
+    clients.forEach((socket) => socket.destroy());
+    await new Promise<void>((resolve) => server.close(() => resolve()));
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
