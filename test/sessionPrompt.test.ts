@@ -18,3 +18,15 @@ test("TerminalSession configures cmd.exe prompt with spacing and ANSI highlight"
   assert.equal(env.TERMINAL_MCP, "1");
   assert.equal(env.PROMPT, "$E[30;43m ⚡ mcp $E[0m $P$G ");
 });
+
+
+test("TerminalSession exports the Bash rcfile path for reload", () => {
+  const session = Object.create(TerminalSession.prototype) as TerminalSession & {
+    setupShellPrompt: (shellName: string) => { args: string[]; env: Record<string, string> };
+  };
+
+  const { args, env } = session.setupShellPrompt("bash");
+  assert.equal(env.TERMINAL_MCP, "1");
+  assert.equal(env.TERMINAL_MCP_RCFILE, args[1]);
+  assert.equal(args[0], "--rcfile");
+});

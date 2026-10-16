@@ -163,6 +163,7 @@ ${bannerCmd}
 `;
       this.rcFile = path.join(os.tmpdir(), `terminal-mcp-bashrc-${process.pid}`);
       fs.writeFileSync(this.rcFile, bashrcContent);
+      env.TERMINAL_MCP_RCFILE = this.rcFile;
       return { args: ["--rcfile", this.rcFile], env };
     }
 

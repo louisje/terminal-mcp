@@ -36573,6 +36573,7 @@ ${bannerCmd}
 `;
       this.rcFile = path10.join(os6.tmpdir(), `terminal-mcp-bashrc-${process.pid}`);
       fs5.writeFileSync(this.rcFile, bashrcContent);
+      env5.TERMINAL_MCP_RCFILE = this.rcFile;
       return { args: ["--rcfile", this.rcFile], env: env5 };
     }
     if (shellName === "zsh") {
