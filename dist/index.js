@@ -37372,6 +37372,9 @@ var TerminalManager = class {
   autoRecordingId = null;
   maxSessions;
   sessionIdleTimeoutMs;
+  getConfiguredShell() {
+    return this.options.shell ?? getDefaultShell();
+  }
   constructor(options2 = {}) {
     this.options = options2;
     this.sandboxController = options2.sandboxController;
@@ -46660,10 +46663,10 @@ var operatorToolDefinitions = [
   { name: "read", description: "Read a text file directly without using the PTY or shell. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
   { name: "write", description: "Write a text file directly, creating parent directories and overwriting the file. Prefer this over shell redirection for whole-file writes.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
   { name: "edit", description: "Apply exact unique non-overlapping string replacements against a file's original content. This is replacement-only, not an append/prepend primitive.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
-  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless /bin/sh subprocess in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
+  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless subprocess using the configured Terminal MCP shell in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
 ];
 var localPath = (path27) => resolve2(operatorCwd, path27);
-async function handleOperatorTool(name, args2) {
+async function handleOperatorTool(name, args2, shell = getDefaultShell()) {
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args2);
@@ -46701,7 +46704,7 @@ async function handleOperatorTool(name, args2) {
     case "bash": {
       const parsed = bashSchema.parse(args2);
       try {
-        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell: "/bin/sh" });
+        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell });
         return result(`${output2.stdout}${output2.stderr}`);
       } catch (error2) {
         const failure = error2;
@@ -46858,7 +46861,7 @@ function registerTools(server, manager, piOperators = false, piExtraOperators = 
         case "edit":
         case "bash":
           if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-          return await handleOperatorTool(name, args2);
+          return await handleOperatorTool(name, args2, manager.getConfiguredShell());
         case "type":
           return await handleType(manager, args2);
         case "sendKey":
@@ -47128,7 +47131,8 @@ constructing shell commands for them. edit performs exact, unique, non-overlappi
 replacements against the original file; it is not an append/prepend primitive.
 
 For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
-/bin/sh subprocess in terminal-mcp's startup working directory and returns stdout/stderr when the
+subprocess using Terminal MCP's configured shell (the --shell option, TERMINAL_MCP_SHELL,
+then the platform shell default) in terminal-mcp's startup working directory and returns stdout/stderr when the
 command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
 shell state across calls, interactive input, TTY behavior, or live observability.`;

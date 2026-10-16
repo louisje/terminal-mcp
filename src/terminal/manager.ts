@@ -66,6 +66,10 @@ export class TerminalManager {
   private maxSessions: number;
   private sessionIdleTimeoutMs: number;
 
+  getConfiguredShell(): string {
+    return this.options.shell ?? getDefaultShell();
+  }
+
   constructor(options: TerminalManagerOptions = {}) {
     this.options = options;
     this.sandboxController = options.sandboxController;

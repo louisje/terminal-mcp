@@ -26,8 +26,7 @@ facility where available and apply the same decision rule.
 
 terminal-mcp's PTY tools drive the same session the user has been working in — their
 current directory, exported environment variables, shell aliases, and tmux state
-all persist across calls. The Pi `bash` operator is a fresh, stateless `/bin/sh`
-subprocess every time, as are typical agent-provided Bash tools. If the user just `cd`'d or `export`'d something in their own
+all persist across calls. The Pi `bash` operator is a fresh, stateless subprocess using Terminal MCP's configured shell every time, as are typical agent-provided Bash tools. If the user just `cd`'d or `export`'d something in their own
 terminal and expects the next command to pick that up, switch to terminal-mcp even
 if nothing is technically broken — staying consistent with the user's actual working
 state is itself the reason.
@@ -72,7 +71,7 @@ When `--pi-operators` is enabled, four additional tools are exposed:
 - `edit`: exact, unique, non-overlapping string replacement against the original
   file. It is not an append/prepend primitive; include surrounding text when needed
   to anchor insertion at the beginning or end.
-- `bash`: run one independent, non-interactive `/bin/sh` subprocess from
+- `bash`: run one independent, non-interactive subprocess using Terminal MCP's configured shell from
   terminal-mcp's startup working directory. It waits for completion and returns
   stdout/stderr directly, with an optional timeout. It does not inherit PTY cwd,
   exports, aliases, or other state changed during the terminal session.

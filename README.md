@@ -168,7 +168,7 @@ The default tool surface is unchanged: Terminal MCP exposes its existing 15 term
 `--pi-operators` when you also want the Pi Coding Agent-style `read`, `write`, `edit`, and `bash`
 tools. These file tools operate relative to the process startup directory; `write` creates parent
 directories, and `edit` requires exact unique non-overlapping replacements from the original file.
-`bash` runs one independent, stateless `/bin/sh` subprocess in that same startup directory,
+`bash` runs one independent, stateless subprocess using Terminal MCP's configured shell (`--shell`, then `TERMINAL_MCP_SHELL`, then the platform-native shell/default) in that same startup directory,
 returns stdout/stderr when it finishes, and accepts an optional timeout in seconds. Prefer these
 operators for routine file operations and one-shot non-interactive commands; use the PTY tools
 when you need persistent shell state, interactive/TTY behavior, or live observability. The flag

@@ -53,7 +53,8 @@ constructing shell commands for them. edit performs exact, unique, non-overlappi
 replacements against the original file; it is not an append/prepend primitive.
 
 For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
-/bin/sh subprocess in terminal-mcp's startup working directory and returns stdout/stderr when the
+subprocess using Terminal MCP's configured shell (the --shell option, TERMINAL_MCP_SHELL,
+then the platform shell default) in terminal-mcp's startup working directory and returns stdout/stderr when the
 command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
 shell state across calls, interactive input, TTY behavior, or live observability.`;

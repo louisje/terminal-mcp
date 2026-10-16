@@ -46,7 +46,7 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
         case "edit":
         case "bash":
           if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-          return await handleOperatorTool(name, args);
+          return await handleOperatorTool(name, args, manager.getConfiguredShell());
         case "type":
           return await handleType(manager, args);
 

@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import { promisify } from "node:util";
 import { z } from "zod";
 import type { ToolDefinition } from "./definitions.js";
+import { getDefaultShell } from "../utils/platform.js";
 
 const execAsync = promisify(exec);
 const operatorCwd = process.cwd();
@@ -20,12 +21,12 @@ export const operatorToolDefinitions: ToolDefinition[] = [
   { name: "read", description: "Read a text file directly without using the PTY or shell. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
   { name: "write", description: "Write a text file directly, creating parent directories and overwriting the file. Prefer this over shell redirection for whole-file writes.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
   { name: "edit", description: "Apply exact unique non-overlapping string replacements against a file's original content. This is replacement-only, not an append/prepend primitive.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
-  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless /bin/sh subprocess in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } },
+  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless subprocess using the configured Terminal MCP shell in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } },
 ];
 
 const localPath = (path: string): string => resolve(operatorCwd, path);
 
-export async function handleOperatorTool(name: string, args: unknown): Promise<TextResult> {
+export async function handleOperatorTool(name: string, args: unknown, shell = getDefaultShell()): Promise<TextResult> {
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args);
@@ -63,7 +64,7 @@ export async function handleOperatorTool(name: string, args: unknown): Promise<T
     case "bash": {
       const parsed = bashSchema.parse(args);
       try {
-        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === undefined ? undefined : parsed.timeout * 1000, maxBuffer: 10 * 1024 * 1024, shell: "/bin/sh" });
+        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === undefined ? undefined : parsed.timeout * 1000, maxBuffer: 10 * 1024 * 1024, shell });
         return result(`${output.stdout}${output.stderr}`);
       } catch (error) {
         const failure = error as { stdout?: string; stderr?: string; code?: number | string; killed?: boolean; signal?: string };

@@ -47,6 +47,7 @@ export declare class TerminalManager {
     private autoRecordingId;
     private maxSessions;
     private sessionIdleTimeoutMs;
+    getConfiguredShell(): string;
     constructor(options?: TerminalManagerOptions);
     /**
      * Kill a session that finished spawning after dispose() had already swept the

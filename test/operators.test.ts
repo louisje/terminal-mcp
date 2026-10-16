@@ -40,3 +40,34 @@ test("bash returns output, exit failures, and timeout failures", async () => {
   assert.equal(timedOut.isError, true);
   assert.match(timedOut.content[0]?.text ?? "", /timed out/);
 });
+
+
+test("bash honors an explicitly configured shell", async (t) => {
+  if (process.platform === "win32") return t.skip("POSIX shell fixture");
+  const dir = await mkdtemp(join(tmpdir(), "terminal-mcp-shell-"));
+  const shell = join(dir, "configured-shell");
+  try {
+    await writeFile(shell, "#!/bin/sh\nprintf 'configured-shell\\n' >&2\nexec /bin/sh \"$@\"\n", { mode: 0o755 });
+    const response = await handleOperatorTool("bash", { command: "printf shell-ok" }, shell);
+    assert.equal(response.content[0]?.text, "shell-okconfigured-shell\n");
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("bash uses the environment-selected shell by default", async (t) => {
+  if (process.platform === "win32") return t.skip("POSIX shell fixture");
+  const dir = await mkdtemp(join(tmpdir(), "terminal-mcp-shell-env-"));
+  const shell = join(dir, "configured-shell");
+  const previous = process.env.TERMINAL_MCP_SHELL;
+  try {
+    await writeFile(shell, "#!/bin/sh\nprintf 'env-shell\\n' >&2\nexec /bin/sh \"$@\"\n", { mode: 0o755 });
+    process.env.TERMINAL_MCP_SHELL = shell;
+    const response = await handleOperatorTool("bash", { command: "printf env-ok" });
+    assert.equal(response.content[0]?.text, "env-okenv-shell\n");
+  } finally {
+    if (previous === undefined) delete process.env.TERMINAL_MCP_SHELL;
+    else process.env.TERMINAL_MCP_SHELL = previous;
+    await rm(dir, { recursive: true, force: true });
+  }
+});

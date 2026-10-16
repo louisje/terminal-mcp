@@ -4,14 +4,6 @@
 
 近期尚未完成、值得後續追蹤的事項。
 
-## Pi `bash` 應沿用 Terminal MCP 的 configured shell
-
-- `--pi-operators` 的 `bash` 目前在 `src/tools/operators.ts` 寫死 `shell: "/bin/sh"`。
-- 應改為沿用 Terminal MCP 原本的 shell selection：`--shell` → `TERMINAL_MCP_SHELL` → `$SHELL` / `COMSPEC` → platform fallback。
-- 目前做法也可能造成 Windows portability 問題。
-- 修正後同步更新 README、`skills/terminal-mcp/SKILL.md`、MCP server instructions 與 tool description，不再宣稱固定使用 `/bin/sh`。
-- 補上 configured-shell 與跨平台行為的測試。
-
 ## 追查 `npm_config_allow_scripts` 的來源
 
 - `npx -y louisje/terminal-mcp` 曾遇到 `EALLOWSCRIPTS`；已確認 repo 本身與 `node-pty` 不是根因。
