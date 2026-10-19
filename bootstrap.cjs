@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Claude Code plugin bootstrap: install the native node-pty dependency locally.
+// Claude Code plugin bootstrap: install platform-specific runtime dependencies locally.
 const { createRequire } = require("node:module");
 const { spawn, spawnSync } = require("node:child_process");
 const { readFileSync, existsSync, mkdirSync } = require("node:fs");
@@ -9,8 +9,8 @@ const root = __dirname;
 const dist = path.join(root, "dist");
 const entry = path.join(dist, "index.js");
 const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
-const spec = manifest.dependencies?.["node-pty"];
-if (!spec || !existsSync(entry)) {
+const specs = {\n  "node-pty": manifest.dependencies?.["node-pty"],\n  "@resvg/resvg-js": manifest.optionalDependencies?.["@resvg/resvg-js"]\n};
+if (Object.values(specs).some((spec) => !spec) || !existsSync(entry)) {
   console.error("terminal-mcp: missing node-pty declaration or dist/index.js");
   process.exit(1);
 }
@@ -24,17 +24,17 @@ function ready() {
     return false;
   }
 }
-if (!ready()) {
+if (!allReady()) {
   mkdirSync(dist, { recursive: true });
-  console.error("terminal-mcp: installing node-pty in dist/node_modules...");
+  console.error("terminal-mcp: installing native dependencies in dist/node_modules...");
   const npm = process.platform === "win32" ? "npm.cmd" : "npm";
   const result = spawnSync(npm, [
     "install", "--prefix", dist, "--no-save", "--no-package-lock",
     "--omit=dev", "--no-audit", "--no-fund", "--ignore-scripts=false",
-    `node-pty@${spec}`
+    ...Object.entries(specs).map(([name, version]) => `${name}@${version}`)
   ], { stdio: ["ignore", "ignore", "inherit"], shell: process.platform === "win32" });
-  if (result.error || result.status !== 0 || !ready()) {
-    console.error("terminal-mcp: node-pty installation or native binding validation failed", result.error || "");
+  if (result.error || result.status !== 0 || !allReady()) {
+    console.error("terminal-mcp: native dependency installation or validation failed", result.error || "");
     process.exit(1);
   }
 }
