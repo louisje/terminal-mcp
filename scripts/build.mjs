@@ -26,7 +26,7 @@ await build({
   bundle: true,
   platform: "node",
   format: "esm",
-  target: "node18",
+  target: "node22",
   external,
   banner: {
     js: "import { createRequire as __createRequire } from 'module';\nimport { fileURLToPath as __fileURLToPath } from 'url';\nimport { dirname as __dirname_fn } from 'path';\nconst require = __createRequire(import.meta.url);\nconst __filename = __fileURLToPath(import.meta.url);\nconst __dirname = __dirname_fn(__filename);",
@@ -41,7 +41,7 @@ await build({
   bundle: true,
   platform: "node",
   format: "esm",
-  target: "node18",
+  target: "node22",
   logLevel: "silent",
 });
 

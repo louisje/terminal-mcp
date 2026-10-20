@@ -702,7 +702,7 @@ See the [docs](./docs/) folder for detailed documentation:
 
 ## Requirements
 
-- Node.js 18.0.0 or later
+- Node.js 22.19.0 or later
 - Windows 10 version 1809 or later (for ConPTY support)
 
 ## License
@@ -723,4 +723,4 @@ Example `codemode` input:
 { "code": "text(await tools.bash({command: 'git status --short'}))" }
 ```
 
-The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Codemode requires Node.js >= 22.19.0 or a compatible Bun runtime. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `bash`).
+The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Node.js >= 22.19.0 is required for all modes. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `bash`).

@@ -30,3 +30,29 @@ test('codemode does not grant disabled operators', { timeout: 20000 }, async () 
     assert.equal(result.content[0].text, 'false');
   } finally { await client.close(); }
 });
+
+test('codemode works through a real socket-connected MCP client', { timeout: 25000 }, async () => {
+  const { createToolProxyServer } = await import('../src/transport/socket.ts');
+  const { TerminalManager } = await import('../src/terminal/index.ts');
+  const { mkdtempSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = mkdtempSync(join(tmpdir(), 'tmcp-codemode-'));
+  const socketPath = join(dir, 'mcp.sock');
+  const manager = new TerminalManager();
+  const server = createToolProxyServer(socketPath, manager);
+  await new Promise((resolve, reject) => server.listening ? resolve() : server.once('listening', resolve).once('error', reject));
+  const client = new Client({ name: 'codemode-socket-test', version: '1.0.0' });
+  try {
+    await client.connect(new StdioClientTransport({ command: process.execPath, args: ['dist/index.js', '--socket', socketPath, '--codemode', '--pi-operators'], stderr: 'pipe' }));
+    assert.deepEqual((await client.listTools()).tools.map(x => x.name), ['codemode']);
+    const value = await client.callTool({ name: 'codemode', arguments: { code: 'text(await tools.bash({command:"printf socket-ok"}))' } });
+    assert.equal(value.isError, false, JSON.stringify(value));
+    assert.equal(value.content[0].text, 'socket-ok');
+  } finally {
+    await client.close().catch(() => {});
+    await new Promise(resolve => server.close(resolve));
+    manager.dispose();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
