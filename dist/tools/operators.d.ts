@@ -7,6 +7,6 @@ type TextResult = {
     isError?: boolean;
 };
 export declare const operatorToolDefinitions: ToolDefinition[];
-export declare function handleOperatorTool(name: string, args: unknown, shell?: string): Promise<TextResult>;
+export declare function handleOperatorTool(name: string, args: unknown, shell?: string, signal?: AbortSignal): Promise<TextResult>;
 export {};
 //# sourceMappingURL=operators.d.ts.map

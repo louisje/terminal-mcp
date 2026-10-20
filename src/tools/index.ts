@@ -32,15 +32,15 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
   }));
 
   // Register call tool handler
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const { name, arguments: args } = request.params;
 
     try {
       if (codemode) {
         if (name !== "codemode") throw new Error(`Unknown tool: ${name}`);
-        return await runCodemode(manager, args, piOperators, piExtraOperators);
+        return await runCodemode(manager, args, piOperators, piExtraOperators, extra.signal);
       }
-      return await dispatchTool(manager, name, args, piOperators, piExtraOperators);
+      return await dispatchTool(manager, name, args, piOperators, piExtraOperators, extra.signal);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return {
@@ -56,7 +56,8 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
   });
 }
 
-export async function dispatchTool(manager: TerminalManager, name: string, args: unknown, piOperators = false, piExtraOperators = false) {
+export async function dispatchTool(manager: TerminalManager, name: string, args: unknown, piOperators = false, piExtraOperators = false, signal?: AbortSignal) {
+  if (signal?.aborted) throw new Error("Tool call aborted");
   switch (name) {
     case "ls":
     case "grep":
@@ -68,7 +69,7 @@ export async function dispatchTool(manager: TerminalManager, name: string, args:
     case "edit":
     case "bash":
       if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-      return await handleOperatorTool(name, args, manager.getConfiguredShell());
+      return await handleOperatorTool(name, args, manager.getConfiguredShell(), signal);
     case "type":
       return await handleType(manager, args);
 

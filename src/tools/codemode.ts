@@ -21,7 +21,8 @@ type ToolResult = { content?: Array<{ type: string; text?: string; data?: string
 export async function runCodemodeWithDispatch(
   args: unknown,
   definitions: ToolDefinition[],
-  dispatch: (name: string, args: Record<string, unknown>) => Promise<unknown>,
+  dispatch: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>,
+  signal?: AbortSignal,
 ) {
   const code = (args as { code?: unknown } | undefined)?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
@@ -29,8 +30,8 @@ export async function runCodemodeWithDispatch(
     name: definition.name,
     description: definition.description,
     inputSchema: definition.inputSchema,
-    execute: async (value) => {
-      const result = await dispatch(definition.name, (value ?? {}) as Record<string, unknown>) as ToolResult;
+    execute: async (value, context) => {
+      const result = await dispatch(definition.name, (value ?? {}) as Record<string, unknown>, context.signal) as ToolResult;
       if (result.isError) throw new Error(result.content?.filter(c => c.type === "text").map(c => c.text).join("\n") || `Tool ${definition.name} failed`);
       if (result.structuredContent !== undefined) return result.structuredContent;
       const content = result.content ?? [];
@@ -81,7 +82,7 @@ export async function runCodemodeWithDispatch(
     workerUrl: new URL("./codemode-worker.js", import.meta.url),
   });
   try {
-    const result = await sandbox.execute(code);
+    const result = await sandbox.execute(code, { signal });
     const content = result.output.map(item => item.type === "text"
       ? { type: "text" as const, text: item.text }
       : { type: "image" as const, data: item.data, mimeType: item.mimeType });
@@ -93,7 +94,7 @@ export async function runCodemodeWithDispatch(
   }
 }
 
-export function runCodemode(manager: TerminalManager, args: unknown, piOperators: boolean, piExtraOperators: boolean) {
+export function runCodemode(manager: TerminalManager, args: unknown, piOperators: boolean, piExtraOperators: boolean, signal?: AbortSignal) {
   return runCodemodeWithDispatch(args, getToolDefinitions(piOperators, piExtraOperators),
-    (name, params) => dispatchTool(manager, name, params, piOperators, piExtraOperators));
+    (name, params, callSignal) => dispatchTool(manager, name, params, piOperators, piExtraOperators, callSignal), signal);
 }

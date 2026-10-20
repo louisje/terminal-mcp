@@ -26,7 +26,7 @@ export const operatorToolDefinitions: ToolDefinition[] = [
 
 const localPath = (path: string): string => resolve(operatorCwd, path);
 
-export async function handleOperatorTool(name: string, args: unknown, shell = getDefaultShell()): Promise<TextResult> {
+export async function handleOperatorTool(name: string, args: unknown, shell = getDefaultShell(), signal?: AbortSignal): Promise<TextResult> {
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args);
@@ -64,9 +64,10 @@ export async function handleOperatorTool(name: string, args: unknown, shell = ge
     case "bash": {
       const parsed = bashSchema.parse(args);
       try {
-        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === undefined ? undefined : parsed.timeout * 1000, maxBuffer: 10 * 1024 * 1024, shell });
+        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === undefined ? undefined : parsed.timeout * 1000, maxBuffer: 10 * 1024 * 1024, shell, signal });
         return result(`${output.stdout}${output.stderr}`);
       } catch (error) {
+        if (signal?.aborted) throw new Error("Command aborted");
         const failure = error as { stdout?: string; stderr?: string; code?: number | string; killed?: boolean; signal?: string };
         const output = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
         const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;

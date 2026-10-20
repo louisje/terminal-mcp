@@ -28,6 +28,10 @@
 
 ## `feat/codemode` 合併前待辦（2026-10-20）
 
+**合併門檻：全部 P0、P1 完成且驗收通過；P2 可暫緩。**
+
+進度：已完成 CI 失敗初步診斷（缺少 rg/fd），並為 CI 安裝依賴；Headless Codemode → bash 的 AbortSignal 已加接線及單元測試。尚須補 Socket 端取消及完整逾時驗證，故 P0 仍未完成。
+
 - [ ] **P0：取消與逾時安全性**：驗證 QuickJS 執行逾時、AbortSignal 與 MCP Client 中斷時，執行中的 `bash`、PTY 操作及其他非同步工具是否會停止或繼續執行；釐清工具副作用不可回滾的情況，必要時補上取消訊號傳遞、子行程清理和迴歸測試。
 - [ ] **P0：跨平台 CI**：查驗 `feat/codemode` GitHub Actions 的實際結果（Node.js 22/24；Linux/macOS/Windows 建置及 Linux/macOS 測試），特別確認 Windows 的 QuickJS Worker、WASM 路徑與打包相容性，修正失敗項目。
 - [ ] **P1：工具探索一致性**：補齊 `searchTools()`、`describeTool()`、`describeNamespace()` 的權限、參數驗證及邊界測試；確保只可發現當前已啟用的 tools，且 `terminal` namespace / MCP Instructions 保持一致。

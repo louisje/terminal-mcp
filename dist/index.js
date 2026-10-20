@@ -46667,7 +46667,7 @@ var operatorToolDefinitions = [
   { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless subprocess using the configured Terminal MCP shell in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
 ];
 var localPath = (path27) => resolve2(operatorCwd, path27);
-async function handleOperatorTool(name, args2, shell = getDefaultShell()) {
+async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal) {
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args2);
@@ -46705,9 +46705,10 @@ async function handleOperatorTool(name, args2, shell = getDefaultShell()) {
     case "bash": {
       const parsed = bashSchema.parse(args2);
       try {
-        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell });
+        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell, signal });
         return result(`${output2.stdout}${output2.stderr}`);
       } catch (error2) {
+        if (signal?.aborted) throw new Error("Command aborted");
         const failure = error2;
         const output2 = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
         const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;
@@ -47964,15 +47965,15 @@ var codemodeDefinition = {
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
   inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] }
 };
-async function runCodemodeWithDispatch(args2, definitions, dispatch) {
+async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
   const code = args2?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
   const tools = definitions.map((definition) => ({
     name: definition.name,
     description: definition.description,
     inputSchema: definition.inputSchema,
-    execute: async (value) => {
-      const result2 = await dispatch(definition.name, value ?? {});
+    execute: async (value, context) => {
+      const result2 = await dispatch(definition.name, value ?? {}, context.signal);
       if (result2.isError) throw new Error(result2.content?.filter((c3) => c3.type === "text").map((c3) => c3.text).join("\n") || `Tool ${definition.name} failed`);
       if (result2.structuredContent !== void 0) return result2.structuredContent;
       const content = result2.content ?? [];
@@ -48022,7 +48023,7 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch) {
     workerUrl: new URL("./codemode-worker.js", import.meta.url)
   });
   try {
-    const result2 = await sandbox.execute(code);
+    const result2 = await sandbox.execute(code, { signal });
     const content = result2.output.map((item) => item.type === "text" ? { type: "text", text: item.text } : { type: "image", data: item.data, mimeType: item.mimeType });
     if (result2.ok && result2.value !== void 0) content.push({ type: "text", text: JSON.stringify(result2.value) });
     if (!result2.ok) content.push({ type: "text", text: result2.error.stack ?? result2.error.message });
@@ -48031,11 +48032,12 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch) {
     await sandbox.close();
   }
 }
-function runCodemode(manager, args2, piOperators, piExtraOperators) {
+function runCodemode(manager, args2, piOperators, piExtraOperators, signal) {
   return runCodemodeWithDispatch(
     args2,
     getToolDefinitions(piOperators, piExtraOperators),
-    (name, params) => dispatchTool(manager, name, params, piOperators, piExtraOperators)
+    (name, params, callSignal) => dispatchTool(manager, name, params, piOperators, piExtraOperators, callSignal),
+    signal
   );
 }
 
@@ -48044,14 +48046,14 @@ function registerTools(server, manager, piOperators = false, piExtraOperators = 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: codemode ? [codemodeDefinition] : getToolDefinitions(piOperators, piExtraOperators)
   }));
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const { name, arguments: args2 } = request.params;
     try {
       if (codemode) {
         if (name !== "codemode") throw new Error(`Unknown tool: ${name}`);
-        return await runCodemode(manager, args2, piOperators, piExtraOperators);
+        return await runCodemode(manager, args2, piOperators, piExtraOperators, extra.signal);
       }
-      return await dispatchTool(manager, name, args2, piOperators, piExtraOperators);
+      return await dispatchTool(manager, name, args2, piOperators, piExtraOperators, extra.signal);
     } catch (error2) {
       const message = error2 instanceof Error ? error2.message : String(error2);
       return {
@@ -48066,7 +48068,8 @@ function registerTools(server, manager, piOperators = false, piExtraOperators = 
     }
   });
 }
-async function dispatchTool(manager, name, args2, piOperators = false, piExtraOperators = false) {
+async function dispatchTool(manager, name, args2, piOperators = false, piExtraOperators = false, signal) {
+  if (signal?.aborted) throw new Error("Tool call aborted");
   switch (name) {
     case "ls":
     case "grep":
@@ -48078,7 +48081,7 @@ async function dispatchTool(manager, name, args2, piOperators = false, piExtraOp
     case "edit":
     case "bash":
       if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-      return await handleOperatorTool(name, args2, manager.getConfiguredShell());
+      return await handleOperatorTool(name, args2, manager.getConfiguredShell(), signal);
     case "type":
       return await handleType(manager, args2);
     case "sendKey":
