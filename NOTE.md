@@ -30,10 +30,10 @@
 
 **合併門檻：全部 P0、P1 完成且驗收通過；P2 可暫緩。**
 
-進度：已完成 CI 失敗初步診斷（缺少 rg/fd），並為 CI 安裝依賴；Headless 與 Socket Codemode → bash 的 AbortSignal 已接線，Socket 取消後不會執行延遲副作用的整合測試已通過。已驗證 Codemode 執行期限、可取消的 sleep 及取消後的 PTY 呼叫不再派送；已發送至 PTY 的輸入和其它工具的既有副作用無法回滾。仍應補強在途 PTY／檔案操作及子行程後代的取消語義，故 P0 仍未完成。
+進度：Codemode 的 AbortSignal／timeout 已接通 Headless、Socket、sleep 與 bash。`bash` 參考 Pi 的程序樹終止策略：Unix 建立獨立 Process Group 並發送 SIGKILL，Windows 使用 taskkill /T /F。取消後不會派送新的 PTY 呼叫；PTY Session 與已發生的檔案副作用不自動回滾。新增背景子行程取消測試，並於 read/write/edit 寫入前檢查取消。原先 CI 缺 rg/fd 問題已修正，`a0ec10f` 跨平台 CI 全數成功；此輪新修改仍須確認 CI。
 
-- [ ] **P0：取消與逾時安全性**：驗證 QuickJS 執行逾時、AbortSignal 與 MCP Client 中斷時，執行中的 `bash`、PTY 操作及其他非同步工具是否會停止或繼續執行；釐清工具副作用不可回滾的情況，必要時補上取消訊號傳遞、子行程清理和迴歸測試。
-- [ ] **P0：跨平台 CI**（`6df5ab0` 已完成成功；較新提交仍須驗證）：查驗 `feat/codemode` GitHub Actions 的實際結果（Node.js 22/24；Linux/macOS/Windows 建置及 Linux/macOS 測試），特別確認 Windows 的 QuickJS Worker、WASM 路徑與打包相容性，修正失敗項目。
+- [x] **P0：取消與逾時安全性**：驗證 QuickJS 執行逾時、AbortSignal 與 MCP Client 中斷時，執行中的 `bash`、PTY 操作及其他非同步工具是否會停止或繼續執行；釐清工具副作用不可回滾的情況，必要時補上取消訊號傳遞、子行程清理和迴歸測試。
+- [ ] **P0：跨平台 CI**（`6df5ab0` 已完成成功；本輪最新提交仍須驗證）：查驗 `feat/codemode` GitHub Actions 的實際結果（Node.js 22/24；Linux/macOS/Windows 建置及 Linux/macOS 測試），特別確認 Windows 的 QuickJS Worker、WASM 路徑與打包相容性，修正失敗項目。
 - [ ] **P1：工具探索一致性**：補齊 `searchTools()`、`describeTool()`、`describeNamespace()` 的權限、參數驗證及邊界測試；確保只可發現當前已啟用的 tools，且 `terminal` namespace / MCP Instructions 保持一致。
 - [ ] **P1：Claude Plugin 啟動效能**：追查 `bootstrap.cjs` 整合測試耗時不穩（曾達 30～50 秒）的原因，區分依賴檢查、選用 resvg 補裝及測試資源競爭；改善測試穩定性，避免不必要的網路安裝。
 - [ ] **P1：文件與 Skills**（README／SKILL.md 已補 Codemode；尚待內容及各入口最終核對）：補齊 README、使用者文件及 AI-facing Skills 的 `--codemode` 範例、工具探索、輸出過濾、PTY/session 使用規則，以及 Node.js >=22.19 的需求；核對 Headless、Socket、Claude Plugin 三種入口。

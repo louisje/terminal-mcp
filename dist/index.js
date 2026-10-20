@@ -1981,7 +1981,7 @@ var require_minimist = __commonJS({
 var require_rc = __commonJS({
   "node_modules/rc/index.js"(exports2, module2) {
     var cc = require_utils();
-    var join11 = __require("path").join;
+    var join12 = __require("path").join;
     var deepExtend = require_deep_extend();
     var etc = "/etc";
     var win = process.platform === "win32";
@@ -2006,15 +2006,15 @@ var require_rc = __commonJS({
       }
       if (!win)
         [
-          join11(etc, name, "config"),
-          join11(etc, name + "rc")
+          join12(etc, name, "config"),
+          join12(etc, name + "rc")
         ].forEach(addConfigFile);
       if (home)
         [
-          join11(home, ".config", name, "config"),
-          join11(home, ".config", name),
-          join11(home, "." + name, "config"),
-          join11(home, "." + name + "rc")
+          join12(home, ".config", name, "config"),
+          join12(home, ".config", name),
+          join12(home, "." + name, "config"),
+          join12(home, "." + name + "rc")
         ].forEach(addConfigFile);
       addConfigFile(cc.find("." + name + "rc"));
       if (env5.config) addConfigFile(env5.config);
@@ -16803,7 +16803,7 @@ var require_cross_spawn = __commonJS({
     var cp = __require("child_process");
     var parse5 = require_parse2();
     var enoent = require_enoent();
-    function spawn6(command, args2, options2) {
+    function spawn7(command, args2, options2) {
       const parsed = parse5(command, args2, options2);
       const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
       enoent.hookChildProcess(spawned, parsed);
@@ -16815,8 +16815,8 @@ var require_cross_spawn = __commonJS({
       result2.error = result2.error || enoent.verifyENOENTSync(result2.status, parsed);
       return result2;
     }
-    module2.exports = spawn6;
-    module2.exports.spawn = spawn6;
+    module2.exports = spawn7;
+    module2.exports.spawn = spawn7;
     module2.exports.sync = spawnSync6;
     module2.exports._parse = parse5;
     module2.exports._enoent = enoent;
@@ -17802,9 +17802,9 @@ var require_get_stream = __commonJS({
     "use strict";
     var { constants: BufferConstants } = __require("buffer");
     var stream = __require("stream");
-    var { promisify: promisify8 } = __require("util");
+    var { promisify: promisify7 } = __require("util");
     var bufferStream = require_buffer_stream();
-    var streamPipelinePromisified = promisify8(stream.pipeline);
+    var streamPipelinePromisified = promisify7(stream.pipeline);
     var MaxBufferError2 = class extends Error {
       constructor() {
         super("maxBuffer exceeded");
@@ -25297,7 +25297,7 @@ Run \`npm install ${pkg2}\` in ${root} and retry.`;
 }
 
 // src/server.ts
-import { exec as exec3 } from "child_process";
+import { exec as exec2 } from "child_process";
 
 // node_modules/zod/v3/external.js
 var external_exports = {};
@@ -46660,12 +46660,31 @@ async function handleNotify(_manager, args2) {
 }
 
 // src/tools/operators.ts
-import { exec as exec2 } from "node:child_process";
+import { spawn as spawn3 } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname as dirname2, resolve as resolve2 } from "node:path";
-import { promisify as promisify7 } from "node:util";
-var execAsync = promisify7(exec2);
+import { dirname as dirname2, join as join5, resolve as resolve2 } from "node:path";
 var operatorCwd = process.cwd();
+function killProcessTree(pid) {
+  if (process.platform === "win32") {
+    const killer = spawn3(
+      join5(process.env.SystemRoot ?? "C:\\Windows", "System32", "taskkill.exe"),
+      ["/F", "/T", "/PID", String(pid)],
+      { stdio: "ignore", detached: true, windowsHide: true }
+    );
+    killer.once("error", () => {
+    });
+    killer.unref();
+  } else {
+    try {
+      process.kill(-pid, "SIGKILL");
+    } catch {
+      try {
+        process.kill(pid, "SIGKILL");
+      } catch {
+      }
+    }
+  }
+}
 var readSchema = external_exports.object({ path: external_exports.string(), offset: external_exports.number().int().positive().optional(), limit: external_exports.number().int().positive().optional() });
 var writeSchema = external_exports.object({ path: external_exports.string(), content: external_exports.string() });
 var editSchema = external_exports.object({ path: external_exports.string(), edits: external_exports.array(external_exports.object({ oldText: external_exports.string(), newText: external_exports.string() })).min(1) });
@@ -46679,6 +46698,7 @@ var operatorToolDefinitions = [
 ];
 var localPath = (path27) => resolve2(operatorCwd, path27);
 async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal) {
+  if (signal?.aborted) throw new Error("Tool call aborted");
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args2);
@@ -46691,6 +46711,7 @@ async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal
       const parsed = writeSchema.parse(args2);
       const target = localPath(parsed.path);
       await mkdir(dirname2(target), { recursive: true });
+      if (signal?.aborted) throw new Error("Tool call aborted");
       await writeFile(target, parsed.content, "utf8");
       return result(`Wrote ${parsed.path}`);
     }
@@ -46710,21 +46731,59 @@ async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal
       for (let i2 = 1; i2 < ranges.length; i2++) if (ranges[i2 - 1].end > ranges[i2].start) throw new Error("Edits must not overlap");
       let updated = original;
       for (const edit of [...ranges].reverse()) updated = updated.slice(0, edit.start) + edit.newText + updated.slice(edit.end);
+      if (signal?.aborted) throw new Error("Tool call aborted");
       await writeFile(target, updated, "utf8");
       return result(`Edited ${parsed.path}`);
     }
     case "bash": {
       const parsed = bashSchema.parse(args2);
+      if (signal?.aborted) throw new Error("Command aborted");
+      let timedOut = false;
+      const child = spawn3(parsed.command, {
+        cwd: operatorCwd,
+        shell,
+        detached: process.platform !== "win32",
+        windowsHide: true,
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+      const stop2 = () => {
+        if (child.pid) killProcessTree(child.pid);
+      };
+      const onAbort = () => stop2();
+      signal?.addEventListener("abort", onAbort, { once: true });
+      if (signal?.aborted) stop2();
+      const timer = parsed.timeout === void 0 ? void 0 : setTimeout(() => {
+        timedOut = true;
+        stop2();
+      }, parsed.timeout * 1e3);
+      let stdout = "";
+      let stderr = "";
+      let exceeded = false;
+      const maxBuffer = 10 * 1024 * 1024;
+      const capture = (stream, chunk) => {
+        if (stream === "stdout") stdout += chunk.toString();
+        else stderr += chunk.toString();
+        if (Buffer.byteLength(stdout) + Buffer.byteLength(stderr) > maxBuffer) {
+          exceeded = true;
+          stop2();
+        }
+      };
+      child.stdout.on("data", (chunk) => capture("stdout", chunk));
+      child.stderr.on("data", (chunk) => capture("stderr", chunk));
       try {
-        const output2 = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === void 0 ? void 0 : parsed.timeout * 1e3, maxBuffer: 10 * 1024 * 1024, shell, signal });
-        return result(`${output2.stdout}${output2.stderr}`);
-      } catch (error2) {
+        const code = await new Promise((resolve7, reject) => {
+          child.once("error", reject);
+          child.once("close", resolve7);
+        });
         if (signal?.aborted) throw new Error("Command aborted");
-        const failure = error2;
-        const output2 = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
-        const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;
-        return result(output2 ? `${output2}
-${suffix}` : suffix, true);
+        const output2 = `${stdout}${stderr}`;
+        if (timedOut) return result(`${output2}${output2 ? "\n" : ""}Command timed out after ${parsed.timeout} second(s).`, true);
+        if (exceeded) return result("Command output exceeded 10 MiB buffer.", true);
+        if (code !== 0) return result(`${output2}${output2 ? "\n" : ""}Command exited with code ${code ?? "unknown"}.`, true);
+        return result(output2);
+      } finally {
+        if (timer) clearTimeout(timer);
+        signal?.removeEventListener("abort", onAbort);
       }
     }
     default:
@@ -46733,7 +46792,7 @@ ${suffix}` : suffix, true);
 }
 
 // src/tools/extra-operators.ts
-import { spawn as spawn3, spawnSync as spawnSync2 } from "node:child_process";
+import { spawn as spawn4, spawnSync as spawnSync2 } from "node:child_process";
 import { readdir, lstat } from "node:fs/promises";
 import { resolve as resolve3, relative } from "node:path";
 var cwd = process.cwd();
@@ -46743,7 +46802,7 @@ var hint = (name) => new Error((name === "fd" ? "fd/fdfind" : name) + " not foun
 var capped = (value) => Buffer.byteLength(value) > 51200 ? Buffer.from(value).subarray(0, 51200).toString("utf8") + "\n[50KB limit reached]" : value;
 async function run(binary, args2, empty, allowNoMatch = false, rawOutput = false) {
   return new Promise((done, fail) => {
-    const child = spawn3(binary, args2, { cwd, stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn4(binary, args2, { cwd, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
     let outputBytes = 0;
@@ -48420,7 +48479,7 @@ async function startServer(options2 = {}) {
         session.write(`tmux new -A -t ${tmuxTarget} -s ${tmuxName} \\; if-shell 'tmux select-window -t ${tmuxName}:${tmuxName}' '' 'new-window -n ${tmuxName}'
 `);
         setTimeout(() => {
-          exec3(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' \u{1F514} terminal-mcp (${tmuxName}) connected'; done`);
+          exec2(`tmux list-clients -F '#{client_tty}' | sort | uniq | while read tty; do tmux display-message -d 5000 -c "$tty" ' \u{1F514} terminal-mcp (${tmuxName}) connected'; done`);
         }, 1e3);
       } else {
         console.error(`[terminal-mcp] Auto-connecting to tmux session '${tmuxTarget}'...`);
@@ -50663,9 +50722,9 @@ import { spawnSync as spawnSync5 } from "child_process";
 var import_shell_quote = __toESM(require_shell_quote(), 1);
 import { randomBytes as randomBytes3 } from "node:crypto";
 import * as fs20 from "fs";
-import { spawn as spawn4, spawnSync as spawnSync3 } from "node:child_process";
+import { spawn as spawn5, spawnSync as spawnSync3 } from "node:child_process";
 import { tmpdir as tmpdir4 } from "node:os";
-import path23, { join as join8 } from "node:path";
+import path23, { join as join9 } from "node:path";
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/utils/ripgrep.js
 import { execFile as execFile2 } from "child_process";
@@ -50882,7 +50941,7 @@ function decodeSandboxedCommand(encodedCommand) {
 }
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/generate-seccomp-filter.js
-import { join as join7, dirname as dirname4 } from "node:path";
+import { join as join8, dirname as dirname4 } from "node:path";
 import { fileURLToPath as fileURLToPath10 } from "node:url";
 import * as fs19 from "node:fs";
 import { execSync as execSync2 } from "node:child_process";
@@ -50898,20 +50957,20 @@ function getGlobalNpmPaths() {
       stdio: ["pipe", "pipe", "ignore"]
     }).trim();
     if (npmRoot) {
-      paths.push(join7(npmRoot, "@anthropic-ai", "sandbox-runtime"));
+      paths.push(join8(npmRoot, "@anthropic-ai", "sandbox-runtime"));
     }
   } catch {
   }
   const home = homedir6();
   paths.push(
     // npm global (Linux/macOS)
-    join7("/usr", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
-    join7("/usr", "local", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
+    join8("/usr", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
+    join8("/usr", "local", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
     // npm global with prefix (common on macOS with homebrew)
-    join7("/opt", "homebrew", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
+    join8("/opt", "homebrew", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
     // User-local npm global
-    join7(home, ".npm", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
-    join7(home, ".npm-global", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime")
+    join8(home, ".npm", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime"),
+    join8(home, ".npm-global", "lib", "node_modules", "@anthropic-ai", "sandbox-runtime")
   );
   return paths;
 }
@@ -50938,13 +50997,13 @@ function getLocalSeccompPaths(filename) {
   if (!arch)
     return [];
   const baseDir = dirname4(fileURLToPath10(import.meta.url));
-  const relativePath = join7("vendor", "seccomp", arch, filename);
+  const relativePath = join8("vendor", "seccomp", arch, filename);
   return [
-    join7(baseDir, relativePath),
+    join8(baseDir, relativePath),
     // bundled: same directory as bundle (e.g., when bundled into claude-cli)
-    join7(baseDir, "..", "..", relativePath),
+    join8(baseDir, "..", "..", relativePath),
     // package root: vendor/seccomp/...
-    join7(baseDir, "..", relativePath)
+    join8(baseDir, "..", relativePath)
     // dist: dist/vendor/seccomp/...
   ];
 }
@@ -50978,7 +51037,7 @@ function findBpfPath(seccompBinaryPath) {
     }
   }
   for (const globalBase of getGlobalNpmPaths()) {
-    const bpfPath = join7(globalBase, "vendor", "seccomp", arch, "unix-block.bpf");
+    const bpfPath = join8(globalBase, "vendor", "seccomp", arch, "unix-block.bpf");
     if (fs19.existsSync(bpfPath)) {
       logForDebugging(`[SeccompFilter] Found pre-generated BPF filter in global install: ${bpfPath} (${arch})`);
       return bpfPath;
@@ -51017,7 +51076,7 @@ function findApplySeccompPath(seccompBinaryPath) {
     }
   }
   for (const globalBase of getGlobalNpmPaths()) {
-    const binaryPath = join7(globalBase, "vendor", "seccomp", arch, "apply-seccomp");
+    const binaryPath = join8(globalBase, "vendor", "seccomp", arch, "apply-seccomp");
     if (fs19.existsSync(binaryPath)) {
       logForDebugging(`[SeccompFilter] Found apply-seccomp binary in global install: ${binaryPath} (${arch})`);
       return binaryPath;
@@ -51185,14 +51244,14 @@ function checkLinuxDependencies(seccompConfig) {
 }
 async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
   const socketId = randomBytes3(8).toString("hex");
-  const httpSocketPath = join8(tmpdir4(), `claude-http-${socketId}.sock`);
-  const socksSocketPath = join8(tmpdir4(), `claude-socks-${socketId}.sock`);
+  const httpSocketPath = join9(tmpdir4(), `claude-http-${socketId}.sock`);
+  const socksSocketPath = join9(tmpdir4(), `claude-socks-${socketId}.sock`);
   const httpSocatArgs = [
     `UNIX-LISTEN:${httpSocketPath},fork,reuseaddr`,
     `TCP:localhost:${httpProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting HTTP bridge: socat ${httpSocatArgs.join(" ")}`);
-  const httpBridgeProcess = spawn4("socat", httpSocatArgs, {
+  const httpBridgeProcess = spawn5("socat", httpSocatArgs, {
     stdio: "ignore"
   });
   if (!httpBridgeProcess.pid) {
@@ -51209,7 +51268,7 @@ async function initializeLinuxNetworkBridge(httpProxyPort, socksProxyPort) {
     `TCP:localhost:${socksProxyPort},keepalive,keepidle=10,keepintvl=5,keepcnt=3`
   ];
   logForDebugging(`Starting SOCKS bridge: socat ${socksSocatArgs.join(" ")}`);
-  const socksBridgeProcess = spawn4("socat", socksSocatArgs, {
+  const socksBridgeProcess = spawn5("socat", socksSocatArgs, {
     stdio: "ignore"
   });
   if (!socksBridgeProcess.pid) {
@@ -51491,7 +51550,7 @@ async function wrapCommandWithSandboxLinux(params) {
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/macos-sandbox-utils.js
 var import_shell_quote2 = __toESM(require_shell_quote(), 1);
-import { spawn as spawn5, spawnSync as spawnSync4 } from "child_process";
+import { spawn as spawn6, spawnSync as spawnSync4 } from "child_process";
 import * as path24 from "path";
 function macGetMandatoryDenyPatterns(allowGitConfig = false) {
   const cwd2 = process.cwd();
@@ -51869,7 +51928,7 @@ function startMacOSSandboxLogMonitor(callback, ignoreViolations) {
   const sandboxExtractRegex = /Sandbox:\s+(.+)$/;
   const wildcardPaths = ignoreViolations?.["*"] || [];
   const commandPatterns = ignoreViolations ? Object.entries(ignoreViolations).filter(([pattern]) => pattern !== "*") : [];
-  const logProcess = spawn5("log", [
+  const logProcess = spawn6("log", [
     "stream",
     "--predicate",
     `(eventMessage ENDSWITH "${sessionSuffix}")`,

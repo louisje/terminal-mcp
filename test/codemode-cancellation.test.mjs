@@ -39,3 +39,20 @@ test('cancelled PTY calls do not dispatch input into an existing session', async
   await assert.rejects(dispatchTool(manager, 'type', {text:'should-not-run'}, false, false, controller.signal), /Tool call aborted/);
   assert.equal(called, false);
 });
+
+test('bash abort kills background descendants, not only shell', {timeout:10000}, async () => {
+  if (process.platform === 'win32') return;
+  const {mkdtempSync, existsSync, rmSync} = await import('node:fs');
+  const {tmpdir} = await import('node:os');
+  const {join} = await import('node:path');
+  const dir=mkdtempSync(join(tmpdir(),'tmcp-tree-abort-'));
+  const marker=join(dir,'orphan-marker');
+  try {
+    const controller=new AbortController();
+    const pending=handleOperatorTool('bash',{command:`(sleep 1; touch '${marker}') & wait`},undefined,controller.signal);
+    setTimeout(()=>controller.abort(),100);
+    await assert.rejects(pending,/Command aborted/);
+    await new Promise(resolve=>setTimeout(resolve,1200));
+    assert.equal(existsSync(marker),false);
+  } finally {rmSync(dir,{recursive:true,force:true});}
+});

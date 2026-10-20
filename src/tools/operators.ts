@@ -1,13 +1,25 @@
-import { exec } from "node:child_process";
+import { spawn } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { promisify } from "node:util";
+import { dirname, join, resolve } from "node:path";
 import { z } from "zod";
 import type { ToolDefinition } from "./definitions.js";
 import { getDefaultShell } from "../utils/platform.js";
 
-const execAsync = promisify(exec);
 const operatorCwd = process.cwd();
+
+// Match Pi Coding Agent's process-group/tree termination behavior.
+function killProcessTree(pid: number): void {
+  if (process.platform === "win32") {
+    const killer = spawn(join(process.env.SystemRoot ?? "C:\\Windows", "System32", "taskkill.exe"),
+      ["/F", "/T", "/PID", String(pid)], { stdio: "ignore", detached: true, windowsHide: true });
+    killer.once("error", () => {});
+    killer.unref();
+  } else {
+    try { process.kill(-pid, "SIGKILL"); }
+    catch { try { process.kill(pid, "SIGKILL"); } catch { /* already exited */ } }
+  }
+}
+
 type TextResult = { content: Array<{ type: "text"; text: string }>; isError?: boolean };
 
 const readSchema = z.object({ path: z.string(), offset: z.number().int().positive().optional(), limit: z.number().int().positive().optional() });
@@ -27,6 +39,7 @@ export const operatorToolDefinitions: ToolDefinition[] = [
 const localPath = (path: string): string => resolve(operatorCwd, path);
 
 export async function handleOperatorTool(name: string, args: unknown, shell = getDefaultShell(), signal?: AbortSignal): Promise<TextResult> {
+  if (signal?.aborted) throw new Error("Tool call aborted");
   switch (name) {
     case "read": {
       const parsed = readSchema.parse(args);
@@ -39,6 +52,7 @@ export async function handleOperatorTool(name: string, args: unknown, shell = ge
       const parsed = writeSchema.parse(args);
       const target = localPath(parsed.path);
       await mkdir(dirname(target), { recursive: true });
+      if (signal?.aborted) throw new Error("Tool call aborted");
       await writeFile(target, parsed.content, "utf8");
       return result(`Wrote ${parsed.path}`);
     }
@@ -58,20 +72,45 @@ export async function handleOperatorTool(name: string, args: unknown, shell = ge
       for (let i = 1; i < ranges.length; i++) if (ranges[i - 1].end > ranges[i].start) throw new Error("Edits must not overlap");
       let updated = original;
       for (const edit of [...ranges].reverse()) updated = updated.slice(0, edit.start) + edit.newText + updated.slice(edit.end);
+      if (signal?.aborted) throw new Error("Tool call aborted");
       await writeFile(target, updated, "utf8");
       return result(`Edited ${parsed.path}`);
     }
     case "bash": {
       const parsed = bashSchema.parse(args);
+      if (signal?.aborted) throw new Error("Command aborted");
+      let timedOut = false;
+      const child = spawn(parsed.command, { cwd: operatorCwd, shell, detached: process.platform !== "win32",
+        windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+      const stop = () => { if (child.pid) killProcessTree(child.pid); };
+      const onAbort = () => stop();
+      signal?.addEventListener("abort", onAbort, { once: true });
+      if (signal?.aborted) stop();
+      const timer = parsed.timeout === undefined ? undefined : setTimeout(() => { timedOut = true; stop(); }, parsed.timeout * 1000);
+      let stdout = "";
+      let stderr = "";
+      let exceeded = false;
+      const maxBuffer = 10 * 1024 * 1024;
+      const capture = (stream: "stdout" | "stderr", chunk: Buffer) => {
+        if (stream === "stdout") stdout += chunk.toString(); else stderr += chunk.toString();
+        if (Buffer.byteLength(stdout) + Buffer.byteLength(stderr) > maxBuffer) { exceeded = true; stop(); }
+      };
+      child.stdout.on("data", (chunk: Buffer) => capture("stdout", chunk));
+      child.stderr.on("data", (chunk: Buffer) => capture("stderr", chunk));
       try {
-        const output = await execAsync(parsed.command, { cwd: operatorCwd, timeout: parsed.timeout === undefined ? undefined : parsed.timeout * 1000, maxBuffer: 10 * 1024 * 1024, shell, signal });
-        return result(`${output.stdout}${output.stderr}`);
-      } catch (error) {
+        const code = await new Promise<number | null>((resolve, reject) => {
+          child.once("error", reject);
+          child.once("close", resolve);
+        });
         if (signal?.aborted) throw new Error("Command aborted");
-        const failure = error as { stdout?: string; stderr?: string; code?: number | string; killed?: boolean; signal?: string };
-        const output = `${failure.stdout ?? ""}${failure.stderr ?? ""}`;
-        const suffix = failure.killed ? `Command timed out after ${parsed.timeout} second(s).` : `Command exited with code ${failure.code ?? failure.signal ?? "unknown"}.`;
-        return result(output ? `${output}\n${suffix}` : suffix, true);
+        const output = `${stdout}${stderr}`;
+        if (timedOut) return result(`${output}${output ? "\n" : ""}Command timed out after ${parsed.timeout} second(s).`, true);
+        if (exceeded) return result("Command output exceeded 10 MiB buffer.", true);
+        if (code !== 0) return result(`${output}${output ? "\n" : ""}Command exited with code ${code ?? "unknown"}.`, true);
+        return result(output);
+      } finally {
+        if (timer) clearTimeout(timer);
+        signal?.removeEventListener("abort", onAbort);
       }
     }
     default: throw new Error(`Unknown operator tool: ${name}`);
