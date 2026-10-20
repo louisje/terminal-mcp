@@ -111,3 +111,37 @@ long-running command finishes while they're not watching). With `--pi-operators`
   ordinary Bash facility otherwise).
 - Don't silently keep using Bash after the user has visibly changed their own shell
   state (cd, export, activating a venv) mid-session — that's the continuity case.
+
+## Codemode (`--codemode`)
+
+This opt-in mode exposes **only one MCP function**, `codemode`. The other Terminal
+MCP operators remain available *inside* its QuickJS script as `tools.<name>(args)`;
+`--pi-operators` and `--pi-extra-operators` still independently govern which tools
+exist. The server instructions continue to explain safe PTY/session selection.
+
+Example (`code` argument to `codemode`):
+
+```javascript
+const matches = await searchTools("shell", { namespace: "terminal", limit: 5 });
+text(matches);
+const bash = await describeTool("bash"); // null unless --pi-operators is enabled
+text(bash?.inputSchema);
+// In an operator-enabled connection:
+// text(await tools.bash({ command: "git status --short" }));
+```
+
+`ALL_TOOLS` gives short names/descriptions, `describeNamespace("terminal")` lists
+currently available names, and `describeTool(name)` gives the argument schema.
+Only `text()`, `image()`, explicit return values and errors are returned to the
+agent; do not dump large intermediate results. Use `Promise.allSettled()` for
+independent calls where partial failures are acceptable. QuickJS has no direct
+filesystem/network access, but injected tools retain their host permissions.
+A new JavaScript execution starts for each call; terminal sessions persist.
+
+The package requires Node.js >=22.19.0. The Claude Code plugin launcher is
+`bootstrap.cjs`, and the bundled Worker/WASM assets belong alongside
+`dist/index.js`. The MCP client may enable Codemode by passing `--codemode`
+to the existing server command.
+
+Cancellation cannot undo a completed file edit or a command's side effects.
+A stopped script also does not imply that a PTY session has been terminated.
