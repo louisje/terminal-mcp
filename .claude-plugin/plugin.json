@@ -20,9 +20,9 @@
   ],
   "mcpServers": {
     "terminal-mcp": {
-      "command": "sh",
+      "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/scripts/launch-mcp.sh"
+        "${CLAUDE_PLUGIN_ROOT}/bootstrap.cjs"
       ]
     }
   },
