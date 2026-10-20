@@ -48,9 +48,11 @@ export async function runCodemodeWithDispatch(
     {
       name: "searchTools", spread: true,
       execute: (args) => {
-        const [query, options] = args as [unknown, {limit?: number; namespace?: string} | undefined];
+        const [query, rawOptions] = args as [unknown, unknown];
+        if (rawOptions !== null && rawOptions !== undefined && (typeof rawOptions !== "object" || Array.isArray(rawOptions))) throw new Error("searchTools() options must be an object");
+        const options = rawOptions as {limit?: number; namespace?: string} | undefined;
         if (typeof query !== "string") throw new Error("searchTools() expects a query string");
-        if (options?.limit !== undefined && (!Number.isInteger(options.limit) || options.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
+        if (options?.limit !== undefined && (typeof options.limit !== "number" || !Number.isInteger(options.limit) || options.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
         if (options?.namespace !== undefined && typeof options.namespace !== "string") throw new Error("searchTools() namespace must be a string");
         if (options?.namespace && options.namespace !== "terminal" && options.namespace !== "terminal-mcp") return [];
         const words = query.toLowerCase().split(/\s+/).filter(Boolean);

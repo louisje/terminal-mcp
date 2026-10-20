@@ -9,7 +9,7 @@ async function evaluate(code, pi = false) {
   try {
     const result = await client.callTool({name:'codemode',arguments:{code}});
     assert.equal(result.isError, false, JSON.stringify(result));
-    return JSON.parse(result.content[0].text);
+    try { return JSON.parse(result.content[0].text); } catch { return result.content[0].text; }
   } finally { await client.close(); }
 }
 
@@ -24,4 +24,21 @@ test('codemode discovery functions identify tools, schemas and namespace', {time
   assert.equal(ns.name, 'terminal');
   assert.equal(ns.tools.includes('bash'), false);
   assert.deepEqual(await evaluate('text(await searchTools("anything", {namespace:"another"}))'), []);
+});
+
+
+test('discovery honors enabled operator sets and validates search options', {timeout:30000}, async () => {
+  const none = await evaluate('text({names:ALL_TOOLS.map(t=>t.name), ns:await describeNamespace("terminal")})');
+  assert.equal(none.names.includes('bash'), false);
+  assert.deepEqual(none.names, none.ns.tools);
+  assert.equal((await evaluate('text(await searchTools("bash"))')).some(t=>t.name==='bash'), false);
+  const enabled = await evaluate('text({names:ALL_TOOLS.map(t=>t.name), ns:await describeNamespace("terminal-mcp")})', true);
+  assert.equal(enabled.names.includes('bash'), true);
+  assert.deepEqual(enabled.names, enabled.ns.tools);
+  assert.equal((await evaluate('text(await searchTools("bash"))', true)).some(t=>t.name==='bash'), true);
+  assert.equal(await evaluate('text(await describeNamespace("other"))'), null);
+  const invalid = await evaluate('try { await searchTools("bash", {limit:0}) } catch(e) { text(e.message) }');
+  assert.match(invalid, /positive integer/);
+  const malformed = await evaluate('try { await searchTools("bash", "bad") } catch(e) { text(e.message) }');
+  assert.match(malformed, /options must be an object/);
 });
