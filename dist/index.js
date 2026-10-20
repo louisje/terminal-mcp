@@ -546,8 +546,8 @@ var require_graceful_fs = __commonJS({
       fs26.createReadStream = createReadStream2;
       fs26.createWriteStream = createWriteStream3;
       var fs$readFile = fs26.readFile;
-      fs26.readFile = readFile2;
-      function readFile2(path27, options2, cb) {
+      fs26.readFile = readFile3;
+      function readFile3(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$readFile(path27, options2, cb);
@@ -2520,8 +2520,8 @@ var require_graceful_fs2 = __commonJS({
       fs26.createReadStream = createReadStream2;
       fs26.createWriteStream = createWriteStream3;
       var fs$readFile = fs26.readFile;
-      fs26.readFile = readFile2;
-      function readFile2(path27, options2, cb) {
+      fs26.readFile = readFile3;
+      function readFile3(path27, options2, cb) {
         if (typeof options2 === "function")
           cb = options2, options2 = null;
         return go$readFile(path27, options2, cb);
@@ -18955,7 +18955,7 @@ var require_checkGrowl = __commonJS({
 var require_gntp = __commonJS({
   "node_modules/growly/lib/gntp.js"(exports2, module2) {
     var net2 = __require("net");
-    var crypto7 = __require("crypto");
+    var crypto8 = __require("crypto");
     var format3 = __require("util").format;
     var fs25 = __require("fs");
     var nl = "\r\n";
@@ -18988,7 +18988,7 @@ var require_gntp = __commonJS({
       }, 750);
     };
     GNTP.prototype.addResource = function(file) {
-      var id = crypto7.createHash("md5").update(file).digest("hex"), header = "Identifier: " + id + nl + "Length: " + file.length + nl + nl;
+      var id = crypto8.createHash("md5").update(file).digest("hex"), header = "Identifier: " + id + nl + "Length: " + file.length + nl + nl;
       this.resources.push({ header, file });
       return "x-growl-resource://" + id;
     };
@@ -19423,10 +19423,10 @@ var require_balloon = __commonJS({
 });
 
 // node_modules/uuid/dist/esm-node/rng.js
-import crypto4 from "crypto";
+import crypto5 from "crypto";
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
-    crypto4.randomFillSync(rnds8Pool);
+    crypto5.randomFillSync(rnds8Pool);
     poolPtr = 0;
   }
   return rnds8Pool.slice(poolPtr, poolPtr += 16);
@@ -19626,14 +19626,14 @@ var init_v35 = __esm({
 });
 
 // node_modules/uuid/dist/esm-node/md5.js
-import crypto5 from "crypto";
+import crypto6 from "crypto";
 function md5(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return crypto5.createHash("md5").update(bytes).digest();
+  return crypto6.createHash("md5").update(bytes).digest();
 }
 var md5_default;
 var init_md5 = __esm({
@@ -19678,14 +19678,14 @@ var init_v4 = __esm({
 });
 
 // node_modules/uuid/dist/esm-node/sha1.js
-import crypto6 from "crypto";
+import crypto7 from "crypto";
 function sha1(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return crypto6.createHash("sha1").update(bytes).digest();
+  return crypto7.createHash("sha1").update(bytes).digest();
 }
 var sha1_default;
 var init_sha1 = __esm({
@@ -21900,7 +21900,7 @@ var init_setup = __esm({
 
 // src/index.ts
 import * as fs24 from "fs";
-import { createRequire as createRequire4 } from "module";
+import { createRequire as createRequire5 } from "module";
 
 // node_modules/update-notifier/update-notifier.js
 import process10 from "node:process";
@@ -25790,15 +25790,15 @@ var makeIssue = (params) => {
       message: issueData.message
     };
   }
-  let errorMessage = "";
+  let errorMessage2 = "";
   const maps = errorMaps.filter((m) => !!m).slice().reverse();
   for (const map of maps) {
-    errorMessage = map(fullIssue, { data, defaultError: errorMessage }).message;
+    errorMessage2 = map(fullIssue, { data, defaultError: errorMessage2 }).message;
   }
   return {
     ...issueData,
     path: fullPath,
-    message: errorMessage
+    message: errorMessage2
   };
 };
 var EMPTY_PATH = [];
@@ -34733,8 +34733,8 @@ var Protocol = class {
                   if (queuedMessage.type === "response") {
                     resolver(message);
                   } else {
-                    const errorMessage = message;
-                    const error2 = new McpError(errorMessage.error.code, errorMessage.error.message, errorMessage.error.data);
+                    const errorMessage2 = message;
+                    const error2 = new McpError(errorMessage2.error.code, errorMessage2.error.message, errorMessage2.error.data);
                     resolver(error2);
                   }
                 } else {
@@ -36025,23 +36025,23 @@ var Server = class extends Protocol {
       const wrappedHandler = async (request, extra) => {
         const validatedRequest = safeParse2(CallToolRequestSchema, request);
         if (!validatedRequest.success) {
-          const errorMessage = validatedRequest.error instanceof Error ? validatedRequest.error.message : String(validatedRequest.error);
-          throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call request: ${errorMessage}`);
+          const errorMessage2 = validatedRequest.error instanceof Error ? validatedRequest.error.message : String(validatedRequest.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call request: ${errorMessage2}`);
         }
         const { params } = validatedRequest.data;
         const result2 = await Promise.resolve(handler2(request, extra));
         if (params.task) {
           const taskValidationResult = safeParse2(CreateTaskResultSchema, result2);
           if (!taskValidationResult.success) {
-            const errorMessage = taskValidationResult.error instanceof Error ? taskValidationResult.error.message : String(taskValidationResult.error);
-            throw new McpError(ErrorCode.InvalidParams, `Invalid task creation result: ${errorMessage}`);
+            const errorMessage2 = taskValidationResult.error instanceof Error ? taskValidationResult.error.message : String(taskValidationResult.error);
+            throw new McpError(ErrorCode.InvalidParams, `Invalid task creation result: ${errorMessage2}`);
           }
           return taskValidationResult.data;
         }
         const validationResult = safeParse2(CallToolResultSchema, result2);
         if (!validationResult.success) {
-          const errorMessage = validationResult.error instanceof Error ? validationResult.error.message : String(validationResult.error);
-          throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call result: ${errorMessage}`);
+          const errorMessage2 = validationResult.error instanceof Error ? validationResult.error.message : String(validationResult.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid tools/call result: ${errorMessage2}`);
         }
         return validationResult.data;
       };
@@ -37230,7 +37230,7 @@ var Recorder = class {
 };
 
 // src/recording/manager.ts
-import * as crypto from "crypto";
+import * as crypto2 from "crypto";
 var RecordingManager = class {
   recordings = /* @__PURE__ */ new Map();
   defaultOptions;
@@ -37354,7 +37354,7 @@ var RecordingManager = class {
     return this.defaultOptions.mode !== "off";
   }
   generateId() {
-    return crypto.randomBytes(8).toString("hex");
+    return crypto2.randomBytes(8).toString("hex");
   }
 };
 
@@ -38786,8 +38786,8 @@ var import_execa = __toESM(require_execa(), 1);
 
 // node_modules/crypto-random-string/index.js
 import { promisify as promisify2 } from "util";
-import crypto2 from "crypto";
-var randomBytesAsync = promisify2(crypto2.randomBytes);
+import crypto3 from "crypto";
+var randomBytesAsync = promisify2(crypto3.randomBytes);
 var urlSafeCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~".split("");
 var numericCharacters = "0123456789".split("");
 var distinguishableCharacters = "CDEHKMPRTUWXY012458".split("");
@@ -38800,7 +38800,7 @@ var generateForCustomCharacters = (length, characters) => {
   let string3 = "";
   let stringLength = 0;
   while (stringLength < length) {
-    const entropy = crypto2.randomBytes(entropyLength);
+    const entropy = crypto3.randomBytes(entropyLength);
     let entropyPosition = 0;
     while (entropyPosition < entropyLength && stringLength < length) {
       const entropyValue = entropy.readUInt16LE(entropyPosition);
@@ -38835,7 +38835,7 @@ var generateForCustomCharactersAsync = async (length, characters) => {
   }
   return string3;
 };
-var generateRandomBytes = (byteLength, type, length) => crypto2.randomBytes(byteLength).toString(type).slice(0, length);
+var generateRandomBytes = (byteLength, type, length) => crypto3.randomBytes(byteLength).toString(type).slice(0, length);
 var generateRandomBytesAsync = async (byteLength, type, length) => {
   const buffer = await randomBytesAsync(byteLength);
   return buffer.toString(type).slice(0, length);
@@ -39314,9 +39314,9 @@ var uint8ArraysToStrings = (uint8ArraysOrStrings, encoding) => {
   if (encoding === "utf8" && uint8ArraysOrStrings.every((uint8ArrayOrString) => typeof uint8ArrayOrString === "string")) {
     return uint8ArraysOrStrings;
   }
-  const decoder = new StringDecoder(encoding);
-  const strings = uint8ArraysOrStrings.map((uint8ArrayOrString) => typeof uint8ArrayOrString === "string" ? stringToUint8Array(uint8ArrayOrString) : uint8ArrayOrString).map((uint8Array) => decoder.write(uint8Array));
-  const finalString = decoder.end();
+  const decoder2 = new StringDecoder(encoding);
+  const strings = uint8ArraysOrStrings.map((uint8ArrayOrString) => typeof uint8ArrayOrString === "string" ? stringToUint8Array(uint8ArrayOrString) : uint8ArrayOrString).map((uint8Array) => decoder2.write(uint8Array));
+  const finalString = decoder2.end();
   return finalString === "" ? strings : [...strings, finalString];
 };
 var joinToUint8Array = (uint8ArraysOrStrings) => {
@@ -46168,10 +46168,10 @@ var linux_default = clipboard2;
 import fs13 from "node:fs";
 import os10 from "node:os";
 import path19 from "node:path";
-import crypto3 from "node:crypto";
+import crypto4 from "node:crypto";
 var textArgs = ["--type", "text/plain"];
 var createStderrFile = () => {
-  const file = path19.join(os10.tmpdir(), `clipboardy-${crypto3.randomUUID()}`);
+  const file = path19.join(os10.tmpdir(), `clipboardy-${crypto4.randomUUID()}`);
   const fileDescriptor = fs13.openSync(file, "w+");
   return {
     fileDescriptor,
@@ -46843,59 +46843,1175 @@ function getToolNames() {
   return toolDefinitions.map((t) => t.name);
 }
 
+// node_modules/@earendil-works/pi-codemode/dist/identifier.js
+function toCodemodeIdentifier(name) {
+  let identifier = "";
+  for (const char of name) {
+    const valid = identifier === "" ? /^[A-Za-z_$]$/.test(char) : /^[A-Za-z0-9_$]$/.test(char);
+    identifier += valid ? char : "_";
+  }
+  return identifier === "" ? "_" : identifier;
+}
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/protocol.js
+function isWorkerToHostMessage(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  const type = value.type;
+  return type === "call" || type === "output" || type === "done" || type === "crash" || type === "started" || type === "idle";
+}
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/execution.js
+var DEFAULT_TIMEOUT_MS = 3e5;
+var IDENTIFIER2 = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+var RESERVED_GLOBALS = /* @__PURE__ */ new Set([
+  "tools",
+  "ALL_TOOLS",
+  "console",
+  "text",
+  "image",
+  "exit",
+  "globalThis",
+  "store",
+  "load"
+]);
+function errorMessage(error2) {
+  return error2 instanceof Error ? error2.message : String(error2);
+}
+function serializeStore(store) {
+  const serialized = {};
+  for (const [key, value] of Object.entries(store ?? {})) {
+    const json = JSON.stringify(value);
+    if (json !== void 0)
+      serialized[key] = json;
+  }
+  return serialized;
+}
+var BridgeError = class extends Error {
+};
+function parseBridgeJson(json, what) {
+  try {
+    return JSON.parse(json);
+  } catch {
+    throw new BridgeError(`${what} is not valid JSON`);
+  }
+}
+function parseStoreWrites(json) {
+  const entries = parseBridgeJson(json, "store writes");
+  if (!Array.isArray(entries))
+    throw new BridgeError("store writes are not an array");
+  const writes = { set: {}, delete: [] };
+  for (const entry of entries) {
+    if (!Array.isArray(entry) || typeof entry[0] !== "string" || (entry.length === 2 ? typeof entry[1] !== "string" : entry.length !== 1)) {
+      throw new BridgeError("store writes contain a malformed entry");
+    }
+    const [key, value] = entry;
+    if (value === void 0)
+      writes.delete.push(key);
+    else
+      writes.set[key] = parseBridgeJson(value, `store value for ${JSON.stringify(key)}`);
+  }
+  return writes;
+}
+function parseScriptError(json) {
+  const parsed = parseBridgeJson(json, "script error");
+  if (typeof parsed !== "object" || parsed === null)
+    throw new BridgeError("script error is not an object");
+  const { name, message, stack } = parsed;
+  if (typeof message !== "string" || name !== void 0 && typeof name !== "string" || stack !== void 0 && typeof stack !== "string") {
+    throw new BridgeError("script error is malformed");
+  }
+  return { kind: "script", name, message, stack };
+}
+function checkGlobals(globals) {
+  const names = /* @__PURE__ */ new Set();
+  const namespaces = /* @__PURE__ */ new Set();
+  for (const global3 of globals) {
+    const parts = global3.name.split(".");
+    if (parts.length > 2 || !parts.every((part) => IDENTIFIER2.test(part)) || RESERVED_GLOBALS.has(parts[0])) {
+      throw new Error(`Invalid global name "${global3.name}"`);
+    }
+    if (names.has(global3.name))
+      throw new Error(`Global "${global3.name}" is already registered`);
+    if (parts.length === 2)
+      namespaces.add(parts[0]);
+    names.add(global3.name);
+  }
+  for (const name of namespaces) {
+    if (names.has(name))
+      throw new Error(`Global "${name}" conflicts with the namespace "${name}"`);
+  }
+}
+var Execution = class {
+  promise;
+  resolveResult;
+  channel;
+  /** Replies produced before the launcher returned the channel. */
+  unsent = [];
+  executors;
+  control;
+  /** Result numbers `deliver()` used. */
+  delivered = /* @__PURE__ */ new Set();
+  signal;
+  timer;
+  output = [];
+  calls = [];
+  pending = /* @__PURE__ */ new Map();
+  /** Whether the execution has its outcome. */
+  finished = false;
+  constructor(options2) {
+    this.promise = new Promise((resolve7) => {
+      this.resolveResult = resolve7;
+    });
+    this.executors = options2.executors;
+    this.control = options2.control;
+    this.signal = options2.signal;
+    if (Number.isFinite(options2.timeoutMs)) {
+      this.timer = setTimeout(() => {
+        this.finish({ kind: "timeout", message: `Execution timed out after ${options2.timeoutMs} ms` });
+      }, options2.timeoutMs);
+    }
+    if (options2.signal) {
+      if (options2.signal.aborted) {
+        this.onAbort();
+      } else {
+        options2.signal.addEventListener("abort", this.onAbort, { once: true });
+      }
+    }
+    if (this.finished)
+      return;
+    const data = {
+      code: options2.code,
+      tools: options2.tools.map((tool) => ({
+        name: tool.name,
+        jsName: tool.jsName ?? toCodemodeIdentifier(tool.name),
+        description: tool.description ?? ""
+      })),
+      globals: options2.globals.map((global3) => ({ name: global3.name, spread: global3.spread === true })),
+      memoryLimitBytes: options2.memoryLimitBytes,
+      store: options2.store,
+      ...options2.deterministic ? { deterministic: options2.deterministic } : {}
+    };
+    const events = {
+      message: (message) => this.receive(message),
+      failure: (error2) => this.finish(error2)
+    };
+    new Promise((resolve7) => resolve7(options2.launch(data, events))).then((channel) => {
+      if (this.finished) {
+        void channel.stop().catch(() => void 0);
+        return;
+      }
+      this.channel = channel;
+      for (const message of this.unsent.splice(0))
+        channel.post(message);
+    }, (error2) => {
+      this.finish({ kind: "sandbox", message: errorMessage(error2) });
+    });
+  }
+  /** `CodemodeRun.deliver()`. */
+  deliver(seq, now, id, outcome) {
+    if (this.finished)
+      return;
+    if (!Number.isFinite(now))
+      throw new Error(`The clock value of result ${seq} is not a finite number`);
+    if (!Number.isInteger(seq) || seq < 1 || this.delivered.has(seq)) {
+      throw new Error(`Result number ${seq} is not a positive integer used once`);
+    }
+    const pending = this.pending.get(id);
+    if (pending === void 0)
+      throw new Error(`Call ${id} is not waiting for a result`);
+    if (!outcome.ok && outcome.properties !== void 0) {
+      const { properties: properties2 } = outcome;
+      if (typeof properties2 !== "object" || properties2 === null || Array.isArray(properties2)) {
+        throw new Error(`The properties of result ${seq} are not an object`);
+      }
+    }
+    const payload = outcome.ok ? outcome.value === void 0 ? void 0 : JSON.stringify(outcome.value) : outcome.message;
+    const properties = !outcome.ok && outcome.properties !== void 0 ? JSON.stringify(outcome.properties) : void 0;
+    this.delivered.add(seq);
+    this.pending.delete(id);
+    if (pending.record) {
+      pending.record.status = outcome.ok ? "ok" : "error";
+      pending.record.durationMs = performance.now() - pending.startedAt;
+    }
+    this.post({
+      type: "result",
+      id,
+      ok: outcome.ok,
+      payload,
+      seq,
+      now,
+      ...properties === void 0 ? {} : { properties }
+    });
+  }
+  abort(message) {
+    this.finish({ kind: "aborted", message });
+    return this.promise;
+  }
+  onAbort = () => {
+    const reason = this.signal?.reason;
+    this.finish({ kind: "aborted", message: reason instanceof Error ? reason.message : "Execution aborted" });
+  };
+  post(message) {
+    if (this.channel)
+      this.channel.post(message);
+    else
+      this.unsent.push(message);
+  }
+  /** An exception here would escape into the launcher's transport and leave the execution unsettled. */
+  receive(message) {
+    try {
+      this.handleMessage(message);
+    } catch (error2) {
+      this.finish({
+        kind: "sandbox",
+        message: error2 instanceof BridgeError ? `Sandbox bridge broken: ${error2.message}. The script may have modified built-ins such as a prototype's toJSON.` : `Sandbox host failed: ${errorMessage(error2)}`
+      });
+    }
+  }
+  handleMessage(message) {
+    if (this.finished)
+      return;
+    if (!isWorkerToHostMessage(message))
+      throw new BridgeError("unknown message from the worker");
+    switch (message.type) {
+      case "output":
+        this.output.push(message.item);
+        break;
+      case "call":
+        if (this.pending.has(message.id))
+          throw new BridgeError(`duplicate call id ${message.id}`);
+        if (this.control)
+          this.forwardCall(message, this.control);
+        else
+          void this.handleCall(message);
+        break;
+      case "started":
+        this.control?.onStarted?.(message.fingerprint);
+        break;
+      case "idle":
+        this.control?.onIdle?.(message.seq, message.issued);
+        break;
+      case "done":
+        this.handleDone(message);
+        break;
+      case "crash":
+        this.finish({ kind: "sandbox", message: message.message });
+        break;
+    }
+  }
+  handleDone(message) {
+    if (!message.ok) {
+      this.finish(parseScriptError(message.error), void 0, void 0, message.during);
+      return;
+    }
+    const value = message.value === void 0 ? void 0 : parseBridgeJson(message.value, "return value");
+    this.finish(void 0, value, parseStoreWrites(message.writes), message.during);
+  }
+  /** A host-controlled run: record the call and hand it to the caller, which answers with `deliver()`. */
+  forwardCall(message, control) {
+    const { id, name, target } = message;
+    const args2 = message.args === void 0 ? void 0 : parseBridgeJson(message.args, "call arguments");
+    const record2 = target === "tool" ? { name, status: "cancelled", durationMs: 0 } : void 0;
+    if (record2)
+      this.calls.push(record2);
+    this.pending.set(id, { record: record2, startedAt: performance.now(), controller: new AbortController() });
+    control.onCall({ id, target, name, args: args2 });
+  }
+  async handleCall(message) {
+    const { id, name } = message;
+    const isTool = message.target === "tool";
+    const record2 = isTool ? { name, status: "cancelled", durationMs: 0 } : void 0;
+    if (record2)
+      this.calls.push(record2);
+    const pending = { record: record2, startedAt: performance.now(), controller: new AbortController() };
+    this.pending.set(id, pending);
+    let status;
+    let reply;
+    try {
+      const tool = (isTool ? this.executors.tools : this.executors.globals).get(name);
+      if (!tool)
+        throw new Error(`Unknown ${isTool ? "tool" : "global"} "${name}"`);
+      const args2 = message.args === void 0 ? void 0 : JSON.parse(message.args);
+      const value = await tool.execute(args2, { signal: pending.controller.signal });
+      reply = { type: "result", id, ok: true, payload: value === void 0 ? void 0 : JSON.stringify(value) };
+      status = "ok";
+    } catch (error2) {
+      reply = { type: "result", id, ok: false, payload: errorMessage(error2) };
+      status = "error";
+    }
+    if (!this.pending.delete(id))
+      return;
+    if (record2) {
+      record2.status = status;
+      record2.durationMs = performance.now() - pending.startedAt;
+    }
+    this.post(reply);
+  }
+  finish(error2, value, writes, during) {
+    if (this.finished)
+      return;
+    this.finished = true;
+    clearTimeout(this.timer);
+    this.signal?.removeEventListener("abort", this.onAbort);
+    const now = performance.now();
+    for (const pending of this.pending.values()) {
+      if (pending.record)
+        pending.record.durationMs = now - pending.startedAt;
+      pending.controller.abort();
+    }
+    this.pending.clear();
+    this.unsent = [];
+    const ended = during === void 0 ? {} : { during: { seq: during.seq, issued: during.issued } };
+    const result2 = error2 ? { ok: false, error: error2, output: this.output, calls: this.calls, ...ended } : {
+      ok: true,
+      value,
+      output: this.output,
+      calls: this.calls,
+      storeWrites: writes ?? { set: {}, delete: [] },
+      ...ended
+    };
+    if (!this.channel) {
+      this.resolveResult(result2);
+      return;
+    }
+    this.channel.stop().catch(() => void 0).then(() => this.resolveResult(result2));
+  }
+};
+var CodemodeSandboxBase = class {
+  toolsByName = /* @__PURE__ */ new Map();
+  globalsByName = /* @__PURE__ */ new Map();
+  timeoutMs;
+  memoryLimitBytes;
+  launch;
+  running = /* @__PURE__ */ new Set();
+  closed = false;
+  constructor(options2, launch) {
+    this.timeoutMs = options2.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    this.memoryLimitBytes = options2.memoryLimitBytes;
+    this.launch = launch;
+    for (const tool of options2.tools ?? [])
+      this.registerTool(tool);
+    checkGlobals(options2.globals ?? []);
+    for (const global3 of options2.globals ?? [])
+      this.globalsByName.set(global3.name, global3);
+  }
+  /** Throws if a tool with the same name is already registered. */
+  registerTool(tool) {
+    if (this.toolsByName.has(tool.name))
+      throw new Error(`Tool "${tool.name}" is already registered`);
+    this.toolsByName.set(tool.name, tool);
+  }
+  unregisterTool(name) {
+    return this.toolsByName.delete(name);
+  }
+  get tools() {
+    return [...this.toolsByName.values()];
+  }
+  get globals() {
+    return [...this.globalsByName.values()];
+  }
+  /**
+   * `code` is an async function body: `return` and top-level `await` work.
+   * Never rejects for script failures; those come back as `{ ok: false }`.
+   * The script can use `store(key, value)` and `load(key)` on `options.store`.
+   */
+  execute(code, options2 = {}) {
+    if (this.closed)
+      return Promise.reject(new Error("Sandbox is closed"));
+    const tools = new Map(this.toolsByName);
+    const execution = new Execution({
+      code,
+      tools: [...tools.values()],
+      globals: [...this.globalsByName.values()],
+      executors: { tools, globals: this.globalsByName },
+      timeoutMs: options2.timeoutMs ?? this.timeoutMs,
+      signal: options2.signal,
+      memoryLimitBytes: this.memoryLimitBytes,
+      store: serializeStore(options2.store),
+      launch: this.launch
+    });
+    this.running.add(execution);
+    return execution.promise.finally(() => this.running.delete(execution));
+  }
+  /**
+   * Run `code` deterministically, with the caller answering its calls: the same script, start time, seed, tools,
+   * globals, and store, answered with the same results in the same `seq` order, makes the same calls with the same
+   * arguments and produces the same output, on any VM with the same fingerprint. A host can therefore replay it
+   * after a restart. The VM runs in UTC, its clock reads `startedAt` and then the `now` of the result being
+   * processed, its randomness comes from `seed`, and `WeakRef` and `FinalizationRegistry` do not exist.
+   *
+   * The sandbox's own tools and globals are not used: the run declares its own, and every call goes to
+   * `options.onCall`. Never rejects for script failures; abort through `options.signal` to end the run with an
+   * error the script cannot catch.
+   */
+  start(code, options2) {
+    if (this.closed)
+      throw new Error("Sandbox is closed");
+    if (!Number.isFinite(options2.startedAt) || options2.startedAt < 0) {
+      throw new Error("startedAt must be a non-negative number of milliseconds since the epoch");
+    }
+    if (!Number.isInteger(options2.seed) || options2.seed < 0 || options2.seed > 4294967295) {
+      throw new Error("seed must be a 32-bit unsigned integer");
+    }
+    const tools = options2.tools ?? [];
+    if (new Set(tools.map((tool) => tool.name)).size !== tools.length)
+      throw new Error("Tool names must be unique");
+    const scriptNames = tools.map((tool) => tool.jsName ?? toCodemodeIdentifier(tool.name));
+    if (new Set(scriptNames).size !== tools.length)
+      throw new Error("Tool script names must be unique");
+    const globals = options2.globals ?? [];
+    checkGlobals(globals);
+    const execution = new Execution({
+      code,
+      tools,
+      globals,
+      executors: { tools: /* @__PURE__ */ new Map(), globals: /* @__PURE__ */ new Map() },
+      timeoutMs: options2.timeoutMs ?? Number.POSITIVE_INFINITY,
+      signal: options2.signal,
+      memoryLimitBytes: this.memoryLimitBytes,
+      store: serializeStore(options2.store),
+      deterministic: { startedAt: options2.startedAt, seed: options2.seed },
+      control: { onStarted: options2.onStarted, onCall: options2.onCall, onIdle: options2.onIdle },
+      launch: this.launch
+    });
+    this.running.add(execution);
+    const result2 = execution.promise.finally(() => this.running.delete(execution));
+    return {
+      result: result2,
+      deliver: (seq, now, id, outcome) => execution.deliver(seq, now, id, outcome),
+      get finished() {
+        return execution.finished;
+      }
+    };
+  }
+  /** Aborts in-flight executions (they resolve with `kind: "aborted"`) and rejects new ones. */
+  async close() {
+    this.closed = true;
+    await Promise.all([...this.running].map((execution) => execution.abort("Sandbox closed")));
+  }
+};
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/host.js
+import { Worker } from "node:worker_threads";
+
+// node_modules/@earendil-works/pi-codemode/dist/wasm.js
+import { readFile as readFile2 } from "node:fs/promises";
+import { createRequire as createRequire4 } from "node:module";
+var modules = /* @__PURE__ */ new Map();
+function loadQuickJSWasm(path27) {
+  const resolved = path27 ?? createRequire4(import.meta.url).resolve("quickjs-wasi/quickjs.wasm");
+  let module2 = modules.get(resolved);
+  if (!module2) {
+    const { WebAssembly: WebAssembly2 } = globalThis;
+    module2 = readFile2(resolved).then((bytes) => WebAssembly2.compile(bytes)).catch((error2) => {
+      modules.delete(resolved);
+      throw error2;
+    });
+    modules.set(resolved, module2);
+  }
+  return module2;
+}
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/host.js
+function defaultWorkerUrl() {
+  return new URL(import.meta.url.endsWith(".ts") ? "./worker.ts" : "./worker.js", import.meta.url);
+}
+function workerLauncher(options2) {
+  return async (data, events) => {
+    let module2;
+    try {
+      module2 = await (options2.wasm ?? loadQuickJSWasm());
+    } catch (error2) {
+      throw new Error(`Failed to load QuickJS: ${errorMessage(error2)}`);
+    }
+    const interrupt = new SharedArrayBuffer(4);
+    const workerData = { ...data, wasm: module2, interrupt };
+    const releaseWorker = options2.acquireWorker?.();
+    let worker;
+    try {
+      worker = new Worker(options2.workerUrl ?? defaultWorkerUrl(), { workerData });
+    } catch (error2) {
+      releaseWorker?.();
+      throw new Error(`Failed to start worker: ${errorMessage(error2)}`);
+    }
+    if (releaseWorker)
+      worker.once("exit", releaseWorker);
+    worker.on("message", (message) => {
+      if (typeof message === "object" && message !== null && ("watch:import" in message || "watch:require" in message))
+        return;
+      events.message(message);
+    });
+    worker.on("error", (error2) => {
+      events.failure({
+        kind: "sandbox",
+        name: error2 instanceof Error ? error2.name : void 0,
+        message: errorMessage(error2)
+      });
+    });
+    worker.on("exit", (code) => {
+      events.failure({ kind: "sandbox", message: `Worker exited with code ${code} before the script settled` });
+    });
+    const stop2 = async () => {
+      Atomics.store(new Int32Array(interrupt), 0, 1);
+      void worker.terminate().catch(() => void 0);
+      worker.unref();
+    };
+    try {
+      options2.onWorkerStarted?.(new Promise((resolve7) => worker.once("exit", () => resolve7())));
+    } catch (error2) {
+      void stop2();
+      throw error2;
+    }
+    return { post: (message) => worker.postMessage(message), stop: stop2 };
+  };
+}
+var CodemodeSandbox = class extends CodemodeSandboxBase {
+  constructor(options2 = {}) {
+    super(options2, workerLauncher(options2));
+  }
+};
+
+// node_modules/quickjs-wasi/dist/extensions.js
+var decoder = new TextDecoder();
+
+// node_modules/quickjs-wasi/dist/index.js
+var MAX_STACK_SIZE = 512 * 1024;
+var EvalFlags = {
+  /** Global script mode (default). */
+  TYPE_GLOBAL: 0,
+  /**
+   * Module mode. `evalCode()` returns a handle to a Promise that resolves
+   * to the module's namespace object (its exports), or rejects if module
+   * evaluation throws. Use together with `executePendingJobs()` and
+   * `resolvePromise()`.
+   */
+  TYPE_MODULE: 1 << 0,
+  /** Force strict mode. */
+  STRICT: 1 << 3,
+  /** Compile only; do not execute. */
+  COMPILE_ONLY: 1 << 5,
+  /** Omit stack frames before this eval from Error backtraces. */
+  BACKTRACE_BARRIER: 1 << 6,
+  /**
+   * Allow top-level `await` in global scripts. When used, `evalCode()`
+   * returns a handle to a Promise that resolves to the completion value.
+   * Use together with `executePendingJobs()` and `resolvePromise()`.
+   */
+  ASYNC: 1 << 7
+};
+var CompileFlags = {
+  /** Strip source code from the bytecode (smaller output, no source in errors). */
+  STRIP_SOURCE: 1 << 4,
+  /** Strip debug information (line numbers, etc.) from the bytecode. */
+  STRIP_DEBUG: 1 << 5
+};
+var Intrinsics = {
+  /** `Date` constructor and prototype methods. */
+  DATE: 1 << 0,
+  /** `eval()` and `Function()` constructor. */
+  EVAL: 1 << 1,
+  /** `RegExp` constructor, prototype methods, and regex literals. */
+  REGEXP: 1 << 2,
+  /** `JSON.parse()` and `JSON.stringify()`. */
+  JSON: 1 << 3,
+  /** `Proxy` and `Reflect`. */
+  PROXY: 1 << 4,
+  /** `Map`, `Set`, `WeakMap`, `WeakSet`. */
+  MAP_SET: 1 << 5,
+  /** `ArrayBuffer`, `TypedArray` variants, `DataView`. */
+  TYPED_ARRAYS: 1 << 6,
+  /** `Promise`, `async`/`await`. */
+  PROMISE: 1 << 7,
+  /** `BigInt`. Note: BigInt is part of BaseObjects in quickjs-ng and cannot be fully removed. */
+  BIG_INT: 1 << 8,
+  /** `WeakRef` and `FinalizationRegistry`. */
+  WEAK_REF: 1 << 9,
+  /** `performance.now()`. */
+  PERFORMANCE: 1 << 10,
+  /** `DOMException` class. */
+  DOM_EXCEPTION: 1 << 11,
+  /**
+   * `atob()` and `btoa()` global functions. Also pulls in `DOMException` as
+   * a dependency (errors thrown by these functions are `DOMException`s).
+   */
+  ATOB_BTOA: 1 << 12,
+  /** All intrinsics enabled (default). */
+  ALL: 4294967295
+};
+var wtf8Decoder = new TextDecoder();
+var wtf8Encoder = new TextEncoder();
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/prelude-source.js
+var MAX_STORE_VALUE_CHARS = 256 * 1024;
+var MAX_STORE_TOTAL_CHARS = 1024 * 1024;
+var MAX_OUTPUT_CHARS = 16 * 1024 * 1024;
+var MAX_OUTPUT_ITEMS = 1e5;
+var IMAGE_HELPER_EXPECTS = 'image expects a non-empty image URL string, an object with image_url, or an image block { type: "image", data, mimeType }';
+var PRELUDE_SOURCE = `(function (bridge, toolsJson, globalsJson, storeJson) {
+	"use strict";
+
+	// Freeze every object reachable from the built-in globals, plus the intrinsics that are only
+	// reachable from instances (iterator and generator prototypes, %TypedArray%).
+	//
+	// Freezing alone breaks ordinary code through the "override mistake": a data property that is
+	// read-only on a prototype cannot be assigned on an instance either, so
+	// this.name = "MyError" in an Error subclass would throw. Commonly overridden properties
+	// become accessors whose setter defines an own property on the instance instead.
+	(function lockdown() {
+		const OVERRIDABLE = new Set(["constructor", "name", "message", "toString", "toLocaleString", "valueOf", "toJSON"]);
+		const seen = new Set([globalThis]);
+		const queue = [];
+		const add = (value) => {
+			if ((typeof value === "object" && value !== null) || typeof value === "function") {
+				if (!seen.has(value)) {
+					seen.add(value);
+					queue.push(value);
+				}
+			}
+		};
+
+		// Accessors from an object literal have no own prototype object, unlike function expressions,
+		// whose prototype.constructor would be converted again without end.
+		function allowOverride(object, key, value, enumerable) {
+			const { get, set } = Object.getOwnPropertyDescriptor(
+				{
+					get accessor() {
+						return value;
+					},
+					set accessor(next) {
+						if (this === object) {
+							throw new TypeError("Cannot assign to read only property '" + String(key) + "' of a built-in");
+						}
+						if ((typeof this !== "object" || this === null) && typeof this !== "function") return;
+						Object.defineProperty(this, key, { value: next, writable: true, enumerable: true, configurable: true });
+					},
+				},
+				"accessor",
+			);
+			Object.defineProperty(object, key, { get, set, enumerable, configurable: false });
+			add(get);
+			add(set);
+		}
+
+		for (const key of Reflect.ownKeys(globalThis)) {
+			const descriptor = Object.getOwnPropertyDescriptor(globalThis, key);
+			add(descriptor.value);
+			add(descriptor.get);
+			add(descriptor.set);
+			if ("value" in descriptor && descriptor.configurable) {
+				Object.defineProperty(globalThis, key, { writable: false, configurable: false });
+			}
+		}
+		add(Object.getPrototypeOf(function* () {}));
+		add(Object.getPrototypeOf(async function () {}));
+		add(Object.getPrototypeOf(async function* () {}));
+		add(Object.getPrototypeOf(Int8Array));
+		add(Object.getPrototypeOf([][Symbol.iterator]()));
+		add(Object.getPrototypeOf(new Map()[Symbol.iterator]()));
+		add(Object.getPrototypeOf(new Set()[Symbol.iterator]()));
+		add(Object.getPrototypeOf(""[Symbol.iterator]()));
+		add(Object.getPrototypeOf(/a/[Symbol.matchAll]("")));
+		if (typeof Iterator === "function") {
+			if (typeof Iterator.prototype.map === "function") add(Object.getPrototypeOf([].values().map((x) => x)));
+			if (typeof Iterator.from === "function") add(Object.getPrototypeOf(Iterator.from({ next() {} })));
+		}
+
+		while (queue.length > 0) {
+			const object = queue.pop();
+			add(Object.getPrototypeOf(object));
+			const descriptors = Object.getOwnPropertyDescriptors(object);
+			for (const key of Reflect.ownKeys(descriptors)) {
+				const descriptor = descriptors[key];
+				if ("value" in descriptor) {
+					add(descriptor.value);
+					if (
+						descriptor.writable &&
+						descriptor.configurable &&
+						(object === Object.prototype || OVERRIDABLE.has(key))
+					) {
+						allowOverride(object, key, descriptor.value, descriptor.enumerable);
+					}
+				} else {
+					add(descriptor.get);
+					add(descriptor.set);
+				}
+			}
+			Object.freeze(object);
+		}
+	})();
+	const stringify = JSON.stringify;
+	const parse = JSON.parse;
+	const promiseThen = Promise.prototype.then;
+	const ErrorCtor = Error;
+	const TypeErrorCtor = TypeError;
+	const RangeErrorCtor = RangeError;
+	const pending = new Map();
+	let nextId = 1;
+	let finished = false;
+	// Thrown by exit() to unwind the script after it already reported success.
+	const EXIT = Object.freeze({});
+
+	function done(ok, payload, writes) {
+		if (finished) return;
+		finished = true;
+		bridge("done", ok, payload, writes);
+	}
+
+	function serialize(value) {
+		return value === undefined ? undefined : stringify(value);
+	}
+
+	// QuickJS stacks list frames only. Prefix "Name: message" like V8 so the
+	// text reads the same as a Node error, and drop this prelude's frames.
+	function errorText(error) {
+		const head = error.message ? error.name + ": " + error.message : String(error.name);
+		const frames =
+			typeof error.stack === "string"
+				? error.stack.split("\\n").filter((line) => line.trim() && !line.includes("codemode-prelude.js"))
+				: [];
+		return [head, ...frames].join("\\n");
+	}
+
+	function format(value) {
+		if (typeof value === "string") return value;
+		if (value instanceof ErrorCtor) return errorText(value);
+		try {
+			const json = stringify(value);
+			return json === undefined ? String(value) : json;
+		} catch {
+			return String(value);
+		}
+	}
+
+	// The host requires string fields. A script can set an error's name or message to anything, so
+	// they are coerced, and a value whose coercion throws gets a placeholder.
+	function describeError(error) {
+		try {
+			if (error instanceof ErrorCtor) {
+				return stringify({ name: String(error.name), message: String(error.message), stack: errorText(error) });
+			}
+			return stringify({ message: String(format(error)) });
+		} catch {
+			return stringify({ message: "The script threw a value that cannot be described" });
+		}
+	}
+
+	function caller(kind, name, spread) {
+		return (...args) =>
+			new Promise((resolve, reject) => {
+				let json;
+				try {
+					json = serialize(spread ? args : args[0]);
+				} catch (error) {
+					reject(error);
+					return;
+				}
+				const id = nextId++;
+				pending.set(id, { resolve, reject });
+				bridge(kind, id, name, json);
+			});
+	}
+
+	const tools = Object.create(null);
+	const allTools = [];
+	for (const { name, jsName, description } of parse(toolsJson)) {
+		const fn = caller("call", name);
+		// The first tool wins when two names normalize to the same identifier.
+		if (!(jsName in tools)) {
+			tools[jsName] = fn;
+			allTools.push(Object.freeze({ name: jsName, description }));
+		}
+		if (!(name in tools)) tools[name] = fn;
+	}
+	Object.freeze(tools);
+	Object.freeze(allTools);
+
+	// Reading a member that does not exist throws an error that names the close matches, instead of
+	// a later "not a function". \`in\` checks still work.
+	const comparable = (name) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+	function guard(target, label, names, hint) {
+		return new Proxy(target, {
+			get(object, property, receiver) {
+				if (typeof property !== "string" || property in object || property in Object.prototype || property === "then" || property === "toJSON") {
+					return Reflect.get(object, property, receiver);
+				}
+				const wanted = comparable(property);
+				const exact = names.filter((name) => comparable(name) === wanted);
+				const close = exact.length > 0 ? exact : names.filter((name) => wanted && (comparable(name).includes(wanted) || wanted.includes(comparable(name))));
+				let message = label + "." + property + " does not exist.";
+				if (close.length > 0) message += " Did you mean " + close.slice(0, 5).map((name) => label + "." + name).join(", ") + "?";
+				else if (names.length <= 20) message += " Available: " + names.join(", ") + ".";
+				if (hint) message += " " + hint;
+				message += ' Check for a member with "' + property + '" in ' + label + ".";
+				throw new TypeErrorCtor(message);
+			},
+		});
+	}
+	const toolsProxy = guard(
+		tools,
+		"tools",
+		allTools.map((tool) => tool.name),
+		"ALL_TOOLS lists every tool; searchTools(query) finds tools by topic.",
+	);
+
+	const namespaces = new Map();
+	for (const { name, spread } of parse(globalsJson)) {
+		const fn = caller("global", name, spread);
+		const dot = name.indexOf(".");
+		if (dot === -1) {
+			Object.defineProperty(globalThis, name, { value: fn, enumerable: true });
+			continue;
+		}
+		const namespace = name.slice(0, dot);
+		if (!namespaces.has(namespace)) namespaces.set(namespace, Object.create(null));
+		namespaces.get(namespace)[name.slice(dot + 1)] = fn;
+	}
+	for (const [namespace, members] of namespaces) {
+		Object.freeze(members);
+		const value = guard(members, namespace, Object.keys(members));
+		Object.defineProperty(globalThis, namespace, { value, enumerable: true });
+	}
+
+	// key -> JSON text. Sizes count key and JSON characters.
+	const stored = new Map(Object.entries(parse(storeJson)));
+	const writes = new Map();
+	let storedChars = 0;
+	for (const [key, json] of stored) storedChars += key.length + json.length;
+
+	const STORE_HINT =
+		"store() is for small state such as IDs or summaries. Show images with image(), keep large data in variables, or write it to a file with a tool.";
+
+	function checkKey(name, key) {
+		if (typeof key !== "string") throw new TypeError(name + "() key must be a string");
+	}
+
+	function store(key, value) {
+		checkKey("store", key);
+		const previous = stored.has(key) ? key.length + stored.get(key).length : 0;
+		if (value === undefined) {
+			stored.delete(key);
+			storedChars -= previous;
+			writes.set(key, undefined);
+			return;
+		}
+		let json;
+		try {
+			json = stringify(value);
+		} catch (error) {
+			throw new TypeError("store(" + stringify(key) + ") value is not JSON-serializable: " + format(error));
+		}
+		if (json === undefined) {
+			throw new TypeError("store(" + stringify(key) + ") value is not JSON-serializable");
+		}
+		if (json.length > ${MAX_STORE_VALUE_CHARS}) {
+			throw new RangeError(
+				"store(" + stringify(key) + ") value has " + json.length + " characters of JSON, more than the limit of ${MAX_STORE_VALUE_CHARS}. " +
+					STORE_HINT,
+			);
+		}
+		const next = storedChars - previous + key.length + json.length;
+		if (next > ${MAX_STORE_TOTAL_CHARS}) {
+			throw new RangeError(
+				"store is full: stored values would exceed ${MAX_STORE_TOTAL_CHARS} characters of JSON. Delete keys with store(key, undefined). " +
+					STORE_HINT,
+			);
+		}
+		stored.set(key, json);
+		storedChars = next;
+		writes.set(key, json);
+	}
+
+	function load(key) {
+		checkKey("load", key);
+		const json = stored.get(key);
+		return json === undefined ? undefined : parse(json);
+	}
+
+	function serializeWrites() {
+		const entries = [];
+		for (const [key, json] of writes) entries.push(json === undefined ? [key] : [key, json]);
+		return stringify(entries);
+	}
+
+	Object.defineProperty(globalThis, "store", { value: store, enumerable: true });
+	Object.defineProperty(globalThis, "load", { value: load, enumerable: true });
+
+	let outputChars = 0;
+	let outputItems = 0;
+
+	// Past the output limits the script fails: done() reports the error, so catching it does not
+	// resume output, and the host ends the script.
+	function output(kind, data, mimeType) {
+		if (finished) return;
+		outputChars += data.length;
+		outputItems++;
+		if (outputChars > ${MAX_OUTPUT_CHARS} || outputItems > ${MAX_OUTPUT_ITEMS}) {
+			const error = new RangeErrorCtor(
+				"script output exceeded the limit of ${MAX_OUTPUT_CHARS} characters or ${MAX_OUTPUT_ITEMS} text(), image(), and console calls. " +
+					"Print a summary instead, or write large data to a file with a tool.",
+			);
+			done(false, describeError(error));
+			throw error;
+		}
+		bridge("output", kind, data, mimeType);
+	}
+
+	// Primitives become their string form, everything else JSON.
+	function outputText(value) {
+		if (value === undefined || value === null || typeof value !== "object" && typeof value !== "function") {
+			return String(value);
+		}
+		const json = stringify(value);
+		return json === undefined ? String(value) : json;
+	}
+
+	function text(value) {
+		let rendered;
+		try {
+			rendered = outputText(value);
+		} catch (error) {
+			throw new TypeErrorCtor(error instanceof ErrorCtor ? error.message : String(error));
+		}
+		output("text", rendered);
+	}
+
+	function imageUrl(value) {
+		if (typeof value === "string") return value;
+		if (typeof value !== "object" || value === null || Array.isArray(value)) {
+			throw new TypeErrorCtor(${JSON.stringify(IMAGE_HELPER_EXPECTS)});
+		}
+		if (value.image_url !== undefined) {
+			if (typeof value.image_url !== "string") throw new TypeErrorCtor(${JSON.stringify(IMAGE_HELPER_EXPECTS)});
+			return value.image_url;
+		}
+		if (typeof value.type !== "string") throw new TypeErrorCtor(${JSON.stringify(IMAGE_HELPER_EXPECTS)});
+		if (value.type !== "image") {
+			throw new TypeErrorCtor('image only accepts image blocks, got "' + value.type + '"');
+		}
+		if (typeof value.data !== "string" || value.data === "") throw new TypeErrorCtor("image expected image block data");
+		if (value.data.toLowerCase().startsWith("data:")) return value.data;
+		return "data:;base64," + value.data;
+	}
+
+	// Base64 of the signatures of the formats providers accept inline (PNG, JPEG except
+	// JPEG-LS, GIF, "RIFF....WEBP"). Signatures start at byte 0, so their encodings are prefixes.
+	const IMAGE_SIGNATURES = [
+		["image/png", /^iVBORw0KGg/],
+		["image/jpeg", /^[/]9j[/](?!9)/],
+		["image/gif", /^R0lGOD[dl]h/],
+		["image/webp", /^UklG.{8}RUJQ/],
+	];
+
+	function image(value) {
+		const url = imageUrl(value);
+		if (url === "") throw new TypeErrorCtor(${JSON.stringify(IMAGE_HELPER_EXPECTS)});
+		const colon = url.indexOf(":");
+		const scheme = colon === -1 ? "" : url.slice(0, colon).toLowerCase();
+		if (scheme === "http" || scheme === "https") {
+			throw new TypeErrorCtor("remote image URLs are not supported in tool outputs. Pass a base64 data URI instead");
+		}
+		const comma = url.indexOf(",");
+		const header = comma === -1 ? [] : url.slice(colon + 1, comma).split(";");
+		if (scheme !== "data" || comma === -1 || header.slice(1).every((part) => part.toLowerCase() !== "base64")) {
+			throw new TypeErrorCtor("invalid image output. Pass a base64 data URI instead");
+		}
+		// Providers reject the whole request on a bad image, and a persisted image block would be
+		// resent on every later turn. Line breaks from wrapped base64 are dropped. The declared type
+		// is ignored in favor of the detected one, as providers also reject mismatches.
+		const data = url.slice(comma + 1).replace(/\\s+/g, "");
+		if (data.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(data)) {
+			throw new TypeErrorCtor("invalid image output. The image data is not valid base64 (truncated or corrupted?)");
+		}
+		const head = data.slice(0, 16);
+		const signature = IMAGE_SIGNATURES.find(([, pattern]) => pattern.test(head));
+		if (!signature) {
+			throw new TypeErrorCtor("invalid image output. The image data is not a PNG, JPEG, GIF, or WebP image");
+		}
+		output("image", data, signature[0]);
+	}
+
+	function exit() {
+		let writesJson;
+		try {
+			writesJson = serializeWrites();
+		} catch (error) {
+			done(false, describeError(error));
+			throw EXIT;
+		}
+		done(true, undefined, writesJson);
+		throw EXIT;
+	}
+
+	const console = {};
+	for (const level of ["log", "info", "warn", "error", "debug"]) {
+		console[level] = (...args) => {
+			output("console", args.map(format).join(" "));
+		};
+	}
+	Object.freeze(console);
+
+	Object.defineProperty(globalThis, "tools", { value: toolsProxy, enumerable: true });
+	Object.defineProperty(globalThis, "ALL_TOOLS", { value: allTools, enumerable: true });
+	Object.defineProperty(globalThis, "console", { value: console, enumerable: true });
+	Object.defineProperty(globalThis, "text", { value: text, enumerable: true });
+	Object.defineProperty(globalThis, "image", { value: image, enumerable: true });
+	Object.defineProperty(globalThis, "exit", { value: exit, enumerable: true });
+
+	return {
+		settle(id, ok, payload, propertiesJson) {
+			const entry = pending.get(id);
+			if (!entry) return;
+			pending.delete(id);
+			if (!ok) {
+				const error = new ErrorCtor(payload);
+				if (propertiesJson !== undefined) {
+					const properties = parse(propertiesJson);
+					for (const key of Object.keys(properties)) {
+						if (key === "name" || key === "message" || key === "stack") continue;
+						Object.defineProperty(error, key, { value: properties[key], writable: true, enumerable: true, configurable: true });
+					}
+				}
+				entry.reject(error);
+				return;
+			}
+			let value;
+			try {
+				value = payload === undefined ? undefined : parse(payload);
+			} catch (error) {
+				entry.reject(error);
+				return;
+			}
+			entry.resolve(value);
+		},
+		run(fn) {
+			let promise;
+			try {
+				promise = fn(toolsProxy, console);
+			} catch (error) {
+				done(false, describeError(error));
+				return;
+			}
+			promiseThen.call(
+				promise,
+				(value) => {
+					let json;
+					try {
+						json = serialize(value);
+					} catch (error) {
+						done(false, describeError(error));
+						return;
+					}
+					done(true, json, serializeWrites());
+				},
+				(error) => {
+					done(false, describeError(error));
+				},
+			);
+		},
+		stalled() {
+			if (finished || pending.size > 0) return false;
+			done(
+				false,
+				stringify({
+					name: "Error",
+					message:
+						"The script is waiting on a promise that can never settle: no tool call is pending, and timers do not exist here.",
+				}),
+			);
+			return true;
+		},
+	};
+})`;
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/vm.js
+function fnv1a(text) {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index++) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+var PRELUDE_HASH = fnv1a(PRELUDE_SOURCE);
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/inline.js
+var INLINE_MAX_STACK_SIZE = 256 * 1024;
+
+// node_modules/@earendil-works/pi-codemode/dist/runtime/remote.js
+var FLUSH_CHARS = 1 << 20;
+
+// node_modules/@earendil-works/pi-codemode/dist/source.js
+var CODEMODE_SOURCE_GRAMMAR = String.raw`
+start: options_source | plain_source
+options_source: OPTIONS_LINE NEWLINE SOURCE
+plain_source: SOURCE
+
+OPTIONS_LINE: /[ \t]*\/\/ @options:[^\r\n]*/
+NEWLINE: /\r?\n/
+SOURCE: /[\s\S]+/
+`;
+
+// src/tools/codemode.ts
+import { fileURLToPath as fileURLToPath9 } from "node:url";
+var codemodeDefinition = {
+  name: "codemode",
+  description: "Execute JavaScript in an isolated QuickJS sandbox. Available functions: tools.<name>(args), ALL_TOOLS, text(value), image(value), exit(). Discover tool names and descriptions with ALL_TOOLS.filter(...). Nested tool output stays out of the model context unless emitted with text().",
+  inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] }
+};
+async function runCodemodeWithDispatch(args2, definitions, dispatch) {
+  const code = args2?.code;
+  if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
+  const tools = definitions.map((definition) => ({
+    name: definition.name,
+    description: definition.description,
+    inputSchema: definition.inputSchema,
+    execute: async (value) => {
+      const result2 = await dispatch(definition.name, value ?? {});
+      if (result2.isError) throw new Error(result2.content?.filter((c3) => c3.type === "text").map((c3) => c3.text).join("\n") || `Tool ${definition.name} failed`);
+      if (result2.structuredContent !== void 0) return result2.structuredContent;
+      const content = result2.content ?? [];
+      if (content.length === 1 && content[0].type === "text") return content[0].text;
+      return content;
+    }
+  }));
+  const sandbox = new CodemodeSandbox({
+    timeoutMs: 6e4,
+    tools,
+    wasm: loadQuickJSWasm(fileURLToPath9(new URL("./quickjs.wasm", import.meta.url))),
+    workerUrl: new URL("./codemode-worker.js", import.meta.url)
+  });
+  try {
+    const result2 = await sandbox.execute(code);
+    const content = result2.output.map((item) => item.type === "text" ? { type: "text", text: item.text } : { type: "image", data: item.data, mimeType: item.mimeType });
+    if (result2.ok && result2.value !== void 0) content.push({ type: "text", text: JSON.stringify(result2.value) });
+    if (!result2.ok) content.push({ type: "text", text: result2.error.stack ?? result2.error.message });
+    return { content, isError: !result2.ok };
+  } finally {
+    await sandbox.close();
+  }
+}
+function runCodemode(manager, args2, piOperators, piExtraOperators) {
+  return runCodemodeWithDispatch(
+    args2,
+    getToolDefinitions(piOperators, piExtraOperators),
+    (name, params) => dispatchTool(manager, name, params, piOperators, piExtraOperators)
+  );
+}
+
 // src/tools/index.ts
-function registerTools(server, manager, piOperators = false, piExtraOperators = false) {
+function registerTools(server, manager, piOperators = false, piExtraOperators = false, codemode = false) {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(piOperators, piExtraOperators)
+    tools: codemode ? [codemodeDefinition] : getToolDefinitions(piOperators, piExtraOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
     try {
-      switch (name) {
-        case "ls":
-        case "grep":
-        case "find":
-          if (!piExtraOperators) throw new Error("Unknown tool: " + name);
-          return await handleExtraOperatorTool(name, args2);
-        case "read":
-        case "write":
-        case "edit":
-        case "bash":
-          if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-          return await handleOperatorTool(name, args2, manager.getConfiguredShell());
-        case "type":
-          return await handleType(manager, args2);
-        case "sendKey":
-          return handleSendKey(manager, args2);
-        case "sleep":
-          return await handleSleep(manager, args2);
-        case "getContent":
-          return await handleGetContent(manager, args2);
-        case "getBufferInfo":
-          return handleGetBufferInfo(manager, args2);
-        case "takeScreenshot":
-          return handleScreenshot(manager, args2);
-        case "startRecording":
-          return handleStartRecording(manager, args2);
-        case "stopRecording":
-          return await handleStopRecording(manager, args2);
-        case "createSession":
-          return await handleCreateSession(manager, args2);
-        case "listSessions":
-          return handleListSessions(manager, args2);
-        case "destroySession":
-          return handleDestroySession(manager, args2);
-        case "resize":
-          return handleResize(manager, args2);
-        case "getClipboard":
-          return await handleGetClipboard(manager, args2);
-        case "setClipboard":
-          return await handleSetClipboard(manager, args2);
-        case "notify":
-          return await handleNotify(manager, args2);
-        default:
-          throw new Error(`Unknown tool: ${name}`);
+      if (codemode) {
+        if (name !== "codemode") throw new Error(`Unknown tool: ${name}`);
+        return await runCodemode(manager, args2, piOperators, piExtraOperators);
       }
+      return await dispatchTool(manager, name, args2, piOperators, piExtraOperators);
     } catch (error2) {
       const message = error2 instanceof Error ? error2.message : String(error2);
       return {
@@ -46909,6 +48025,53 @@ function registerTools(server, manager, piOperators = false, piExtraOperators = 
       };
     }
   });
+}
+async function dispatchTool(manager, name, args2, piOperators = false, piExtraOperators = false) {
+  switch (name) {
+    case "ls":
+    case "grep":
+    case "find":
+      if (!piExtraOperators) throw new Error("Unknown tool: " + name);
+      return await handleExtraOperatorTool(name, args2);
+    case "read":
+    case "write":
+    case "edit":
+    case "bash":
+      if (!piOperators) throw new Error(`Unknown tool: ${name}`);
+      return await handleOperatorTool(name, args2, manager.getConfiguredShell());
+    case "type":
+      return await handleType(manager, args2);
+    case "sendKey":
+      return handleSendKey(manager, args2);
+    case "sleep":
+      return await handleSleep(manager, args2);
+    case "getContent":
+      return await handleGetContent(manager, args2);
+    case "getBufferInfo":
+      return handleGetBufferInfo(manager, args2);
+    case "takeScreenshot":
+      return handleScreenshot(manager, args2);
+    case "startRecording":
+      return handleStartRecording(manager, args2);
+    case "stopRecording":
+      return await handleStopRecording(manager, args2);
+    case "createSession":
+      return await handleCreateSession(manager, args2);
+    case "listSessions":
+      return handleListSessions(manager, args2);
+    case "destroySession":
+      return handleDestroySession(manager, args2);
+    case "resize":
+      return handleResize(manager, args2);
+    case "getClipboard":
+      return await handleGetClipboard(manager, args2);
+    case "setClipboard":
+      return await handleSetClipboard(manager, args2);
+    case "notify":
+      return await handleNotify(manager, args2);
+    default:
+      throw new Error(`Unknown tool: ${name}`);
+  }
 }
 
 // src/prompts/index.ts
@@ -47140,7 +48303,7 @@ shell state across calls, interactive input, TTY behavior, or live observability
 var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
 
 Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
-function createServerWithManager(manager, piOperators = false, piExtraOperators = false) {
+function createServerWithManager(manager, piOperators = false, piExtraOperators = false, codemode = false) {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -47151,10 +48314,10 @@ function createServerWithManager(manager, piOperators = false, piExtraOperators 
         tools: {},
         prompts: {}
       },
-      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "")
+      instructions: (codemode ? "Only codemode is exposed. Execute JavaScript with tools.<name>(args), discover available tools via ALL_TOOLS, emit results using text(). Existing terminal tools remain available inside the sandbox.\n\n" : SERVER_INSTRUCTIONS) + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "")
     }
   );
-  registerTools(server, manager, piOperators, piExtraOperators);
+  registerTools(server, manager, piOperators, piExtraOperators, codemode);
   registerPrompts(server);
   return server;
 }
@@ -47167,7 +48330,7 @@ function createServer(options2 = {}) {
     maxSessions: options2.maxSessions,
     sessionIdleTimeout: options2.sessionIdleTimeout
   });
-  const server = createServerWithManager(manager, options2.piOperators, options2.piExtraOperators);
+  const server = createServerWithManager(manager, options2.piOperators, options2.piExtraOperators, options2.codemode);
   return { server, manager };
 }
 async function startServer(options2 = {}) {
@@ -47287,12 +48450,18 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     });
   }
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(options2.piOperators, options2.piExtraOperators)
+    tools: options2.codemode ? [codemodeDefinition] : getToolDefinitions(options2.piOperators, options2.piExtraOperators)
   }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args2 } = request.params;
     try {
-      const result2 = await sendRequest(name, args2);
+      const result2 = options2.codemode ? name === "codemode" ? await runCodemodeWithDispatch(
+        args2,
+        getToolDefinitions(options2.piOperators, options2.piExtraOperators),
+        (tool, params) => sendRequest(tool, params)
+      ) : (() => {
+        throw new Error(`Unknown tool: ${name}`);
+      })() : await sendRequest(name, args2);
       return result2;
     } catch (error2) {
       const message = error2 instanceof Error ? error2.message : String(error2);
@@ -47449,11 +48618,11 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
             });
             socket.write(JSON.stringify(response) + "\n");
           } catch (error2) {
-            const errorMessage = error2 instanceof Error ? error2.message : String(error2);
+            const errorMessage2 = error2 instanceof Error ? error2.message : String(error2);
             socket.write(
               JSON.stringify({
                 id: 0,
-                error: { message: `Parse error: ${errorMessage}` }
+                error: { message: `Parse error: ${errorMessage2}` }
               }) + "\n"
             );
           }
@@ -48150,8 +49319,8 @@ function createSocksProxyServer(options2) {
       return new Promise((resolve7, reject) => {
         socksServer.close((error2) => {
           if (error2) {
-            const errorMessage = error2.message?.toLowerCase() || "";
-            const isAlreadyClosed = errorMessage.includes("not running") || errorMessage.includes("already closed") || errorMessage.includes("not listening");
+            const errorMessage2 = error2.message?.toLowerCase() || "";
+            const isAlreadyClosed = errorMessage2.includes("not running") || errorMessage2.includes("already closed") || errorMessage2.includes("not listening");
             if (!isAlreadyClosed) {
               reject(error2);
               return;
@@ -49062,8 +50231,8 @@ function getAllKeysIn(object3) {
 var getAllKeysIn_default = getAllKeysIn;
 
 // node_modules/lodash-es/_DataView.js
-var DataView = getNative_default(root_default, "DataView");
-var DataView_default = DataView;
+var DataView2 = getNative_default(root_default, "DataView");
+var DataView_default = DataView2;
 
 // node_modules/lodash-es/_Promise.js
 var Promise2 = getNative_default(root_default, "Promise");
@@ -49613,7 +50782,7 @@ function decodeSandboxedCommand(encodedCommand) {
 
 // node_modules/@anthropic-ai/sandbox-runtime/dist/sandbox/generate-seccomp-filter.js
 import { join as join7, dirname as dirname4 } from "node:path";
-import { fileURLToPath as fileURLToPath9 } from "node:url";
+import { fileURLToPath as fileURLToPath10 } from "node:url";
 import * as fs19 from "node:fs";
 import { execSync as execSync2 } from "node:child_process";
 import { homedir as homedir6 } from "node:os";
@@ -49667,7 +50836,7 @@ function getLocalSeccompPaths(filename) {
   const arch = getVendorArchitecture();
   if (!arch)
     return [];
-  const baseDir = dirname4(fileURLToPath9(import.meta.url));
+  const baseDir = dirname4(fileURLToPath10(import.meta.url));
   const relativePath = join7("vendor", "seccomp", arch, filename);
   return [
     join7(baseDir, relativePath),
@@ -51896,7 +53065,7 @@ function getDefaultFromItems(items) {
 }
 
 // src/index.ts
-var require4 = createRequire4(import.meta.url);
+var require4 = createRequire5(import.meta.url);
 var pkg = require4("../package.json");
 var { version: version4 } = pkg;
 var DEFAULT_SOCKET_PATH = getDefaultSocketPath();
@@ -51948,6 +53117,9 @@ for (let i2 = 0; i2 < args.length; i2++) {
       break;
     case "--pi-extra-operators":
       options.piExtraOperators = true;
+      break;
+    case "--codemode":
+      options.codemode = true;
       break;
     case "--pi-operators":
       options.piOperators = true;
@@ -52079,6 +53251,7 @@ Options:
                          instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
+  --codemode             Expose a single QuickJS codemode tool (Node >=22.19)
   --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
   --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
@@ -52193,7 +53366,7 @@ async function main() {
         if (options.tmux) {
           console.error("[terminal-mcp] Note: --tmux ignored when connecting to existing session.");
         }
-        await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
+        await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode });
         return;
       } catch {
         console.error("[terminal-mcp] Failed to connect to existing session, creating new PTY...");
@@ -52209,7 +53382,8 @@ async function main() {
       tmux: options.tmux,
       title: options.title,
       piOperators: options.piOperators,
-      piExtraOperators: options.piExtraOperators
+      piExtraOperators: options.piExtraOperators,
+      codemode: options.codemode
     });
     return;
   }
@@ -52231,12 +53405,13 @@ async function main() {
       maxSessions: options.maxSessions,
       sessionIdleTimeout: options.sessionIdleTimeout,
       piOperators: options.piOperators,
-      piExtraOperators: options.piExtraOperators
+      piExtraOperators: options.piExtraOperators,
+      codemode: options.codemode
     });
   } else if (isInteractive) {
     await startInteractiveMode(socketPath);
   } else {
-    await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
+    await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode });
   }
 }
 async function startInteractiveMode(socketPath) {

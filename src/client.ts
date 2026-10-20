@@ -7,6 +7,7 @@ import {
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { getToolDefinitions } from "./tools/definitions.js";
+import { runCodemodeWithDispatch, codemodeDefinition } from "./tools/codemode.js";
 import { installStdioShutdownHandlers } from "./utils/shutdown.js";
 
 interface SocketRequest {
@@ -25,6 +26,7 @@ interface McpClientModeOptions {
   title?: string;
   piOperators?: boolean;
   piExtraOperators?: boolean;
+  codemode?: boolean;
 }
 
 type SocketRequestSender = (
@@ -156,7 +158,7 @@ export async function startMcpClientMode(
 
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(options.piOperators, options.piExtraOperators),
+    tools: options.codemode ? [codemodeDefinition] : getToolDefinitions(options.piOperators, options.piExtraOperators),
   }));
 
   // Register call tool handler - proxy to socket
@@ -164,7 +166,12 @@ export async function startMcpClientMode(
     const { name, arguments: args } = request.params;
 
     try {
-      const result = await sendRequest(name, args as Record<string, unknown>);
+      const result = options.codemode
+        ? name === "codemode"
+          ? await runCodemodeWithDispatch(args, getToolDefinitions(options.piOperators, options.piExtraOperators),
+              (tool, params) => sendRequest(tool, params))
+          : (() => { throw new Error(`Unknown tool: ${name}`); })()
+        : await sendRequest(name, args as Record<string, unknown>);
       return result as {
         content: Array<{ type: "text"; text: string }>;
         isError?: boolean;

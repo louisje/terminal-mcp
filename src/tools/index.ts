@@ -5,6 +5,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { TerminalManager } from "../terminal/index.js";
 import { getToolDefinitions } from "./definitions.js";
+import { runCodemode, codemodeDefinition } from "./codemode.js";
 import { handleOperatorTool } from "./operators.js";
 import { handleExtraOperatorTool } from "./extra-operators.js";
 
@@ -24,10 +25,10 @@ import { handleGetClipboard } from "./getClipboard.js";
 import { handleSetClipboard } from "./setClipboard.js";
 import { handleNotify } from "./notify.js";
 
-export function registerTools(server: Server, manager: TerminalManager, piOperators = false, piExtraOperators = false): void {
+export function registerTools(server: Server, manager: TerminalManager, piOperators = false, piExtraOperators = false, codemode = false): void {
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: getToolDefinitions(piOperators, piExtraOperators),
+    tools: codemode ? [codemodeDefinition] : getToolDefinitions(piOperators, piExtraOperators),
   }));
 
   // Register call tool handler
@@ -35,66 +36,11 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
     const { name, arguments: args } = request.params;
 
     try {
-      switch (name) {
-        case "ls":
-        case "grep":
-        case "find":
-          if (!piExtraOperators) throw new Error("Unknown tool: " + name);
-          return await handleExtraOperatorTool(name, args);
-        case "read":
-        case "write":
-        case "edit":
-        case "bash":
-          if (!piOperators) throw new Error(`Unknown tool: ${name}`);
-          return await handleOperatorTool(name, args, manager.getConfiguredShell());
-        case "type":
-          return await handleType(manager, args);
-
-        case "sendKey":
-          return handleSendKey(manager, args);
-
-        case "sleep":
-          return await handleSleep(manager, args);
-
-        case "getContent":
-          return await handleGetContent(manager, args);
-
-        case "getBufferInfo":
-          return handleGetBufferInfo(manager, args);
-
-        case "takeScreenshot":
-          return handleScreenshot(manager, args);
-
-        case "startRecording":
-          return handleStartRecording(manager, args);
-
-        case "stopRecording":
-          return await handleStopRecording(manager, args);
-
-        case "createSession":
-          return await handleCreateSession(manager, args);
-
-        case "listSessions":
-          return handleListSessions(manager, args);
-
-        case "destroySession":
-          return handleDestroySession(manager, args);
-
-        case "resize":
-          return handleResize(manager, args);
-
-        case "getClipboard":
-          return await handleGetClipboard(manager, args);
-
-        case "setClipboard":
-          return await handleSetClipboard(manager, args);
-
-        case "notify":
-          return await handleNotify(manager, args);
-
-        default:
-          throw new Error(`Unknown tool: ${name}`);
+      if (codemode) {
+        if (name !== "codemode") throw new Error(`Unknown tool: ${name}`);
+        return await runCodemode(manager, args, piOperators, piExtraOperators);
       }
+      return await dispatchTool(manager, name, args, piOperators, piExtraOperators);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return {
@@ -108,4 +54,67 @@ export function registerTools(server: Server, manager: TerminalManager, piOperat
       };
     }
   });
+}
+
+export async function dispatchTool(manager: TerminalManager, name: string, args: unknown, piOperators = false, piExtraOperators = false) {
+  switch (name) {
+    case "ls":
+    case "grep":
+    case "find":
+      if (!piExtraOperators) throw new Error("Unknown tool: " + name);
+      return await handleExtraOperatorTool(name, args);
+    case "read":
+    case "write":
+    case "edit":
+    case "bash":
+      if (!piOperators) throw new Error(`Unknown tool: ${name}`);
+      return await handleOperatorTool(name, args, manager.getConfiguredShell());
+    case "type":
+      return await handleType(manager, args);
+
+    case "sendKey":
+      return handleSendKey(manager, args);
+
+    case "sleep":
+      return await handleSleep(manager, args);
+
+    case "getContent":
+      return await handleGetContent(manager, args);
+
+    case "getBufferInfo":
+      return handleGetBufferInfo(manager, args);
+
+    case "takeScreenshot":
+      return handleScreenshot(manager, args);
+
+    case "startRecording":
+      return handleStartRecording(manager, args);
+
+    case "stopRecording":
+      return await handleStopRecording(manager, args);
+
+    case "createSession":
+      return await handleCreateSession(manager, args);
+
+    case "listSessions":
+      return handleListSessions(manager, args);
+
+    case "destroySession":
+      return handleDestroySession(manager, args);
+
+    case "resize":
+      return handleResize(manager, args);
+
+    case "getClipboard":
+      return await handleGetClipboard(manager, args);
+
+    case "setClipboard":
+      return await handleSetClipboard(manager, args);
+
+    case "notify":
+      return await handleNotify(manager, args);
+
+        default:
+      throw new Error(`Unknown tool: ${name}`);
+  }
 }

@@ -93,6 +93,7 @@ const options: {
   sessionIdleTimeout?: number;
   piOperators?: boolean;
   piExtraOperators?: boolean;
+  codemode?: boolean;
 } = {};
 
 for (let i = 0; i < args.length; i++) {
@@ -105,6 +106,9 @@ for (let i = 0; i < args.length; i++) {
       break;
     case "--pi-extra-operators":
       options.piExtraOperators = true;
+      break;
+    case "--codemode":
+      options.codemode = true;
       break;
     case "--pi-operators":
       options.piOperators = true;
@@ -239,6 +243,7 @@ Options:
                          instead of ~/.bashrc or ~/.zshrc only)
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
+  --codemode             Expose a single QuickJS codemode tool (Node >=22.19)
   --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
   --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
@@ -360,7 +365,7 @@ async function main() {
         if (options.tmux) {
           console.error('[terminal-mcp] Note: --tmux ignored when connecting to existing session.');
         }
-          await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
+          await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode });
         return;
       } catch {
         // If connection fails, fall through to create new PTY
@@ -378,7 +383,7 @@ async function main() {
       login: options.login,
         tmux: options.tmux,
         title: options.title,
-        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators,
+        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode,
     });
     return;
   }
@@ -406,14 +411,14 @@ async function main() {
       title: options.title,
       maxSessions: options.maxSessions,
         sessionIdleTimeout: options.sessionIdleTimeout,
-        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators,
+        piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode,
     });
   } else if (isInteractive) {
     // Interactive mode: Shell on stdin/stdout, tool proxy on Unix socket
       await startInteractiveMode(socketPath);
   } else {
     // MCP client mode: Connect to socket, serve MCP over stdio
-      await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators });
+      await startMcpClientMode(socketPath, { title: options.title, piOperators: options.piOperators, piExtraOperators: options.piExtraOperators, codemode: options.codemode });
   }
 }
 

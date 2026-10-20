@@ -9,7 +9,10 @@
 // they remain external and must exist in node_modules at runtime.
 
 import { build } from "esbuild";
-import { chmod } from "fs/promises";
+import { chmod, copyFile } from "fs/promises";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+const require = createRequire(import.meta.url);
 
 const external = [
   // Native / platform-specific — cannot be bundled.
@@ -42,4 +45,7 @@ await build({
   logLevel: "silent",
 });
 
+await build({ entryPoints: ["src/codemode-worker.ts"], outfile: "dist/codemode-worker.js", bundle: true, platform: "node", format: "esm", target: "node22", logLevel: "silent" });
+const wasmPath = join(dirname(require.resolve("quickjs-wasi/package.json")), "quickjs.wasm");
+await copyFile(wasmPath, "dist/quickjs.wasm");
 await chmod("dist/index.js", 0o755);

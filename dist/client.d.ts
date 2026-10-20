@@ -2,6 +2,7 @@ interface McpClientModeOptions {
     title?: string;
     piOperators?: boolean;
     piExtraOperators?: boolean;
+    codemode?: boolean;
 }
 type SocketRequestSender = (method: string, params?: Record<string, unknown>) => Promise<unknown>;
 export declare function notifyClientConnected(sendRequest: SocketRequestSender, options: {

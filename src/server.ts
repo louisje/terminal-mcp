@@ -19,6 +19,7 @@ export interface ServerOptions {
   sessionIdleTimeout?: number;
   piOperators?: boolean;
   piExtraOperators?: boolean;
+  codemode?: boolean;
 }
 
 /**
@@ -61,7 +62,7 @@ shell state across calls, interactive input, TTY behavior, or live observability
 
 const PI_EXTRA_OPERATOR_INSTRUCTIONS = `\n\nPi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
 
-export function createServerWithManager(manager: TerminalManager, piOperators = false, piExtraOperators = false): Server {
+export function createServerWithManager(manager: TerminalManager, piOperators = false, piExtraOperators = false, codemode = false): Server {
   const server = new Server(
     {
       name: "terminal-mcp",
@@ -72,11 +73,11 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
         tools: {},
         prompts: {},
       },
-      instructions: SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : ""),
+      instructions: (codemode ? "Only codemode is exposed. Execute JavaScript with tools.<name>(args), discover available tools via ALL_TOOLS, emit results using text(). Existing terminal tools remain available inside the sandbox.\n\n" : SERVER_INSTRUCTIONS) + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : ""),
     }
   );
 
-  registerTools(server, manager, piOperators, piExtraOperators);
+  registerTools(server, manager, piOperators, piExtraOperators, codemode);
   registerPrompts(server);
 
   return server;
@@ -98,7 +99,7 @@ export function createServer(options: ServerOptions = {}): {
     sessionIdleTimeout: options.sessionIdleTimeout,
   });
 
-  const server = createServerWithManager(manager, options.piOperators, options.piExtraOperators);
+  const server = createServerWithManager(manager, options.piOperators, options.piExtraOperators, options.codemode);
 
   return { server, manager };
 }

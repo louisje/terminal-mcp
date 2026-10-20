@@ -708,3 +708,19 @@ See the [docs](./docs/) folder for detailed documentation:
 ## License
 
 MIT
+
+### Experimental codemode (opt-in)
+
+Use `--codemode` to expose **one** MCP tool, `codemode`, in place of the regular tool list. The tool runs JavaScript inside Pi's QuickJS WASM sandbox and can call any tools enabled for that connection via `await tools.<name>(args)`. Use `ALL_TOOLS` to discover tool names/descriptions and `text(value)` to include output in the model context. Tool calls themselves are not automatically returned to the model.
+
+```sh
+terminal-mcp --headless --codemode --pi-operators
+```
+
+Example `codemode` input:
+
+```json
+{ "code": "text(await tools.bash({command: 'git status --short'}))" }
+```
+
+The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Codemode requires Node.js >= 22.19.0 or a compatible Bun runtime. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `bash`).
