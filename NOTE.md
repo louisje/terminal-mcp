@@ -30,7 +30,7 @@
 
 **合併門檻：全部 P0、P1 完成且驗收通過；P2 可暫緩。**
 
-進度：已完成 CI 失敗初步診斷（缺少 rg/fd），並為 CI 安裝依賴；Headless Codemode → bash 的 AbortSignal 已加接線及單元測試。尚須補 Socket 端取消及完整逾時驗證，故 P0 仍未完成。
+進度：已完成 CI 失敗初步診斷（缺少 rg/fd），並為 CI 安裝依賴；Headless 與 Socket Codemode → bash 的 AbortSignal 已接線，Socket 取消後不會執行延遲副作用的整合測試已通過。仍須驗證逾時、PTY/其他工具的取消語義（已產生的副作用不可回滾），故 P0 仍未完成。
 
 - [ ] **P0：取消與逾時安全性**：驗證 QuickJS 執行逾時、AbortSignal 與 MCP Client 中斷時，執行中的 `bash`、PTY 操作及其他非同步工具是否會停止或繼續執行；釐清工具副作用不可回滾的情況，必要時補上取消訊號傳遞、子行程清理和迴歸測試。
 - [ ] **P0：跨平台 CI**（`6df5ab0` 已完成成功；較新提交仍須驗證）：查驗 `feat/codemode` GitHub Actions 的實際結果（Node.js 22/24；Linux/macOS/Windows 建置及 Linux/macOS 測試），特別確認 Windows 的 QuickJS Worker、WASM 路徑與打包相容性，修正失敗項目。

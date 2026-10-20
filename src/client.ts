@@ -142,13 +142,23 @@ export async function startMcpClientMode(
   // Helper to send request to interactive terminal
   async function sendRequest(
     method: string,
-    params?: Record<string, unknown>
+    params?: Record<string, unknown>,
+    signal?: AbortSignal
   ): Promise<unknown> {
     const id = ++requestId;
     const request: SocketRequest = { id, method, params };
 
     return new Promise((resolve, reject) => {
-      pendingRequests.set(id, { resolve, reject });
+      if (signal?.aborted) { reject(new Error("Tool call aborted")); return; }
+      const cleanup = () => signal?.removeEventListener("abort", abort);
+      const abort = () => {
+        if (!pendingRequests.delete(id)) return;
+        socket.write(JSON.stringify({ id: ++requestId, method: "cancel", params: { requestId: id } }) + "\n");
+        cleanup();
+        reject(new Error("Tool call aborted"));
+      };
+      signal?.addEventListener("abort", abort, { once: true });
+      pendingRequests.set(id, { resolve: value => { cleanup(); resolve(value); }, reject: error => { cleanup(); reject(error); } });
       socket.write(JSON.stringify(request) + "\n", (error) => {
         if (error) {
           pendingRequests.delete(id);
@@ -164,16 +174,16 @@ export async function startMcpClientMode(
   }));
 
   // Register call tool handler - proxy to socket
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const { name, arguments: args } = request.params;
 
     try {
       const result = options.codemode
         ? name === "codemode"
           ? await runCodemodeWithDispatch(args, getToolDefinitions(options.piOperators, options.piExtraOperators),
-              (tool, params) => sendRequest(tool, params))
+              (tool, params, signal) => sendRequest(tool, params, signal), extra.signal)
           : (() => { throw new Error(`Unknown tool: ${name}`); })()
-        : await sendRequest(name, args as Record<string, unknown>);
+        : await sendRequest(name, args as Record<string, unknown>, extra.signal);
       return result as {
         content: Array<{ type: "text"; text: string }>;
         isError?: boolean;

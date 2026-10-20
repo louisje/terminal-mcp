@@ -156,6 +156,7 @@ export function createToolProxyServer(
 
   const server = new NetServer((socket) => {
     let buffer = "";
+    const inflight = new Map<number, AbortController>();
     let clientPiOperators = piOperators;
     let clientPiExtraOperators = piExtraOperators;
 
@@ -168,10 +169,18 @@ export function createToolProxyServer(
         if (line.trim()) {
           try {
             const request = JSON.parse(line) as SocketRequest;
+            if (request.method === "cancel") {
+              const target = request.params?.requestId;
+              if (typeof target === "number") inflight.get(target)?.abort();
+              continue;
+            }
+            const controller = new AbortController();
+            inflight.set(request.id, controller);
             const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, clientPiExtraOperators, (enabled) => {
               clientPiOperators = clientPiOperators || enabled;
-            }, (enabled) => { clientPiExtraOperators = clientPiExtraOperators || enabled; });
-            socket.write(JSON.stringify(response) + "\n");
+            }, (enabled) => { clientPiExtraOperators = clientPiExtraOperators || enabled; }, controller.signal);
+            inflight.delete(request.id);
+            if (!controller.signal.aborted && !socket.destroyed) socket.write(JSON.stringify(response) + "\n");
           } catch (error) {
             const errorMessage =
               error instanceof Error ? error.message : String(error);
@@ -186,6 +195,7 @@ export function createToolProxyServer(
       }
     });
 
+    socket.on("close", () => { for (const controller of inflight.values()) controller.abort(); inflight.clear(); });
     socket.on("error", () => {
       // Client disconnected, ignore
     });
@@ -206,7 +216,8 @@ async function handleToolRequest(
   piOperators = false,
   piExtraOperators = false,
   setClientPiOperators?: (enabled: boolean) => void,
-  setClientPiExtraOperators?: (enabled: boolean) => void
+  setClientPiExtraOperators?: (enabled: boolean) => void,
+  signal?: AbortSignal
 ): Promise<SocketResponse> {
   const { id, method, params } = request;
   const stats = getStats();
@@ -226,7 +237,7 @@ async function handleToolRequest(
       case "edit":
       case "bash":
         if (!piOperators) throw new Error(`Unknown tool: ${method}`);
-        result = await handleOperatorTool(method, params);
+        result = await handleOperatorTool(method, params, manager.getConfiguredShell(), signal);
         break;
       case "type":
         stats.recordToolCall("type");

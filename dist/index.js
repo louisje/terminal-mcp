@@ -48489,11 +48489,29 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     }, SOCKET_CLOSE_GRACE_MS);
     graceTimer.unref();
   });
-  async function sendRequest(method, params) {
+  async function sendRequest(method, params, signal) {
     const id = ++requestId;
     const request = { id, method, params };
     return new Promise((resolve7, reject) => {
-      pendingRequests.set(id, { resolve: resolve7, reject });
+      if (signal?.aborted) {
+        reject(new Error("Tool call aborted"));
+        return;
+      }
+      const cleanup = () => signal?.removeEventListener("abort", abort);
+      const abort = () => {
+        if (!pendingRequests.delete(id)) return;
+        socket.write(JSON.stringify({ id: ++requestId, method: "cancel", params: { requestId: id } }) + "\n");
+        cleanup();
+        reject(new Error("Tool call aborted"));
+      };
+      signal?.addEventListener("abort", abort, { once: true });
+      pendingRequests.set(id, { resolve: (value) => {
+        cleanup();
+        resolve7(value);
+      }, reject: (error2) => {
+        cleanup();
+        reject(error2);
+      } });
       socket.write(JSON.stringify(request) + "\n", (error2) => {
         if (error2) {
           pendingRequests.delete(id);
@@ -48505,16 +48523,17 @@ async function startMcpClientMode(socketPath, options2 = {}) {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: options2.codemode ? [codemodeDefinition] : getToolDefinitions(options2.piOperators, options2.piExtraOperators)
   }));
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler(CallToolRequestSchema, async (request, extra) => {
     const { name, arguments: args2 } = request.params;
     try {
       const result2 = options2.codemode ? name === "codemode" ? await runCodemodeWithDispatch(
         args2,
         getToolDefinitions(options2.piOperators, options2.piExtraOperators),
-        (tool, params) => sendRequest(tool, params)
+        (tool, params, signal) => sendRequest(tool, params, signal),
+        extra.signal
       ) : (() => {
         throw new Error(`Unknown tool: ${name}`);
-      })() : await sendRequest(name, args2);
+      })() : await sendRequest(name, args2, extra.signal);
       return result2;
     } catch (error2) {
       const message = error2 instanceof Error ? error2.message : String(error2);
@@ -48654,6 +48673,7 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
   }
   const server = new NetServer((socket) => {
     let buffer = "";
+    const inflight = /* @__PURE__ */ new Map();
     let clientPiOperators = piOperators;
     let clientPiExtraOperators = piExtraOperators;
     socket.on("data", async (data) => {
@@ -48664,12 +48684,20 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
         if (line.trim()) {
           try {
             const request = JSON.parse(line);
+            if (request.method === "cancel") {
+              const target = request.params?.requestId;
+              if (typeof target === "number") inflight.get(target)?.abort();
+              continue;
+            }
+            const controller = new AbortController();
+            inflight.set(request.id, controller);
             const response = await handleToolRequest(manager, request, onClientConnected, clientPiOperators, clientPiExtraOperators, (enabled) => {
               clientPiOperators = clientPiOperators || enabled;
             }, (enabled) => {
               clientPiExtraOperators = clientPiExtraOperators || enabled;
-            });
-            socket.write(JSON.stringify(response) + "\n");
+            }, controller.signal);
+            inflight.delete(request.id);
+            if (!controller.signal.aborted && !socket.destroyed) socket.write(JSON.stringify(response) + "\n");
           } catch (error2) {
             const errorMessage2 = error2 instanceof Error ? error2.message : String(error2);
             socket.write(
@@ -48682,13 +48710,17 @@ function createToolProxyServer(socketPath, manager, onClientConnected, piOperato
         }
       }
     });
+    socket.on("close", () => {
+      for (const controller of inflight.values()) controller.abort();
+      inflight.clear();
+    });
     socket.on("error", () => {
     });
   });
   server.listen(socketPath);
   return server;
 }
-async function handleToolRequest(manager, request, onClientConnected, piOperators = false, piExtraOperators = false, setClientPiOperators, setClientPiExtraOperators) {
+async function handleToolRequest(manager, request, onClientConnected, piOperators = false, piExtraOperators = false, setClientPiOperators, setClientPiExtraOperators, signal) {
   const { id, method, params } = request;
   const stats = getStats();
   try {
@@ -48705,7 +48737,7 @@ async function handleToolRequest(manager, request, onClientConnected, piOperator
       case "edit":
       case "bash":
         if (!piOperators) throw new Error(`Unknown tool: ${method}`);
-        result2 = await handleOperatorTool(method, params);
+        result2 = await handleOperatorTool(method, params, manager.getConfiguredShell(), signal);
         break;
       case "type":
         stats.recordToolCall("type");
