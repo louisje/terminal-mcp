@@ -24,7 +24,7 @@ export declare const sleepTool: {
         required: never[];
     };
 };
-export declare function handleSleep(_manager: TerminalManager, args: unknown): Promise<{
+export declare function handleSleep(_manager: TerminalManager, args: unknown, signal?: AbortSignal): Promise<{
     content: Array<{
         type: "text";
         text: string;

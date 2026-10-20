@@ -9,3 +9,33 @@ test('bash operator respects abort signal', { timeout: 12000 }, async () => {
   setTimeout(() => controller.abort(), 80);
   await assert.rejects(pending, /Command aborted/);
 });
+
+test('codemode timeout aborts its in-flight tool signal', { timeout: 12000 }, async () => {
+  const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
+  const { StdioClientTransport } = await import('@modelcontextprotocol/sdk/client/stdio.js');
+  const client = new Client({name:'timeout-test',version:'1'});
+  await client.connect(new StdioClientTransport({command:process.execPath,args:['dist/index.js','--headless','--codemode'],stderr:'pipe'}));
+  try {
+    const r = await client.callTool({name:'codemode',arguments:{code:'await tools.sleep({milliseconds:70000})',timeoutMs:250}});
+    assert.equal(r.isError, true);
+    assert.match(r.content[0].text, /timed out|timeout|exceeded/i);
+  } finally { await client.close(); }
+});
+
+test('sleep operator aborts immediately and leaves terminal management untouched', async () => {
+  const { handleSleep } = await import('../src/tools/sleep.ts');
+  const controller = new AbortController();
+  const pending = handleSleep(undefined, {milliseconds:10000}, controller.signal);
+  controller.abort();
+  await assert.rejects(pending, /Sleep aborted/);
+});
+
+test('cancelled PTY calls do not dispatch input into an existing session', async () => {
+  const { dispatchTool } = await import('../src/tools/index.ts');
+  const controller = new AbortController();
+  controller.abort();
+  let called = false;
+  const manager = { write() { called = true; } };
+  await assert.rejects(dispatchTool(manager, 'type', {text:'should-not-run'}, false, false, controller.signal), /Tool call aborted/);
+  assert.equal(called, false);
+});

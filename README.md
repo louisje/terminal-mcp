@@ -717,6 +717,8 @@ Use `--codemode` to expose **one** MCP tool, `codemode`, in place of the regular
 terminal-mcp --headless --codemode --pi-operators
 ```
 
+Codemode accepts an optional `timeoutMs` (integer 1–60000, default 60000) to bound one execution. Timeouts cancel pending cancellable operators, but cannot roll back writes already made to files or persistent PTY sessions.
+
 Example `codemode` input:
 
 ```json

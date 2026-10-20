@@ -77,7 +77,7 @@ export async function dispatchTool(manager: TerminalManager, name: string, args:
       return handleSendKey(manager, args);
 
     case "sleep":
-      return await handleSleep(manager, args);
+      return await handleSleep(manager, args, signal);
 
     case "getContent":
       return await handleGetContent(manager, args);

@@ -38020,10 +38020,21 @@ function formatMilliseconds(milliseconds) {
     return `${milliseconds} ${label}`;
   }
 }
-async function handleSleep(_manager, args2) {
+async function handleSleep(_manager, args2, signal) {
   const parsed = sleepSchema.parse(args2 ?? {});
-  await new Promise((resolve7) => {
-    setTimeout(resolve7, parsed.milliseconds);
+  await new Promise((resolve7, reject) => {
+    if (signal?.aborted) return reject(new Error("Sleep aborted"));
+    const timer = setTimeout(() => {
+      cleanup();
+      resolve7();
+    }, parsed.milliseconds);
+    const abort = () => {
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error("Sleep aborted"));
+    };
+    const cleanup = () => signal?.removeEventListener("abort", abort);
+    signal?.addEventListener("abort", abort, { once: true });
   });
   return {
     content: [
@@ -47963,11 +47974,16 @@ var codemodeDefinition = {
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
-  inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] }
+  inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." }, timeoutMs: { type: "integer", minimum: 1, maximum: 6e4, description: "Execution deadline in milliseconds (default 60000)." } }, required: ["code"] }
 };
 async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
   const code = args2?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
+  const requestedTimeout = args2.timeoutMs;
+  if (requestedTimeout !== void 0 && (!Number.isInteger(requestedTimeout) || Number(requestedTimeout) < 1 || Number(requestedTimeout) > 6e4)) {
+    throw new Error("codemode timeoutMs must be an integer between 1 and 60000");
+  }
+  const timeoutMs = requestedTimeout === void 0 ? 6e4 : Number(requestedTimeout);
   const tools = definitions.map((definition) => ({
     name: definition.name,
     description: definition.description,
@@ -48016,7 +48032,7 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
     }
   ];
   const sandbox = new CodemodeSandbox({
-    timeoutMs: 6e4,
+    timeoutMs,
     tools,
     globals,
     wasm: loadQuickJSWasm(fileURLToPath9(new URL("./quickjs.wasm", import.meta.url))),
@@ -48087,7 +48103,7 @@ async function dispatchTool(manager, name, args2, piOperators = false, piExtraOp
     case "sendKey":
       return handleSendKey(manager, args2);
     case "sleep":
-      return await handleSleep(manager, args2);
+      return await handleSleep(manager, args2, signal);
     case "getContent":
       return await handleGetContent(manager, args2);
     case "getBufferInfo":
@@ -48749,7 +48765,7 @@ async function handleToolRequest(manager, request, onClientConnected, piOperator
         break;
       case "sleep":
         stats.recordToolCall("sleep");
-        result2 = await handleSleep(manager, params);
+        result2 = await handleSleep(manager, params, signal);
         break;
       case "getContent":
         stats.recordToolCall("getContent");

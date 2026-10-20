@@ -13,7 +13,7 @@ export const codemodeDefinition: ToolDefinition = {
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
-  inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] },
+  inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." }, timeoutMs: { type: "integer", minimum: 1, maximum: 60000, description: "Execution deadline in milliseconds (default 60000)." } }, required: ["code"] },
 };
 
 type ToolResult = { content?: Array<{ type: string; text?: string; data?: string; mimeType?: string }>; isError?: boolean; structuredContent?: unknown };
@@ -26,6 +26,11 @@ export async function runCodemodeWithDispatch(
 ) {
   const code = (args as { code?: unknown } | undefined)?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
+  const requestedTimeout = (args as { timeoutMs?: unknown }).timeoutMs;
+  if (requestedTimeout !== undefined && (!Number.isInteger(requestedTimeout) || Number(requestedTimeout) < 1 || Number(requestedTimeout) > 60_000)) {
+    throw new Error("codemode timeoutMs must be an integer between 1 and 60000");
+  }
+  const timeoutMs = requestedTimeout === undefined ? 60_000 : Number(requestedTimeout);
   const tools: CodemodeTool[] = definitions.map((definition) => ({
     name: definition.name,
     description: definition.description,
@@ -75,7 +80,7 @@ export async function runCodemodeWithDispatch(
     },
   ];
   const sandbox = new CodemodeSandbox({
-    timeoutMs: 60_000,
+    timeoutMs,
     tools,
     globals,
     wasm: loadQuickJSWasm(fileURLToPath(new URL("./quickjs.wasm", import.meta.url))),

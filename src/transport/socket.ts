@@ -251,7 +251,7 @@ async function handleToolRequest(
 
       case "sleep":
         stats.recordToolCall("sleep");
-        result = await handleSleep(manager, params);
+        result = await handleSleep(manager, params, signal);
         break;
 
       case "getContent":

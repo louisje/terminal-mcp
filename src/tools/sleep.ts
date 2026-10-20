@@ -44,12 +44,17 @@ function formatMilliseconds(milliseconds: number): string {
 
 export async function handleSleep(
   _manager: TerminalManager,
-  args: unknown
+  args: unknown,
+  signal?: AbortSignal
 ): Promise<{ content: Array<{ type: "text"; text: string }> }> {
   const parsed = sleepSchema.parse(args ?? {});
 
-  await new Promise((resolve) => {
-    setTimeout(resolve, parsed.milliseconds);
+  await new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) return reject(new Error("Sleep aborted"));
+    const timer = setTimeout(() => { cleanup(); resolve(); }, parsed.milliseconds);
+    const abort = () => { clearTimeout(timer); cleanup(); reject(new Error("Sleep aborted")); };
+    const cleanup = () => signal?.removeEventListener("abort", abort);
+    signal?.addEventListener("abort", abort, { once: true });
   });
 
   return {
