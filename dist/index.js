@@ -47956,7 +47956,12 @@ SOURCE: /[\s\S]+/
 import { fileURLToPath as fileURLToPath9 } from "node:url";
 var codemodeDefinition = {
   name: "codemode",
-  description: "Execute JavaScript in an isolated QuickJS sandbox. Available functions: tools.<name>(args), ALL_TOOLS, text(value), image(value), exit(). Discover tool names and descriptions with ALL_TOOLS.filter(...). Nested tool output stays out of the model context unless emitted with text().",
+  description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
+- Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
+- Find tools with ALL_TOOLS.filter(t => ...); entries include name and description.
+- Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
+- Use Promise.allSettled for independent calls and filter verbose results before emitting.
+- No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
   inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] }
 };
 async function runCodemodeWithDispatch(args2, definitions, dispatch) {
@@ -48303,6 +48308,15 @@ shell state across calls, interactive input, TTY behavior, or live observability
 var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
 
 Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
+var CODEMODE_INSTRUCTIONS = `
+
+Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover available tool names and descriptions with ALL_TOOLS; search with ALL_TOOLS.filter(t => ...) and use the tool description to identify its arguments.
+Use Promise.allSettled for independent calls when failures should not cancel other results; chain dependent calls sequentially. Filter large outputs in the script and emit only relevant results with text(value). Ordinary nested tool results are not automatically returned to the model. Script globals do not include Node.js, filesystem, network, or timers; calls to injected tools retain their existing host permissions. Each execution is a fresh JavaScript environment, while the real terminal sessions persist.
+For PTY operations, inspect the default terminal with await tools.getContent({}) before using it. If it is occupied or uncertain, create a separate session via tools.createSession({}). Use tools.type({text: command, autoSubmit: true}) or tools.sendKey({key: "enter"}) as appropriate and inspect output with tools.getContent({}).`;
+function getServerInstructions({ codemode = false, piOperators = false, piExtraOperators = false } = {}) {
+  const base = codemode ? SERVER_INSTRUCTIONS.replace("First call getContent()", "First call tools.getContent({})").replace("call createSession()", "call tools.createSession({})").replace("type(<command>), sendKey('Enter'), then getContent()", "tools.type({text: command, autoSubmit: true}), then tools.getContent({})") : SERVER_INSTRUCTIONS;
+  return base + (codemode ? CODEMODE_INSTRUCTIONS : "") + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "");
+}
 function createServerWithManager(manager, piOperators = false, piExtraOperators = false, codemode = false) {
   const server = new Server(
     {
@@ -48314,7 +48328,7 @@ function createServerWithManager(manager, piOperators = false, piExtraOperators 
         tools: {},
         prompts: {}
       },
-      instructions: (codemode ? "Only codemode is exposed. Execute JavaScript with tools.<name>(args), discover available tools via ALL_TOOLS, emit results using text(). Existing terminal tools remain available inside the sandbox.\n\n" : SERVER_INSTRUCTIONS) + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "")
+      instructions: getServerInstructions({ codemode, piOperators, piExtraOperators })
     }
   );
   registerTools(server, manager, piOperators, piExtraOperators, codemode);
@@ -48395,7 +48409,8 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     {
       capabilities: {
         tools: {}
-      }
+      },
+      instructions: getServerInstructions(options2)
     }
   );
   let requestId = 0;

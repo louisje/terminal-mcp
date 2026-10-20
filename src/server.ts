@@ -25,7 +25,7 @@ export interface ServerOptions {
 /**
  * Create and configure the MCP server with an existing terminal manager
  */
-const SERVER_INSTRUCTIONS = `Terminal MCP exposes a real PTY-backed shell to AI assistants.
+export const SERVER_INSTRUCTIONS = `Terminal MCP exposes a real PTY-backed shell to AI assistants.
 
 Prefer this server over plain non-interactive shell tools whenever the command:
 - needs sudo or otherwise prompts for a password (the human user can type it interactively)
@@ -62,6 +62,27 @@ shell state across calls, interactive input, TTY behavior, or live observability
 
 const PI_EXTRA_OPERATOR_INSTRUCTIONS = `\n\nPi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
 
+
+const CODEMODE_INSTRUCTIONS = `
+
+Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover available tool names and descriptions with ALL_TOOLS; search with ALL_TOOLS.filter(t => ...) and use the tool description to identify its arguments.
+Use Promise.allSettled for independent calls when failures should not cancel other results; chain dependent calls sequentially. Filter large outputs in the script and emit only relevant results with text(value). Ordinary nested tool results are not automatically returned to the model. Script globals do not include Node.js, filesystem, network, or timers; calls to injected tools retain their existing host permissions. Each execution is a fresh JavaScript environment, while the real terminal sessions persist.
+For PTY operations, inspect the default terminal with await tools.getContent({}) before using it. If it is occupied or uncertain, create a separate session via tools.createSession({}). Use tools.type({text: command, autoSubmit: true}) or tools.sendKey({key: "enter"}) as appropriate and inspect output with tools.getContent({}).`;
+
+export interface InstructionOptions { codemode?: boolean; piOperators?: boolean; piExtraOperators?: boolean; }
+
+export function getServerInstructions({ codemode = false, piOperators = false, piExtraOperators = false }: InstructionOptions = {}): string {
+  const base = codemode
+    ? SERVER_INSTRUCTIONS.replace("First call getContent()", "First call tools.getContent({})")
+      .replace("call createSession()", "call tools.createSession({})")
+      .replace("type(<command>), sendKey('Enter'), then getContent()", "tools.type({text: command, autoSubmit: true}), then tools.getContent({})")
+    : SERVER_INSTRUCTIONS;
+  return base
+    + (codemode ? CODEMODE_INSTRUCTIONS : "")
+    + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "")
+    + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "");
+}
+
 export function createServerWithManager(manager: TerminalManager, piOperators = false, piExtraOperators = false, codemode = false): Server {
   const server = new Server(
     {
@@ -73,7 +94,7 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
         tools: {},
         prompts: {},
       },
-      instructions: (codemode ? "Only codemode is exposed. Execute JavaScript with tools.<name>(args), discover available tools via ALL_TOOLS, emit results using text(). Existing terminal tools remain available inside the sandbox.\n\n" : SERVER_INSTRUCTIONS) + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : ""),
+      instructions: getServerInstructions({ codemode, piOperators, piExtraOperators }),
     }
   );
 

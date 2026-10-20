@@ -7,7 +7,12 @@ import { dispatchTool } from "./index.js";
 
 export const codemodeDefinition: ToolDefinition = {
   name: "codemode",
-  description: "Execute JavaScript in an isolated QuickJS sandbox. Available functions: tools.<name>(args), ALL_TOOLS, text(value), image(value), exit(). Discover tool names and descriptions with ALL_TOOLS.filter(...). Nested tool output stays out of the model context unless emitted with text().",
+  description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
+- Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
+- Find tools with ALL_TOOLS.filter(t => ...); entries include name and description.
+- Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
+- Use Promise.allSettled for independent calls and filter verbose results before emitting.
+- No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
   inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." } }, required: ["code"] },
 };
 

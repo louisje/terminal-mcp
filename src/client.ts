@@ -2,6 +2,7 @@ import * as net from "net";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { VERSION } from "./utils/version.js";
+import { getServerInstructions } from "./server.js";
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
@@ -75,6 +76,7 @@ export async function startMcpClientMode(
       capabilities: {
         tools: {},
       },
+      instructions: getServerInstructions(options),
     }
   );
 
