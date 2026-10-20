@@ -47958,7 +47958,7 @@ var codemodeDefinition = {
   name: "codemode",
   description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
 - Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
-- Find tools with ALL_TOOLS.filter(t => ...); entries include name and description.
+- Find tools with ALL_TOOLS, await searchTools(query, {limit?, namespace?}), await describeTool(name), or await describeNamespace("terminal").
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
@@ -47980,9 +47980,44 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch) {
       return content;
     }
   }));
+  const globals = [
+    {
+      name: "searchTools",
+      spread: true,
+      execute: (args3) => {
+        const [query, options2] = args3;
+        if (typeof query !== "string") throw new Error("searchTools() expects a query string");
+        if (options2?.limit !== void 0 && (!Number.isInteger(options2.limit) || options2.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
+        if (options2?.namespace !== void 0 && typeof options2.namespace !== "string") throw new Error("searchTools() namespace must be a string");
+        if (options2?.namespace && options2.namespace !== "terminal" && options2.namespace !== "terminal-mcp") return [];
+        const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+        return definitions.map((d) => ({ name: d.name, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) })).filter((d) => !words.length || d.score > 0).sort((a2, b) => b.score - a2.score).slice(0, options2?.limit ?? 10).map(({ name, description }) => ({ name, description }));
+      }
+    },
+    {
+      name: "describeTool",
+      spread: true,
+      execute: (args3) => {
+        const [name] = args3;
+        if (typeof name !== "string") throw new Error("describeTool() expects a tool name");
+        const tool = definitions.find((d) => d.name === name);
+        return tool ? { name: tool.name, description: tool.description, inputSchema: tool.inputSchema } : null;
+      }
+    },
+    {
+      name: "describeNamespace",
+      spread: true,
+      execute: (args3) => {
+        const [name] = args3;
+        if (typeof name !== "string") throw new Error("describeNamespace() expects a namespace name");
+        return name === "terminal" || name === "terminal-mcp" ? { name: "terminal", description: "Terminal MCP tools for PTY sessions and opted-in file and shell operations", tools: definitions.map((d) => d.name) } : null;
+      }
+    }
+  ];
   const sandbox = new CodemodeSandbox({
     timeoutMs: 6e4,
     tools,
+    globals,
     wasm: loadQuickJSWasm(fileURLToPath9(new URL("./quickjs.wasm", import.meta.url))),
     workerUrl: new URL("./codemode-worker.js", import.meta.url)
   });
@@ -48310,7 +48345,7 @@ var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
 Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
 var CODEMODE_INSTRUCTIONS = `
 
-Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover available tool names and descriptions with ALL_TOOLS; search with ALL_TOOLS.filter(t => ...) and use the tool description to identify its arguments.
+Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover tools with ALL_TOOLS or await searchTools(query, {limit?, namespace?}); use await describeTool(name) to inspect the inputSchema and await describeNamespace("terminal") for the server tool group.
 Use Promise.allSettled for independent calls when failures should not cancel other results; chain dependent calls sequentially. Filter large outputs in the script and emit only relevant results with text(value). Ordinary nested tool results are not automatically returned to the model. Script globals do not include Node.js, filesystem, network, or timers; calls to injected tools retain their existing host permissions. Each execution is a fresh JavaScript environment, while the real terminal sessions persist.
 For PTY operations, inspect the default terminal with await tools.getContent({}) before using it. If it is occupied or uncertain, create a separate session via tools.createSession({}). Use tools.type({text: command, autoSubmit: true}) or tools.sendKey({key: "enter"}) as appropriate and inspect output with tools.getContent({}).`;
 function getServerInstructions({ codemode = false, piOperators = false, piExtraOperators = false } = {}) {

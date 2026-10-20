@@ -9,7 +9,7 @@ export const codemodeDefinition: ToolDefinition = {
   name: "codemode",
   description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
 - Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
-- Find tools with ALL_TOOLS.filter(t => ...); entries include name and description.
+- Find tools with ALL_TOOLS, await searchTools(query, {limit?, namespace?}), await describeTool(name), or await describeNamespace("terminal").
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
@@ -38,9 +38,45 @@ export async function runCodemodeWithDispatch(
       return content;
     },
   }));
+  const globals: CodemodeTool[] = [
+    {
+      name: "searchTools", spread: true,
+      execute: (args) => {
+        const [query, options] = args as [unknown, {limit?: number; namespace?: string} | undefined];
+        if (typeof query !== "string") throw new Error("searchTools() expects a query string");
+        if (options?.limit !== undefined && (!Number.isInteger(options.limit) || options.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
+        if (options?.namespace !== undefined && typeof options.namespace !== "string") throw new Error("searchTools() namespace must be a string");
+        if (options?.namespace && options.namespace !== "terminal" && options.namespace !== "terminal-mcp") return [];
+        const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+        return definitions.map(d => ({ name: d.name, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) }))
+          .filter(d => !words.length || d.score > 0).sort((a,b) => b.score - a.score)
+          .slice(0, options?.limit ?? 10).map(({ name, description }) => ({ name, description }));
+      },
+    },
+    {
+      name: "describeTool", spread: true,
+      execute: (args) => {
+        const [name] = args as unknown[];
+        if (typeof name !== "string") throw new Error("describeTool() expects a tool name");
+        const tool = definitions.find(d => d.name === name);
+        return tool ? { name: tool.name, description: tool.description, inputSchema: tool.inputSchema } : null;
+      },
+    },
+    {
+      name: "describeNamespace", spread: true,
+      execute: (args) => {
+        const [name] = args as unknown[];
+        if (typeof name !== "string") throw new Error("describeNamespace() expects a namespace name");
+        return name === "terminal" || name === "terminal-mcp"
+          ? { name: "terminal", description: "Terminal MCP tools for PTY sessions and opted-in file and shell operations", tools: definitions.map(d => d.name) }
+          : null;
+      },
+    },
+  ];
   const sandbox = new CodemodeSandbox({
     timeoutMs: 60_000,
     tools,
+    globals,
     wasm: loadQuickJSWasm(fileURLToPath(new URL("./quickjs.wasm", import.meta.url))),
     workerUrl: new URL("./codemode-worker.js", import.meta.url),
   });
