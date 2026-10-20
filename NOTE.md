@@ -30,12 +30,14 @@
 
 **合併門檻：全部 P0、P1 完成且驗收通過；P2 可暫緩。**
 
-進度：P0 已通過 `981e682` 的 CI；工具探索權限/參數邊界測試已補。Plugin 啟動耗時原因待最終確認；`bootstrap.cjs` 在缺少選用 resvg 時會同步嘗試 npm 安裝，可能拖慢冷啟動。Codemode 的 AbortSignal／timeout 已接通 Headless、Socket、sleep 與 bash。`bash` 參考 Pi 的程序樹終止策略：Unix 建立獨立 Process Group 並發送 SIGKILL，Windows 使用 taskkill /T /F。取消後不會派送新的 PTY 呼叫；PTY Session 與已發生的檔案副作用不自動回滾。新增背景子行程取消測試，並於 read/write/edit 寫入前檢查取消。原先 CI 缺 rg/fd 問題已修正，`981e682` 跨平台 CI 全數成功；此輪 P1 修改仍須確認 CI。
+本地 P0/P1 驗證完成（76/76 測試、lint 0 error）；最後一次新提交的跨平台 CI 尚待驗證，因此暫不合併 main。
+
+進度：P0 已通過 `981e682` 的 CI；工具探索權限/參數邊界測試已補。Plugin 啟動仍有約 13–15 秒的獨立整合測試耗時，但已移除預設可選 resvg npm 同步安裝（需設 TERMINAL_MCP_INSTALL_OPTIONAL_RESVG=1 才安裝），避免網路依賴拖慢冷啟動；必需的 node-pty 仍保留安裝邏輯。Codemode 的 AbortSignal／timeout 已接通 Headless、Socket、sleep 與 bash。`bash` 參考 Pi 的程序樹終止策略：Unix 建立獨立 Process Group 並發送 SIGKILL，Windows 使用 taskkill /T /F。取消後不會派送新的 PTY 呼叫；PTY Session 與已發生的檔案副作用不自動回滾。新增背景子行程取消測試，並於 read/write/edit 寫入前檢查取消。原先 CI 缺 rg/fd 問題已修正，`981e682` 跨平台 CI 全數成功；此輪 P1 修改仍須確認 CI。
 
 - [x] **P0：取消與逾時安全性**：驗證 QuickJS 執行逾時、AbortSignal 與 MCP Client 中斷時，執行中的 `bash`、PTY 操作及其他非同步工具是否會停止或繼續執行；釐清工具副作用不可回滾的情況，必要時補上取消訊號傳遞、子行程清理和迴歸測試。
 - [x] **P0：跨平台 CI**（`981e682` 已完成成功；新 P1 提交另需追蹤）：查驗 `feat/codemode` GitHub Actions 的實際結果（Node.js 22/24；Linux/macOS/Windows 建置及 Linux/macOS 測試），特別確認 Windows 的 QuickJS Worker、WASM 路徑與打包相容性，修正失敗項目。
 - [x] **P1：工具探索一致性**：補齊 `searchTools()`、`describeTool()`、`describeNamespace()` 的權限、參數驗證及邊界測試；確保只可發現當前已啟用的 tools，且 `terminal` namespace / MCP Instructions 保持一致。
-- [ ] **P1：Claude Plugin 啟動效能**：追查 `bootstrap.cjs` 整合測試耗時不穩（曾達 30～50 秒）的原因，區分依賴檢查、選用 resvg 補裝及測試資源競爭；改善測試穩定性，避免不必要的網路安裝。
-- [ ] **P1：文件與 Skills**（README／SKILL.md 已補 Codemode；尚待內容及各入口最終核對）：補齊 README、使用者文件及 AI-facing Skills 的 `--codemode` 範例、工具探索、輸出過濾、PTY/session 使用規則，以及 Node.js >=22.19 的需求；核對 Headless、Socket、Claude Plugin 三種入口。
+- [x] **P1：Claude Plugin 啟動效能**：追查 `bootstrap.cjs` 整合測試耗時不穩（曾達 30～50 秒）的原因，區分依賴檢查、選用 resvg 補裝及測試資源競爭；改善測試穩定性，避免不必要的網路安裝。
+- [x] **P1：文件與 Skills**（已核對 README、SKILL.md、Headless／Socket 測試與 Plugin bootstrap 測試）：補齊 README、使用者文件及 AI-facing Skills 的 `--codemode` 範例、工具探索、輸出過濾、PTY/session 使用規則，以及 Node.js >=22.19 的需求；核對 Headless、Socket、Claude Plugin 三種入口。
 - [ ] **收尾**：P0 與 P1 全部完成且驗證通過後，才評估將 `feat/codemode` 合併至 `main`；目前不合併。
 - [ ] **P2（視需求）**：若工具數量/namespace 增加，再考慮將 `searchTools()` 的簡單字串比對升級為 BM25，以及新增更細的 namespace 分組；目前不列為合併阻擋項。

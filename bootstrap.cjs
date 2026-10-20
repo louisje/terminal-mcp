@@ -49,8 +49,9 @@ if (!ready("node-pty", required) && !install("node-pty", required)) {
   process.exit(1);
 }
 
-// resvg is optional: failure must not prevent the MCP server from starting.
-if (optional && !ready("@resvg/resvg-js", optional)) {
+// Optional SVG rasterization must not block MCP startup with an npm download.
+// Users who need PNG screenshots can explicitly request the optional install.
+if (optional && process.env.TERMINAL_MCP_INSTALL_OPTIONAL_RESVG === "1" && !ready("@resvg/resvg-js", optional)) {
   if (!install("@resvg/resvg-js", optional)) {
     console.error("terminal-mcp: optional resvg unavailable; continuing without it");
   }

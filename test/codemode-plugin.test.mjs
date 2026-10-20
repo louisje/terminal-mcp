@@ -19,8 +19,7 @@ test('Claude plugin bootstrap runs the bundled codemode without project node_mod
     cpSync(join(root, 'bootstrap.cjs'), join(dir, 'bootstrap.cjs'));
     const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
     // Exercise the required native dependency without an external npm download.
-    // The optional resvg install path is independent of codemode.
-    delete manifest.optionalDependencies;
+    // Keep optional resvg declared: bootstrap must start without a network install.
     writeFileSync(join(dir, 'package.json'), JSON.stringify(manifest));
     symlinkSync(join(root, 'node_modules', 'node-pty'), join(dir, 'dist', 'node_modules', 'node-pty'), 'junction');
     const client = new Client({ name: 'plugin-test', version: '1.0.0' });

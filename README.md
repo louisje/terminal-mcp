@@ -725,4 +725,6 @@ Example `codemode` input:
 { "code": "text(await tools.bash({command: 'git status --short'}))" }
 ```
 
+The Claude Code plugin bootstrap does not automatically download optional resvg at startup; set `TERMINAL_MCP_INSTALL_OPTIONAL_RESVG=1` when launching it to request installation for PNG screenshot support. The required native `node-pty` remains auto-installed if unavailable.
+
 The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Node.js >= 22.19.0 is required for all modes. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `bash`).
