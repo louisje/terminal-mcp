@@ -122,16 +122,23 @@ exist. The server instructions continue to explain safe PTY/session selection.
 Example (`code` argument to `codemode`):
 
 ```javascript
+const all = await searchTools(); // all tools, with descriptions
+text(all);
 const matches = await searchTools("shell", { namespace: "terminal", limit: 5 });
 text(matches);
+text(await describeNamespace("terminal")); // instructions and tool descriptions
 const bash = await describeTool("bash"); // null unless --pi-operators is enabled
 text(bash?.inputSchema);
 // In an operator-enabled connection:
 // text(await tools.bash({ command: "git status --short" }));
 ```
 
-`ALL_TOOLS` gives short names/descriptions, `describeNamespace("terminal")` lists
-currently available names, and `describeTool(name)` gives the argument schema.
+`searchTools()` lists all currently available tools with names, namespaces, and
+descriptions; pass a query to filter the results. `describeNamespace("terminal")`
+provides namespace instructions and available tools with descriptions.
+`describeTool(name)` provides the tool-specific instruction and input schema,
+without repeating the description already available during discovery. Use
+descriptions to discover tools and instructions to learn how to invoke them.
 Only `text()`, `image()`, explicit return values and errors are returned to the
 agent; do not dump large intermediate results. Use `Promise.allSettled()` for
 independent calls where partial failures are acceptable. QuickJS has no direct
