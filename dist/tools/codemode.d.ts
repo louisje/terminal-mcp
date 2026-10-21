@@ -1,7 +1,7 @@
 import type { TerminalManager } from "../terminal/index.js";
 import { type ToolDefinition } from "./definitions.js";
 export declare const codemodeDefinition: ToolDefinition;
-export declare function runCodemodeWithDispatch(args: unknown, definitions: ToolDefinition[], dispatch: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>, signal?: AbortSignal): Promise<{
+export declare function runCodemodeWithDispatch(args: unknown, definitions: ToolDefinition[], dispatch: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>, signal?: AbortSignal, namespaceInstruction?: string): Promise<{
     content: ({
         type: "text";
         text: string;

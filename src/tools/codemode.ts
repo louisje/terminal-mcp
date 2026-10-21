@@ -2,14 +2,15 @@
 import { CodemodeSandbox, loadQuickJSWasm, type CodemodeTool } from "@earendil-works/pi-codemode";
 import { fileURLToPath } from "node:url";
 import type { TerminalManager } from "../terminal/index.js";
-import { getToolDefinitions, type ToolDefinition } from "./definitions.js";
+import { getCodemodeToolDefinitions, type ToolDefinition } from "./definitions.js";
 import { dispatchTool } from "./index.js";
+import { getServerInstructions } from "../server.js";
 
 export const codemodeDefinition: ToolDefinition = {
   name: "codemode",
   description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
 - Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
-- Find tools with ALL_TOOLS, await searchTools(query, {limit?, namespace?}), await describeTool(name), or await describeNamespace("terminal").
+- Discover all tool summaries with await searchTools(), or search by keyword with await searchTools(query, {limit?, namespace?}). Read await describeNamespace("terminal") for terminal-wide instructions, and await describeTool(name) for tool usage guidance and inputSchema.
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
@@ -23,6 +24,7 @@ export async function runCodemodeWithDispatch(
   definitions: ToolDefinition[],
   dispatch: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>,
   signal?: AbortSignal,
+  namespaceInstruction = getServerInstructions(),
 ) {
   const code = (args as { code?: unknown } | undefined)?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
@@ -31,9 +33,16 @@ export async function runCodemodeWithDispatch(
     throw new Error("codemode timeoutMs must be an integer between 1 and 60000");
   }
   const timeoutMs = requestedTimeout === undefined ? 60_000 : Number(requestedTimeout);
+  const summaries = definitions.map(definition => ({
+    name: definition.name,
+    namespace: "terminal",
+    description: definition.description,
+    instruction: definition.instruction,
+    inputSchema: definition.inputSchema,
+  }));
   const tools: CodemodeTool[] = definitions.map((definition) => ({
     name: definition.name,
-    description: definition.description,
+    description: summaries.find(d => d.name === definition.name)!.description,
     inputSchema: definition.inputSchema,
     execute: async (value, context) => {
       const result = await dispatch(definition.name, (value ?? {}) as Record<string, unknown>, context.signal) as ToolResult;
@@ -51,14 +60,14 @@ export async function runCodemodeWithDispatch(
         const [query, rawOptions] = args as [unknown, unknown];
         if (rawOptions !== null && rawOptions !== undefined && (typeof rawOptions !== "object" || Array.isArray(rawOptions))) throw new Error("searchTools() options must be an object");
         const options = rawOptions as {limit?: number; namespace?: string} | undefined;
-        if (typeof query !== "string") throw new Error("searchTools() expects a query string");
+        if (query !== undefined && typeof query !== "string") throw new Error("searchTools() expects a query string");
         if (options?.limit !== undefined && (typeof options.limit !== "number" || !Number.isInteger(options.limit) || options.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
         if (options?.namespace !== undefined && typeof options.namespace !== "string") throw new Error("searchTools() namespace must be a string");
         if (options?.namespace && options.namespace !== "terminal" && options.namespace !== "terminal-mcp") return [];
-        const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-        return definitions.map(d => ({ name: d.name, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) }))
+        const words = (query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
+        return summaries.map(d => ({ name: d.name, namespace: d.namespace, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) }))
           .filter(d => !words.length || d.score > 0).sort((a,b) => b.score - a.score)
-          .slice(0, options?.limit ?? 10).map(({ name, description }) => ({ name, description }));
+          .slice(0, options?.limit ?? (words.length ? 10 : undefined)).map(({ name, namespace, description }) => ({ name, namespace, description }));
       },
     },
     {
@@ -66,8 +75,8 @@ export async function runCodemodeWithDispatch(
       execute: (args) => {
         const [name] = args as unknown[];
         if (typeof name !== "string") throw new Error("describeTool() expects a tool name");
-        const tool = definitions.find(d => d.name === name);
-        return tool ? { name: tool.name, description: tool.description, inputSchema: tool.inputSchema } : null;
+        const tool = summaries.find(d => d.name === name);
+        return tool ? { name: tool.name, namespace: tool.namespace, ...(tool.instruction ? { instruction: tool.instruction } : {}), inputSchema: tool.inputSchema } : null;
       },
     },
     {
@@ -76,7 +85,7 @@ export async function runCodemodeWithDispatch(
         const [name] = args as unknown[];
         if (typeof name !== "string") throw new Error("describeNamespace() expects a namespace name");
         return name === "terminal" || name === "terminal-mcp"
-          ? { name: "terminal", description: "Terminal MCP tools for PTY sessions and opted-in file and shell operations", tools: definitions.map(d => d.name) }
+          ? { name: "terminal", instruction: namespaceInstruction, tools: summaries.map(({name, description}) => ({name, description})) }
           : null;
       },
     },
@@ -102,6 +111,7 @@ export async function runCodemodeWithDispatch(
 }
 
 export function runCodemode(manager: TerminalManager, args: unknown, piOperators: boolean, piExtraOperators: boolean, signal?: AbortSignal) {
-  return runCodemodeWithDispatch(args, getToolDefinitions(piOperators, piExtraOperators),
-    (name, params, callSignal) => dispatchTool(manager, name, params, piOperators, piExtraOperators, callSignal), signal);
+  return runCodemodeWithDispatch(args, getCodemodeToolDefinitions(piOperators, piExtraOperators),
+    (name, params, callSignal) => dispatchTool(manager, name, params, piOperators, piExtraOperators, callSignal), signal,
+    getServerInstructions({piOperators, piExtraOperators}));
 }

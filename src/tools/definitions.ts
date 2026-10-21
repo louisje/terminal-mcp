@@ -24,6 +24,7 @@ import { extraOperatorToolDefinitions } from "./extra-operators.js";
 export interface ToolDefinition {
   name: string;
   description: string;
+  instruction?: string;
   inputSchema: {
     type: "object";
     properties: Record<string, unknown>;
@@ -48,6 +49,43 @@ export const toolDefinitions: ToolDefinition[] = [
   setClipboardTool,
   notifyTool,
 ];
+
+/** Explicit discovery summaries. Existing MCP descriptions remain the single source
+ * of usage guidance; they are never split heuristically at runtime. */
+const TOOL_SUMMARIES: Record<string, string> = {
+  type: "Send text input to an interactive terminal session.",
+  sendKey: "Send a key or keyboard shortcut to a terminal session.",
+  sleep: "Pause execution for a specified duration.",
+  getContent: "Read content from a terminal session buffer.",
+  getBufferInfo: "Get terminal buffer and scrollback metadata.",
+  takeScreenshot: "Capture a screenshot of a terminal session.",
+  startRecording: "Start recording a terminal session.",
+  stopRecording: "Stop and finalize a terminal recording.",
+  createSession: "Create an isolated interactive terminal session.",
+  listSessions: "List active terminal sessions.",
+  destroySession: "Destroy an additional terminal session.",
+  resize: "Resize a terminal session.",
+  getClipboard: "Read the system clipboard.",
+  setClipboard: "Write text to the system clipboard.",
+  notify: "Send an operating-system notification.",
+  read: "Read a text file.",
+  write: "Write a text file.",
+  edit: "Edit a file by exact string replacement.",
+  bash: "Run a one-shot non-interactive shell command.",
+  ls: "List directory entries.",
+  grep: "Search file contents using ripgrep.",
+  find: "Find files using fd or fdfind.",
+};
+
+/** Canonical split fields for codemode. Legacy MCP descriptions are retained
+ * unchanged as instruction text, avoiding a second copy of usage guidance. */
+export function getCodemodeToolDefinitions(piOperators = false, piExtraOperators = false): ToolDefinition[] {
+  return getToolDefinitions(piOperators, piExtraOperators).map(tool => ({
+    ...tool,
+    description: TOOL_SUMMARIES[tool.name] ?? tool.description,
+    instruction: tool.description,
+  }));
+}
 
 export function getToolDefinitions(piOperators = false, piExtraOperators = false): ToolDefinition[] {
   return [...toolDefinitions, ...(piOperators ? operatorToolDefinitions : []), ...(piExtraOperators ? extraOperatorToolDefinitions : [])];

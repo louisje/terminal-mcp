@@ -46907,6 +46907,37 @@ var toolDefinitions = [
   setClipboardTool,
   notifyTool
 ];
+var TOOL_SUMMARIES = {
+  type: "Send text input to an interactive terminal session.",
+  sendKey: "Send a key or keyboard shortcut to a terminal session.",
+  sleep: "Pause execution for a specified duration.",
+  getContent: "Read content from a terminal session buffer.",
+  getBufferInfo: "Get terminal buffer and scrollback metadata.",
+  takeScreenshot: "Capture a screenshot of a terminal session.",
+  startRecording: "Start recording a terminal session.",
+  stopRecording: "Stop and finalize a terminal recording.",
+  createSession: "Create an isolated interactive terminal session.",
+  listSessions: "List active terminal sessions.",
+  destroySession: "Destroy an additional terminal session.",
+  resize: "Resize a terminal session.",
+  getClipboard: "Read the system clipboard.",
+  setClipboard: "Write text to the system clipboard.",
+  notify: "Send an operating-system notification.",
+  read: "Read a text file.",
+  write: "Write a text file.",
+  edit: "Edit a file by exact string replacement.",
+  bash: "Run a one-shot non-interactive shell command.",
+  ls: "List directory entries.",
+  grep: "Search file contents using ripgrep.",
+  find: "Find files using fd or fdfind."
+};
+function getCodemodeToolDefinitions(piOperators = false, piExtraOperators = false) {
+  return getToolDefinitions(piOperators, piExtraOperators).map((tool) => ({
+    ...tool,
+    description: TOOL_SUMMARIES[tool.name] ?? tool.description,
+    instruction: tool.description
+  }));
+}
 function getToolDefinitions(piOperators = false, piExtraOperators = false) {
   return [...toolDefinitions, ...piOperators ? operatorToolDefinitions : [], ...piExtraOperators ? extraOperatorToolDefinitions : []];
 }
@@ -48029,13 +48060,13 @@ var codemodeDefinition = {
   name: "codemode",
   description: `Run JavaScript as an async function body in an isolated QuickJS sandbox (not JSON or a code fence). Top-level await works.
 - Call tools with await tools.<name>({ ...args }); calls resolve to text or structured output and throw on failure.
-- Find tools with ALL_TOOLS, await searchTools(query, {limit?, namespace?}), await describeTool(name), or await describeNamespace("terminal").
+- Discover all tool summaries with await searchTools(), or search by keyword with await searchTools(query, {limit?, namespace?}). Read await describeNamespace("terminal") for terminal-wide instructions, and await describeTool(name) for tool usage guidance and inputSchema.
 - Emit meaningful results with text(value), image(value), or top-level return; nested tool calls are not automatically emitted.
 - Use Promise.allSettled for independent calls and filter verbose results before emitting.
 - No Node.js globals, direct filesystem/network access, or timers. Tool calls use the host's existing permissions.`,
   inputSchema: { type: "object", properties: { code: { type: "string", description: "JavaScript body; use await tools.name(args) and text(result)." }, timeoutMs: { type: "integer", minimum: 1, maximum: 6e4, description: "Execution deadline in milliseconds (default 60000)." } }, required: ["code"] }
 };
-async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
+async function runCodemodeWithDispatch(args2, definitions, dispatch, signal, namespaceInstruction = getServerInstructions()) {
   const code = args2?.code;
   if (typeof code !== "string" || !code.trim()) throw new Error("codemode requires nonempty code");
   const requestedTimeout = args2.timeoutMs;
@@ -48043,9 +48074,16 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
     throw new Error("codemode timeoutMs must be an integer between 1 and 60000");
   }
   const timeoutMs = requestedTimeout === void 0 ? 6e4 : Number(requestedTimeout);
+  const summaries = definitions.map((definition) => ({
+    name: definition.name,
+    namespace: "terminal",
+    description: definition.description,
+    instruction: definition.instruction,
+    inputSchema: definition.inputSchema
+  }));
   const tools = definitions.map((definition) => ({
     name: definition.name,
-    description: definition.description,
+    description: summaries.find((d) => d.name === definition.name).description,
     inputSchema: definition.inputSchema,
     execute: async (value, context) => {
       const result2 = await dispatch(definition.name, value ?? {}, context.signal);
@@ -48064,12 +48102,12 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
         const [query, rawOptions] = args3;
         if (rawOptions !== null && rawOptions !== void 0 && (typeof rawOptions !== "object" || Array.isArray(rawOptions))) throw new Error("searchTools() options must be an object");
         const options2 = rawOptions;
-        if (typeof query !== "string") throw new Error("searchTools() expects a query string");
+        if (query !== void 0 && typeof query !== "string") throw new Error("searchTools() expects a query string");
         if (options2?.limit !== void 0 && (typeof options2.limit !== "number" || !Number.isInteger(options2.limit) || options2.limit <= 0)) throw new Error("searchTools() limit must be a positive integer");
         if (options2?.namespace !== void 0 && typeof options2.namespace !== "string") throw new Error("searchTools() namespace must be a string");
         if (options2?.namespace && options2.namespace !== "terminal" && options2.namespace !== "terminal-mcp") return [];
-        const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-        return definitions.map((d) => ({ name: d.name, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) })).filter((d) => !words.length || d.score > 0).sort((a2, b) => b.score - a2.score).slice(0, options2?.limit ?? 10).map(({ name, description }) => ({ name, description }));
+        const words = (query ?? "").toLowerCase().split(/\s+/).filter(Boolean);
+        return summaries.map((d) => ({ name: d.name, namespace: d.namespace, description: d.description, score: words.reduce((score, w) => score + (d.name.toLowerCase().includes(w) ? 4 : 0) + (d.description.toLowerCase().includes(w) ? 1 : 0), 0) })).filter((d) => !words.length || d.score > 0).sort((a2, b) => b.score - a2.score).slice(0, options2?.limit ?? (words.length ? 10 : void 0)).map(({ name, namespace, description }) => ({ name, namespace, description }));
       }
     },
     {
@@ -48078,8 +48116,8 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
       execute: (args3) => {
         const [name] = args3;
         if (typeof name !== "string") throw new Error("describeTool() expects a tool name");
-        const tool = definitions.find((d) => d.name === name);
-        return tool ? { name: tool.name, description: tool.description, inputSchema: tool.inputSchema } : null;
+        const tool = summaries.find((d) => d.name === name);
+        return tool ? { name: tool.name, namespace: tool.namespace, ...tool.instruction ? { instruction: tool.instruction } : {}, inputSchema: tool.inputSchema } : null;
       }
     },
     {
@@ -48088,7 +48126,7 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
       execute: (args3) => {
         const [name] = args3;
         if (typeof name !== "string") throw new Error("describeNamespace() expects a namespace name");
-        return name === "terminal" || name === "terminal-mcp" ? { name: "terminal", description: "Terminal MCP tools for PTY sessions and opted-in file and shell operations", tools: definitions.map((d) => d.name) } : null;
+        return name === "terminal" || name === "terminal-mcp" ? { name: "terminal", instruction: namespaceInstruction, tools: summaries.map(({ name: name2, description }) => ({ name: name2, description })) } : null;
       }
     }
   ];
@@ -48112,9 +48150,10 @@ async function runCodemodeWithDispatch(args2, definitions, dispatch, signal) {
 function runCodemode(manager, args2, piOperators, piExtraOperators, signal) {
   return runCodemodeWithDispatch(
     args2,
-    getToolDefinitions(piOperators, piExtraOperators),
+    getCodemodeToolDefinitions(piOperators, piExtraOperators),
     (name, params, callSignal) => dispatchTool(manager, name, params, piOperators, piExtraOperators, callSignal),
-    signal
+    signal,
+    getServerInstructions({ piOperators, piExtraOperators })
   );
 }
 
@@ -48425,12 +48464,12 @@ var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
 Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
 var CODEMODE_INSTRUCTIONS = `
 
-Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover tools with ALL_TOOLS or await searchTools(query, {limit?, namespace?}); use await describeTool(name) to inspect the inputSchema and await describeNamespace("terminal") for the server tool group.
+Codemode exposes one MCP tool that executes JavaScript as an async function body in an isolated QuickJS VM. Use top-level await with tools.<name>(args). Discover all tools with await searchTools(), or search by keyword with await searchTools(query, {limit?, namespace?}); use await describeTool(name) to inspect the inputSchema and await describeNamespace("terminal") for the server tool group.
 Use Promise.allSettled for independent calls when failures should not cancel other results; chain dependent calls sequentially. Filter large outputs in the script and emit only relevant results with text(value). Ordinary nested tool results are not automatically returned to the model. Script globals do not include Node.js, filesystem, network, or timers; calls to injected tools retain their existing host permissions. Each execution is a fresh JavaScript environment, while the real terminal sessions persist.
-For PTY operations, inspect the default terminal with await tools.getContent({}) before using it. If it is occupied or uncertain, create a separate session via tools.createSession({}). Use tools.type({text: command, autoSubmit: true}) or tools.sendKey({key: "enter"}) as appropriate and inspect output with tools.getContent({}).`;
+Read await describeNamespace("terminal") for the Terminal MCP operational and safety instructions before working with terminal tools.`;
 function getServerInstructions({ codemode = false, piOperators = false, piExtraOperators = false } = {}) {
-  const base = codemode ? SERVER_INSTRUCTIONS.replace("First call getContent()", "First call tools.getContent({})").replace("call createSession()", "call tools.createSession({})").replace("type(<command>), sendKey('Enter'), then getContent()", "tools.type({text: command, autoSubmit: true}), then tools.getContent({})") : SERVER_INSTRUCTIONS;
-  return base + (codemode ? CODEMODE_INSTRUCTIONS : "") + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "");
+  if (codemode) return CODEMODE_INSTRUCTIONS.trim();
+  return SERVER_INSTRUCTIONS + (piOperators ? PI_OPERATOR_INSTRUCTIONS : "") + (piExtraOperators ? PI_EXTRA_OPERATOR_INSTRUCTIONS : "");
 }
 function createServerWithManager(manager, piOperators = false, piExtraOperators = false, codemode = false) {
   const server = new Server(
@@ -48605,9 +48644,10 @@ async function startMcpClientMode(socketPath, options2 = {}) {
     try {
       const result2 = options2.codemode ? name === "codemode" ? await runCodemodeWithDispatch(
         args2,
-        getToolDefinitions(options2.piOperators, options2.piExtraOperators),
+        getCodemodeToolDefinitions(options2.piOperators, options2.piExtraOperators),
         (tool, params, signal) => sendRequest(tool, params, signal),
-        extra.signal
+        extra.signal,
+        getServerInstructions({ piOperators: options2.piOperators, piExtraOperators: options2.piExtraOperators })
       ) : (() => {
         throw new Error(`Unknown tool: ${name}`);
       })() : await sendRequest(name, args2, extra.signal);

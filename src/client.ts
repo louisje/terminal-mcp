@@ -7,7 +7,7 @@ import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { getToolDefinitions } from "./tools/definitions.js";
+import { getToolDefinitions, getCodemodeToolDefinitions } from "./tools/definitions.js";
 import { runCodemodeWithDispatch, codemodeDefinition } from "./tools/codemode.js";
 import { installStdioShutdownHandlers } from "./utils/shutdown.js";
 
@@ -180,8 +180,9 @@ export async function startMcpClientMode(
     try {
       const result = options.codemode
         ? name === "codemode"
-          ? await runCodemodeWithDispatch(args, getToolDefinitions(options.piOperators, options.piExtraOperators),
-              (tool, params, signal) => sendRequest(tool, params, signal), extra.signal)
+          ? await runCodemodeWithDispatch(args, getCodemodeToolDefinitions(options.piOperators, options.piExtraOperators),
+              (tool, params, signal) => sendRequest(tool, params, signal), extra.signal,
+              getServerInstructions({piOperators: options.piOperators, piExtraOperators: options.piExtraOperators}))
           : (() => { throw new Error(`Unknown tool: ${name}`); })()
         : await sendRequest(name, args as Record<string, unknown>, extra.signal);
       return result as {
