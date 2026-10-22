@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Claude Code plugin bootstrap: install native dependencies without changing npm/bunx entrypoints.
+// Shared CLI and plugin bootstrap: validate native dependencies before launching dist/index.js.
 const { createRequire } = require("node:module");
 const { spawn, spawnSync } = require("node:child_process");
 const { readFileSync, existsSync, mkdirSync } = require("node:fs");
@@ -57,7 +57,7 @@ if (optional && process.env.TERMINAL_MCP_INSTALL_OPTIONAL_RESVG === "1" && !read
   }
 }
 
-const child = spawn(process.execPath, [entry, "--mcp", ...process.argv.slice(2)], {
+const child = spawn(process.execPath, [entry, ...process.argv.slice(2)], {
   cwd: process.cwd(),
   env: process.env,
   stdio: "inherit"
