@@ -10,6 +10,30 @@
   Terminal MCP gives LLMs a shared view of your terminal session. Perfect for debugging CLIs and TUI applications in real-time, or letting AI drive terminal-based tools autonomously.
 </p>
 
+## ChatGPT / Codex Plugin (local stdio)
+
+This repository includes a portable Agent Plugins `plugin.json`, a local
+stdio `mcp.json`, and the shared `skills/terminal-mcp/SKILL.md`.
+
+The Plugin starts `node bootstrap.cjs --mcp --codemode --pi-operators`.
+The bootstrap validates and installs the required native `node-pty` dependency,
+then launches the existing `dist/index.js`. Node.js >=22.19 and npm are required
+for a fresh installation. Local stdio execution requires a client that supports
+local MCP servers; it is **not** a ChatGPT Web remote connection. Availability
+of desktop-only plugin installation/submission depends on the client and account.
+
+Build from source before local testing:
+
+```bash
+npm install
+npm run build
+node bootstrap.cjs --help
+```
+
+The plugin's `mcp.json` is for local stdio only. For ChatGPT Web via Secure MCP
+Tunnel, keep running the separate `tunnel-client` profile and register that
+connection in ChatGPT; the Plugin manifest does not start the tunnel.
+
 ## Install
 
 ```bash
