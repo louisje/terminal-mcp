@@ -61,7 +61,7 @@ const TOOL_SUMMARIES: Record<string, string> = {
   takeScreenshot: "Capture a screenshot of a terminal session.",
   startRecording: "Start recording a terminal session.",
   stopRecording: "Stop and finalize a terminal recording.",
-  createSession: "Create an isolated interactive terminal session.",
+  createSession: "Create an isolated headless PTY session, not directly visible to the user.",
   listSessions: "List active terminal sessions.",
   destroySession: "Destroy an additional terminal session.",
   resize: "Resize a terminal session.",

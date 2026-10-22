@@ -83,6 +83,10 @@ When `--pi-operators` is enabled, four additional tools are exposed:
 Prefer these operators for routine file work and quick one-shot commands. Do not use the
 PTY `type` → `getContent` loop merely to emulate what an operator can do directly.
 
+## Session visibility
+
+Only the default session can be directly visible to the user, and only in interactive mode. In headless mode, the default session is not directly visible either. Every additional session created by `createSession()` is a headless PTY: tools can drive its stdin and read its output, but it is never displayed directly in the user's terminal. For commands requiring a human to watch or type a password, use an available user-visible default session. Do not assume an extra session lets the user respond to prompts. A headless PTY is still suitable for long-running builds and tests when only the AI needs to inspect partial output.
+
 ## PTY tool workflow
 
 First call `getContent()` without `sessionId` to check whether the default terminal

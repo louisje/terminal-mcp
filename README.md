@@ -429,7 +429,7 @@ Stop a recording and finalize the asciicast file.
 ```
 
 ### `createSession`
-Create a new terminal session and return its metadata. Use the returned `sessionId` to target this session in subsequent tool calls.
+Create a new **headless PTY** session and return its metadata. Additional sessions are never displayed directly in the user's terminal, though MCP tools can interact with them. Only the default session may be user-visible, in interactive mode; in headless mode even the default is not directly visible. Use the returned `sessionId` to target this session in subsequent tool calls.
 
 ```json
 {
@@ -481,6 +481,8 @@ By default, every tool call without a `sessionId` targets a single auto-created 
 - Additional sessions are created by `createSession` and tracked until they're destroyed or idle-evicted (`--session-idle-timeout`, default 600s).
 - Concurrent sessions are capped at `--max-sessions` (default 5).
 - An active recording captures output from all sessions in the process.
+
+For password prompts or tasks the human needs to watch directly, prefer an idle user-visible default session; an additional headless PTY cannot display prompts to the user. For long-running builds or tests where only the AI needs to monitor progress, extra headless sessions work well.
 
 Typical use case: an AI agent driving a long-running build in one session while running diagnostics in another, without command interleaving.
 

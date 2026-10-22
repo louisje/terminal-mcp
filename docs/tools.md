@@ -17,6 +17,10 @@ Terminal MCP exposes PTY tools and optional Pi-style operators. This document de
 
 ---
 
+## Session visibility
+
+The default session may be directly visible to the human in interactive mode, but not in headless mode. Sessions created with `createSession()` are always headless PTYs. They support interactive terminal tools but do not display output or prompts directly to the user. Use a free user-visible default session for direct human interaction, and extra headless sessions for isolated/parallel work and AI-observed builds.
+
 ## shell (optional: `--pi-operators`)
 
 Runs one non-interactive command in a fresh subprocess using the configured Terminal MCP shell, **not necessarily Bash**. It uses the server startup working directory, not the current PTY directory. The call waits until the command finishes and does not retain environment variables, aliases, or cwd across invocations.

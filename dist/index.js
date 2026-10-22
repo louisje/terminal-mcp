@@ -38567,7 +38567,7 @@ var createSessionSchema = external_exports.object({
 });
 var createSessionTool = {
   name: "createSession",
-  description: "First call getContent() without sessionId to inspect the default terminal. Reuse it only when clearly idle and available. Create an isolated terminal if someone is using it, a command/TUI is running, availability is unclear, or you need parallel work or a different shell/size. Do not send input or interrupt work in an occupied terminal. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
+  description: "Creates an additional headless PTY, never directly displayed in the user's terminal. It remains interactive through MCP tools, but cannot serve as a user-visible password prompt or terminal. Only the default session may be user-visible, depending on mode. First call getContent() without sessionId to inspect the default terminal. Reuse it only when clearly idle and available. Create an isolated terminal if someone is using it, a command/TUI is running, availability is unclear, or you need parallel work or a different shell/size. Do not send input or interrupt work in an occupied terminal. Returns session metadata; use the returned sessionId in subsequent type/sendKey/getContent/takeScreenshot calls to address this extra session.",
   inputSchema: {
     type: "object",
     properties: {
@@ -46916,7 +46916,7 @@ var TOOL_SUMMARIES = {
   takeScreenshot: "Capture a screenshot of a terminal session.",
   startRecording: "Start recording a terminal session.",
   stopRecording: "Stop and finalize a terminal recording.",
-  createSession: "Create an isolated interactive terminal session.",
+  createSession: "Create an isolated headless PTY session, not directly visible to the user.",
   listSessions: "List active terminal sessions.",
   destroySession: "Destroy an additional terminal session.",
   resize: "Resize a terminal session.",
@@ -46926,7 +46926,7 @@ var TOOL_SUMMARIES = {
   read: "Read a text file.",
   write: "Write a text file.",
   edit: "Edit a file by exact string replacement.",
-  bash: "Run a one-shot non-interactive shell command.",
+  shell: "Run a quick one-shot non-interactive command with the configured shell; prefer PTY for long builds and tests.",
   ls: "List directory entries.",
   grep: "Search file contents using ripgrep.",
   find: "Find files using fd or fdfind."
@@ -48436,10 +48436,18 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - performs a long-running compile, build, or test run: prefer a PTY even when non-interactive, so progress, failures, and partial output can be inspected without blocking on completion
 - needs to be observed while still running (server, REPL, or any command with live progress)
 
+Only the default session may be directly visible to the user (in interactive mode);
+under headless mode even the default session is not directly visible. Sessions created
+by createSession() are always headless PTYs: AI can interact with them through tools,
+but the user cannot see them directly. For user-observed commands or password prompts,
+use the default session only when it is visibly available; do not assume that creating
+another session will let the user see a prompt or type a password.
+
 First call getContent() without sessionId to inspect the default terminal. Reuse it
 only when clearly idle and available. If someone is using it, a command/TUI is
 running, or availability is unclear, call createSession() and use the returned
-sessionId for subsequent terminal calls. Do not send input or interrupt occupied terminals.
+sessionId for subsequent terminal calls, provided direct human interaction is not
+required. Do not send input or interrupt occupied terminals.
 
 Workflow in the chosen session: type(<command>), sendKey('Enter'), then getContent() to read the result.
 For long-running interactive programs, sendKey for navigation and takeScreenshot to

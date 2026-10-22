@@ -35,10 +35,18 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - performs a long-running compile, build, or test run: prefer a PTY even when non-interactive, so progress, failures, and partial output can be inspected without blocking on completion
 - needs to be observed while still running (server, REPL, or any command with live progress)
 
+Only the default session may be directly visible to the user (in interactive mode);
+under headless mode even the default session is not directly visible. Sessions created
+by createSession() are always headless PTYs: AI can interact with them through tools,
+but the user cannot see them directly. For user-observed commands or password prompts,
+use the default session only when it is visibly available; do not assume that creating
+another session will let the user see a prompt or type a password.
+
 First call getContent() without sessionId to inspect the default terminal. Reuse it
 only when clearly idle and available. If someone is using it, a command/TUI is
 running, or availability is unclear, call createSession() and use the returned
-sessionId for subsequent terminal calls. Do not send input or interrupt occupied terminals.
+sessionId for subsequent terminal calls, provided direct human interaction is not
+required. Do not send input or interrupt occupied terminals.
 
 Workflow in the chosen session: type(<command>), sendKey('Enter'), then getContent() to read the result.
 For long-running interactive programs, sendKey for navigation and takeScreenshot to

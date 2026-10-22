@@ -403,3 +403,7 @@ process.on("SIGINT", () => {
 - Default `getContent()` only returns visible viewport; use `visibleOnly: false` to read scrollback history, which returns the last `100` lines by default
 - Use `maxLines: 0` with `visibleOnly: false` to include the full scrollback buffer when needed
 - Screenshot is lighter than full content retrieval
+
+## Session visibility
+
+Only the default session may be displayed directly to the user, when Terminal MCP runs interactively. In headless mode the default session is not displayed directly. Each additional PTY made by `createSession()` is headless, independent of the server mode; AI tools can interact with it, but it is not attached to the user-facing terminal. This matters for passwords and direct human observation: creating a new session does not make its prompt visible to the user.
