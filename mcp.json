@@ -6,6 +6,7 @@
       "command": "node",
       "args": [
         "${PLUGIN_ROOT}/bootstrap.cjs",
+        "--mcp",
         "--codemode",
         "--pi-operators"
       ]
