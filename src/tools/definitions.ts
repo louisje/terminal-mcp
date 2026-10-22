@@ -71,7 +71,7 @@ const TOOL_SUMMARIES: Record<string, string> = {
   read: "Read a text file.",
   write: "Write a text file.",
   edit: "Edit a file by exact string replacement.",
-  bash: "Run a one-shot non-interactive shell command.",
+  shell: "Run a quick one-shot non-interactive command with the configured shell; prefer PTY for long builds and tests.",
   ls: "List directory entries.",
   grep: "Search file contents using ripgrep.",
   find: "Find files using fd or fdfind.",

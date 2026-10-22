@@ -132,7 +132,7 @@ terminal-mcp [OPTIONS]
 
 Options:
   --mcp                  Use MCP mode (connects to existing session or creates new PTY)
-  --pi-operators         Also expose read, write, edit, and bash (19 tools total; default is 15)
+  --pi-operators         Also expose read, write, edit, and shell (19 tools total; default is 15)
   --pi-extra-operators   Also expose ls, grep, and find (18 tools total; 22 with both flags)
   --title <label>        Set the interactive terminal title when connecting as a client
   --cols <number>        Terminal width in columns (default: $TERMINAL_MCP_COLS or 120)
@@ -165,18 +165,29 @@ Multi-Session Options:
 ### Pi operators
 
 The default tool surface is unchanged: Terminal MCP exposes its existing 15 terminal tools. Add
-`--pi-operators` when you also want the Pi Coding Agent-style `read`, `write`, `edit`, and `bash`
+`--pi-operators` when you also want the Pi Coding Agent-style `read`, `write`, `edit`, and `shell`
 tools. These file tools operate relative to the process startup directory; `write` creates parent
 directories, and `edit` requires exact unique non-overlapping replacements from the original file.
-`bash` runs one independent, stateless subprocess using Terminal MCP's configured shell (`--shell`, then `TERMINAL_MCP_SHELL`, then the platform-native shell/default) in that same startup directory,
+`shell` runs one independent, stateless subprocess using Terminal MCP's configured shell (`--shell`, then `TERMINAL_MCP_SHELL`, then the platform-native shell/default) in that same startup directory,
 returns stdout/stderr when it finishes, and accepts an optional timeout in seconds. Prefer these
-operators for routine file operations and one-shot non-interactive commands; use the PTY tools
-when you need persistent shell state, interactive/TTY behavior, or live observability. The flag
+operators for routine file operations and short one-shot non-interactive commands; use the PTY tools
+for long-running compilation, builds, and tests (even without interaction), as well as persistent shell state, interactive/TTY behavior, or live observability. The flag
 applies consistently to direct MCP, headless MCP, and socket/client mode.
+
+**Which execution mode should I use?**
+
+| Task | Preferred tool |
+| --- | --- |
+| Fast checks, `git status`, short unit tests | `shell` |
+| Long compiles, builds, integration tests, full test suites | PTY (`type` / `getContent`) |
+| SSH, sudo prompts, TUI, persistent environment or live output | PTY |
+| Direct text-file reads, writes, and exact replacements | `read`, `write`, `edit` |
+
+Long-running builds and tests should use PTY even when no interaction is expected, because intermediate output can be inspected before completion.
 
 ### Pi extra operators
 
-The optional --pi-extra-operators flag independently exposes ls, grep, and find. It does not enable read, write, edit, or bash. The two flags may be combined for 22 tools. ls uses Node.js; grep requires rg and find requires fd or fdfind on PATH. Dependencies are never installed automatically; missing tools return installation guidance.
+The optional --pi-extra-operators flag independently exposes ls, grep, and find. It does not enable read, write, edit, or shell. The two flags may be combined for 22 tools. ls uses Node.js; grep requires rg and find requires fd or fdfind on PATH. Dependencies are never installed automatically; missing tools return installation guidance.
 
 
 Environment variables:
@@ -722,9 +733,9 @@ Codemode accepts an optional `timeoutMs` (integer 1–60000, default 60000) to b
 Example `codemode` input:
 
 ```json
-{ "code": "text(await tools.bash({command: 'git status --short'}))" }
+{ "code": "text(await tools.shell({command: 'git status --short'}))" }
 ```
 
 The Claude Code plugin bootstrap does not automatically download optional resvg at startup; set `TERMINAL_MCP_INSTALL_OPTIONAL_RESVG=1` when launching it to request installation for PNG screenshot support. The required native `node-pty` remains auto-installed if unavailable.
 
-The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Node.js >= 22.19.0 is required for all modes. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `bash`).
+The flag works with both headless servers and socket-connected MCP clients. `--pi-operators` and `--pi-extra-operators` still control which tools can be called; they are not implicitly enabled. Node.js >= 22.19.0 is required for all modes. Existing non-codemode operation remains the default. The bundled distribution includes `dist/codemode-worker.js` and `dist/quickjs.wasm`; both must be shipped alongside `dist/index.js`. JavaScript isolation does **not** sandbox the capabilities of injected tools (e.g. `shell`).

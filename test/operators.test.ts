@@ -9,7 +9,7 @@ import { handleOperatorTool } from "../src/tools/operators.ts";
 test("tool definitions keep 15 by default and expose 19 with pi operators", () => {
   assert.equal(getToolDefinitions().length, 15);
   assert.equal(getToolDefinitions(true).length, 19);
-  assert.deepEqual(getToolDefinitions(true).slice(-4).map((tool) => tool.name), ["read", "write", "edit", "bash"]);
+  assert.deepEqual(getToolDefinitions(true).slice(-4).map((tool) => tool.name), ["read", "write", "edit", "shell"]);
 });
 
 test("read, write, and edit implement the basic operator semantics", async () => {
@@ -27,35 +27,35 @@ test("read, write, and edit implement the basic operator semantics", async () =>
   }
 });
 
-test("bash returns output, exit failures, and timeout failures", async () => {
-  const ok = await handleOperatorTool("bash", { command: "printf operator-ok" });
+test("shell returns output, exit failures, and timeout failures", async () => {
+  const ok = await handleOperatorTool("shell", { command: "printf operator-ok" });
   assert.equal(ok.content[0]?.text, "operator-ok");
 
-  const failed = await handleOperatorTool("bash", { command: "printf failed >&2; exit 7" });
+  const failed = await handleOperatorTool("shell", { command: "printf failed >&2; exit 7" });
   assert.equal(failed.isError, true);
   assert.match(failed.content[0]?.text ?? "", /failed/);
   assert.match(failed.content[0]?.text ?? "", /code 7/);
 
-  const timedOut = await handleOperatorTool("bash", { command: "sleep 1", timeout: 0.05 });
+  const timedOut = await handleOperatorTool("shell", { command: "sleep 1", timeout: 0.05 });
   assert.equal(timedOut.isError, true);
   assert.match(timedOut.content[0]?.text ?? "", /timed out/);
 });
 
 
-test("bash honors an explicitly configured shell", async (t) => {
+test("shell honors an explicitly configured shell", async (t) => {
   if (process.platform === "win32") return t.skip("POSIX shell fixture");
   const dir = await mkdtemp(join(tmpdir(), "terminal-mcp-shell-"));
   const shell = join(dir, "configured-shell");
   try {
     await writeFile(shell, "#!/bin/sh\nprintf 'configured-shell\\n' >&2\nexec /bin/sh \"$@\"\n", { mode: 0o755 });
-    const response = await handleOperatorTool("bash", { command: "printf shell-ok" }, shell);
+    const response = await handleOperatorTool("shell", { command: "printf shell-ok" }, shell);
     assert.equal(response.content[0]?.text, "shell-okconfigured-shell\n");
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
 });
 
-test("bash uses the environment-selected shell by default", async (t) => {
+test("shell uses the environment-selected shell by default", async (t) => {
   if (process.platform === "win32") return t.skip("POSIX shell fixture");
   const dir = await mkdtemp(join(tmpdir(), "terminal-mcp-shell-env-"));
   const shell = join(dir, "configured-shell");
@@ -63,7 +63,7 @@ test("bash uses the environment-selected shell by default", async (t) => {
   try {
     await writeFile(shell, "#!/bin/sh\nprintf 'env-shell\\n' >&2\nexec /bin/sh \"$@\"\n", { mode: 0o755 });
     process.env.TERMINAL_MCP_SHELL = shell;
-    const response = await handleOperatorTool("bash", { command: "printf env-ok" });
+    const response = await handleOperatorTool("shell", { command: "printf env-ok" });
     assert.equal(response.content[0]?.text, "env-okenv-shell\n");
   } finally {
     if (previous === undefined) delete process.env.TERMINAL_MCP_SHELL;

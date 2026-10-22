@@ -7,7 +7,7 @@ import { connect } from 'node:net';
 import { createToolProxyServer } from '../src/transport/socket.ts';
 import { TerminalManager } from '../src/terminal/index.ts';
 
-test('socket cancellation aborts an in-flight bash command', { timeout: 12000 }, async () => {
+test('socket cancellation aborts an in-flight shell command', { timeout: 12000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'tmcp-socket-abort-'));
   const marker = join(dir, 'should-not-exist');
   const server = createToolProxyServer(join(dir, 'socket'), new TerminalManager(), undefined, true);
@@ -16,7 +16,7 @@ test('socket cancellation aborts an in-flight bash command', { timeout: 12000 },
     await new Promise(resolve => server.once('listening', resolve));
     socket = connect(join(dir, 'socket'));
     await new Promise(resolve => socket.once('connect', resolve));
-    socket.write(JSON.stringify({id:1,method:'bash',params:{command:`sleep 2; touch '${marker}'`}}) + '\n');
+    socket.write(JSON.stringify({id:1,method:'shell',params:{command:`sleep 2; touch '${marker}'`}}) + '\n');
     await new Promise(resolve => setTimeout(resolve, 100));
     socket.write(JSON.stringify({id:2,method:'cancel',params:{requestId:1}}) + '\n');
     await new Promise(resolve => setTimeout(resolve, 2400));

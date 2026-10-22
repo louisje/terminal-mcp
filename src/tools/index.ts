@@ -67,7 +67,7 @@ export async function dispatchTool(manager: TerminalManager, name: string, args:
     case "read":
     case "write":
     case "edit":
-    case "bash":
+    case "shell":
       if (!piOperators) throw new Error(`Unknown tool: ${name}`);
       return await handleOperatorTool(name, args, manager.getConfiguredShell(), signal);
     case "type":

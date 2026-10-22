@@ -33,7 +33,7 @@ test('Claude plugin bootstrap runs the bundled codemode without project node_mod
       assert.deepEqual((await client.listTools()).tools.map(x => x.name), ['codemode']);
       const result = await client.callTool({
         name: 'codemode',
-        arguments: { code: 'text(await tools.bash({command:"printf plugin-ok"}))' },
+        arguments: { code: 'text(await tools.shell({command:"printf plugin-ok"}))' },
       });
       assert.equal(result.isError, false, JSON.stringify(result));
       assert.equal(result.content[0].text, 'plugin-ok');

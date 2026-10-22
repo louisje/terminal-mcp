@@ -235,7 +235,7 @@ async function handleToolRequest(
       case "read":
       case "write":
       case "edit":
-      case "bash":
+      case "shell":
         if (!piOperators) throw new Error(`Unknown tool: ${method}`);
         result = await handleOperatorTool(method, params, manager.getConfiguredShell(), signal);
         break;

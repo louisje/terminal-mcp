@@ -13,10 +13,10 @@ test('codemode exposes only one tool and invokes opted-in operators', { timeout:
   const client = await connect(['--codemode', '--pi-operators']);
   try {
     assert.deepEqual((await client.listTools()).tools.map(t => t.name), ['codemode']);
-    const result = await client.callTool({ name: 'codemode', arguments: { code: 'text(await tools.bash({command:"printf codemode-ok"}))' } });
+    const result = await client.callTool({ name: 'codemode', arguments: { code: 'text(await tools.shell({command:"printf codemode-ok"}))' } });
     assert.equal(result.isError, false);
     assert.equal(result.content[0].text, 'codemode-ok');
-    const names = await client.callTool({ name: 'codemode', arguments: { code: 'text(ALL_TOOLS.map(x=>x.name).includes("bash"))' } });
+    const names = await client.callTool({ name: 'codemode', arguments: { code: 'text(ALL_TOOLS.map(x=>x.name).includes("shell"))' } });
     assert.equal(names.content[0].text, 'true');
     const failure = await client.callTool({ name: 'codemode', arguments: { code: 'throw new Error("intentional")' } });
     assert.equal(failure.isError, true);
@@ -26,7 +26,7 @@ test('codemode exposes only one tool and invokes opted-in operators', { timeout:
 test('codemode does not grant disabled operators', { timeout: 20000 }, async () => {
   const client = await connect(['--codemode']);
   try {
-    const result = await client.callTool({ name: 'codemode', arguments: { code: 'text(ALL_TOOLS.some(x=>x.name==="bash"))' } });
+    const result = await client.callTool({ name: 'codemode', arguments: { code: 'text(ALL_TOOLS.some(x=>x.name==="shell"))' } });
     assert.equal(result.content[0].text, 'false');
   } finally { await client.close(); }
 });
@@ -46,7 +46,7 @@ test('codemode works through a real socket-connected MCP client', { timeout: 250
   try {
     await client.connect(new StdioClientTransport({ command: process.execPath, args: ['dist/index.js', '--socket', socketPath, '--codemode', '--pi-operators'], stderr: 'pipe' }));
     assert.deepEqual((await client.listTools()).tools.map(x => x.name), ['codemode']);
-    const value = await client.callTool({ name: 'codemode', arguments: { code: 'text(await tools.bash({command:"printf socket-ok"}))' } });
+    const value = await client.callTool({ name: 'codemode', arguments: { code: 'text(await tools.shell({command:"printf socket-ok"}))' } });
     assert.equal(value.isError, false, JSON.stringify(value));
     assert.equal(value.content[0].text, 'socket-ok');
   } finally {

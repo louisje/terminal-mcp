@@ -1,6 +1,6 @@
 # Tools Reference
 
-Terminal MCP exposes eight MCP tools for interacting with the terminal. This document provides complete API documentation for each tool.
+Terminal MCP exposes PTY tools and optional Pi-style operators. This document describes the terminal tools and the optional stateless shell operator.
 
 ## Overview
 
@@ -14,6 +14,21 @@ Terminal MCP exposes eight MCP tools for interacting with the terminal. This doc
 | [`takeScreenshot`](#takescreenshot) | Capture terminal state with metadata |
 | [`startRecording`](#startrecording) | Start recording terminal output |
 | [`stopRecording`](#stoprecording) | Stop recording and save file |
+
+---
+
+## shell (optional: `--pi-operators`)
+
+Runs one non-interactive command in a fresh subprocess using the configured Terminal MCP shell, **not necessarily Bash**. It uses the server startup working directory, not the current PTY directory. The call waits until the command finishes and does not retain environment variables, aliases, or cwd across invocations.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `command` | string | Yes | Command to run |
+| `timeout` | number | No | Timeout in seconds |
+
+Returns stdout/stderr, with a tool error for failed exit, timeout, or output overflow. Prefer for quick checks and short tests. **Use PTY for long-running compiles, builds, and test suites** even without interaction, so progress and intermediate failures remain observable. PTY is also appropriate for TUI programs, prompts, and persistent shell state.
+
+In codemode, invoke `await tools.shell({command: "git status --short"})`. This operator is exposed only when `--pi-operators` is enabled.
 
 ---
 

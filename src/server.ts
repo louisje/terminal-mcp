@@ -32,7 +32,8 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - prompts the user for input mid-execution (ssh login, git push over HTTPS, npm login, etc.)
 - runs a TUI program (vim, nano, less, more, htop, top, man, kubectl edit, gh pr create)
 - requires line-buffered TTY behavior (color output, progress bars, fzf, watch)
-- needs to be observed while still running (long-running build, server, REPL)
+- performs a long-running compile, build, or test run: prefer a PTY even when non-interactive, so progress, failures, and partial output can be inspected without blocking on completion
+- needs to be observed while still running (server, REPL, or any command with live progress)
 
 First call getContent() without sessionId to inspect the default terminal. Reuse it
 only when clearly idle and available. If someone is using it, a command/TUI is
@@ -53,12 +54,14 @@ Pi operators are enabled. Prefer read, write, and edit for direct text-file oper
 constructing shell commands for them. edit performs exact, unique, non-overlapping string
 replacements against the original file; it is not an append/prepend primitive.
 
-For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
+For short, one-shot, non-interactive shell commands, prefer shell. It runs a fresh stateless
 subprocess using Terminal MCP's configured shell (the --shell option, TERMINAL_MCP_SHELL,
 then the platform shell default) in terminal-mcp's startup working directory and returns stdout/stderr when the
 command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
-shell state across calls, interactive input, TTY behavior, or live observability.`;
+shell state across calls, interactive input, TTY behavior, or live observability. In particular,
+prefer PTY for lengthy compilation, builds, or test suites even if no interaction is expected;
+use shell for short checks and quick tests that finish promptly.`;
 
 const PI_EXTRA_OPERATOR_INSTRUCTIONS = `\n\nPi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
 

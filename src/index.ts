@@ -244,7 +244,7 @@ Options:
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --codemode             Expose a single QuickJS codemode tool (Node >=22.19)
-  --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
+  --pi-operators         Expose Pi-style read, write, edit, and shell tools (19 total)
   --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)

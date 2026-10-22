@@ -3,9 +3,9 @@ import { strict as assert } from 'node:assert';
 import { handleOperatorTool } from '../src/tools/operators.ts';
 
 // Aborting the host signal must cancel a running one-shot command.
-test('bash operator respects abort signal', { timeout: 12000 }, async () => {
+test('shell operator respects abort signal', { timeout: 12000 }, async () => {
   const controller = new AbortController();
-  const pending = handleOperatorTool('bash', { command: 'sleep 10' }, undefined, controller.signal);
+  const pending = handleOperatorTool('shell', { command: 'sleep 10' }, undefined, controller.signal);
   setTimeout(() => controller.abort(), 80);
   await assert.rejects(pending, /Command aborted/);
 });
@@ -40,7 +40,7 @@ test('cancelled PTY calls do not dispatch input into an existing session', async
   assert.equal(called, false);
 });
 
-test('bash abort kills background descendants, not only shell', {timeout:10000}, async () => {
+test('shell abort kills background descendants, not only shell', {timeout:10000}, async () => {
   if (process.platform === 'win32') return;
   const {mkdtempSync, existsSync, rmSync} = await import('node:fs');
   const {tmpdir} = await import('node:os');
@@ -49,7 +49,7 @@ test('bash abort kills background descendants, not only shell', {timeout:10000},
   const marker=join(dir,'orphan-marker');
   try {
     const controller=new AbortController();
-    const pending=handleOperatorTool('bash',{command:`(sleep 1; touch '${marker}') & wait`},undefined,controller.signal);
+    const pending=handleOperatorTool('shell',{command:`(sleep 1; touch '${marker}') & wait`},undefined,controller.signal);
     setTimeout(()=>controller.abort(),100);
     await assert.rejects(pending,/Command aborted/);
     await new Promise(resolve=>setTimeout(resolve,1200));

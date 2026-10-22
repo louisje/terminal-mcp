@@ -12,7 +12,7 @@ description: |
 ## Default rule
 
 When Pi operators are enabled, use `read`, `write`, and `edit` for direct text-file
-operations and `bash` for ordinary one-shot, non-interactive commands. These avoid
+operations and `shell` for short one-shot, non-interactive commands. These avoid
 unnecessary PTY interaction and return their result directly.
 
 Use the PTY/session tools when the user's real shell matters. The five reasons below
@@ -26,7 +26,7 @@ facility where available and apply the same decision rule.
 
 terminal-mcp's PTY tools drive the same session the user has been working in — their
 current directory, exported environment variables, shell aliases, and tmux state
-all persist across calls. The Pi `bash` operator is a fresh, stateless subprocess using Terminal MCP's configured shell every time, as are typical agent-provided Bash tools. If the user just `cd`'d or `export`'d something in their own
+all persist across calls. The Pi `shell` operator is a fresh, stateless subprocess using Terminal MCP's configured shell every time, as are typical agent-provided Bash tools. If the user just `cd`'d or `export`'d something in their own
 terminal and expects the next command to pick that up, switch to terminal-mcp even
 if nothing is technically broken — staying consistent with the user's actual working
 state is itself the reason.
@@ -62,6 +62,10 @@ When the agent's built-in Bash tool is unavailable, disabled, or cannot execute 
 required command, use terminal-mcp as the fallback terminal instead of stopping solely
 because Bash cannot be used.
 
+## Long-running compilation, builds, and tests
+
+Prefer the persistent PTY for lengthy `npm run build`, `cargo build`, `make`, integration tests, or full test suites, even without interactive input. Observe intermediate logs and failures with `getContent` while the process runs. Use `shell` for quick checks and short tests that finish promptly.
+
 ## Pi operators
 
 When `--pi-operators` is enabled, four additional tools are exposed:
@@ -71,12 +75,12 @@ When `--pi-operators` is enabled, four additional tools are exposed:
 - `edit`: exact, unique, non-overlapping string replacement against the original
   file. It is not an append/prepend primitive; include surrounding text when needed
   to anchor insertion at the beginning or end.
-- `bash`: run one independent, non-interactive subprocess using Terminal MCP's configured shell from
+- `shell`: run one independent, non-interactive subprocess using Terminal MCP's configured shell from
   terminal-mcp's startup working directory. It waits for completion and returns
   stdout/stderr directly, with an optional timeout. It does not inherit PTY cwd,
   exports, aliases, or other state changed during the terminal session.
 
-Prefer these operators for routine file work and one-shot commands. Do not use the
+Prefer these operators for routine file work and quick one-shot commands. Do not use the
 PTY `type` → `getContent` loop merely to emulate what an operator can do directly.
 
 ## PTY tool workflow
@@ -100,14 +104,14 @@ Default PTY/tool list: `type`, `sendKey`, `sleep`, `getContent`, `getBufferInfo`
 `listSessions`, `destroySession`, `resize`, `getClipboard`, `setClipboard`,
 `notify` (OS-level desktop notification — useful to alert the user when a
 long-running command finishes while they're not watching). With `--pi-operators`,
-`read`, `write`, `edit`, and `bash` are additionally available.
+`read`, `write`, `edit`, and `shell` are additionally available.
 
 ## Anti-patterns
 
 - Don't ask the user to paste a sudo/SSH password into chat — switch to
   terminal-mcp so they type it themselves.
 - Don't drive the PTY for routine, invisible one-off commands where none of the five
-  reasons above apply — use the Pi `bash` operator when available (or the agent's
+  reasons above apply — use the Pi `shell` operator when available (or the agent's
   ordinary Bash facility otherwise).
 - Don't silently keep using Bash after the user has visibly changed their own shell
   state (cd, export, activating a venv) mid-session — that's the continuity case.
@@ -127,10 +131,10 @@ text(all);
 const matches = await searchTools("shell", { namespace: "terminal", limit: 5 });
 text(matches);
 text(await describeNamespace("terminal")); // instructions and tool descriptions
-const bash = await describeTool("bash"); // null unless --pi-operators is enabled
-text(bash?.inputSchema);
+const shell = await describeTool("shell"); // null unless --pi-operators is enabled
+text(shell?.inputSchema);
 // In an operator-enabled connection:
-// text(await tools.bash({ command: "git status --short" }));
+// text(await tools.shell({ command: "git status --short" }));
 ```
 
 `searchTools()` lists all currently available tools with names, namespaces, and

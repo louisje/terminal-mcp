@@ -19,6 +19,10 @@ Terminal MCP can be configured via command-line arguments and selected environme
 | `--version`, `-v` | flag | - | Show version number |
 | `--help`, `-h` | flag | - | Show help message |
 
+### Optional Pi operators
+
+`--pi-operators` adds `read`, `write`, `edit`, and `shell`. The `shell` tool executes a short, one-shot, non-interactive command with the configured shell. Use PTY for long-running compilation, builds, tests, interactive prompts, or ongoing session state. This option works in regular and codemode connections.
+
 See [Sandbox Mode](./sandbox.md) for detailed sandbox configuration.
 
 ### Recording Options

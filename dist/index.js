@@ -46688,13 +46688,13 @@ function killProcessTree(pid) {
 var readSchema = external_exports.object({ path: external_exports.string(), offset: external_exports.number().int().positive().optional(), limit: external_exports.number().int().positive().optional() });
 var writeSchema = external_exports.object({ path: external_exports.string(), content: external_exports.string() });
 var editSchema = external_exports.object({ path: external_exports.string(), edits: external_exports.array(external_exports.object({ oldText: external_exports.string(), newText: external_exports.string() })).min(1) });
-var bashSchema = external_exports.object({ command: external_exports.string(), timeout: external_exports.number().positive().optional() });
+var shellSchema = external_exports.object({ command: external_exports.string(), timeout: external_exports.number().positive().optional() });
 var result = (value, isError = false) => ({ content: [{ type: "text", text: value }], ...isError ? { isError: true } : {} });
 var operatorToolDefinitions = [
   { name: "read", description: "Read a text file directly without using the PTY or shell. offset is a 1-indexed line number.", inputSchema: { type: "object", properties: { path: { type: "string" }, offset: { type: "integer", minimum: 1 }, limit: { type: "integer", minimum: 1 } }, required: ["path"] } },
   { name: "write", description: "Write a text file directly, creating parent directories and overwriting the file. Prefer this over shell redirection for whole-file writes.", inputSchema: { type: "object", properties: { path: { type: "string" }, content: { type: "string" } }, required: ["path", "content"] } },
   { name: "edit", description: "Apply exact unique non-overlapping string replacements against a file's original content. This is replacement-only, not an append/prepend primitive.", inputSchema: { type: "object", properties: { path: { type: "string" }, edits: { type: "array", items: { type: "object", properties: { oldText: { type: "string" }, newText: { type: "string" } }, required: ["oldText", "newText"] } } }, required: ["path", "edits"] } },
-  { name: "bash", description: "Execute a one-shot non-interactive command in a fresh stateless subprocess using the configured Terminal MCP shell in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer this over PTY type/sendKey/getContent unless persistent shell state, interaction, TTY behavior, or live observability is needed.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
+  { name: "shell", description: "Execute a one-shot non-interactive command in a fresh stateless subprocess using the configured Terminal MCP shell in the terminal-mcp startup working directory. Returns stdout/stderr after completion; prefer for quick one-shot commands. Use PTY for long-running compilation, builds, and tests to inspect live progress, as well as for persistent shell state, interaction, or TTY behavior.", inputSchema: { type: "object", properties: { command: { type: "string" }, timeout: { type: "number", description: "Timeout in seconds" } }, required: ["command"] } }
 ];
 var localPath = (path27) => resolve2(operatorCwd, path27);
 async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal) {
@@ -46735,8 +46735,8 @@ async function handleOperatorTool(name, args2, shell = getDefaultShell(), signal
       await writeFile(target, updated, "utf8");
       return result(`Edited ${parsed.path}`);
     }
-    case "bash": {
-      const parsed = bashSchema.parse(args2);
+    case "shell": {
+      const parsed = shellSchema.parse(args2);
       if (signal?.aborted) throw new Error("Command aborted");
       let timedOut = false;
       const child = spawn3(parsed.command, {
@@ -48195,7 +48195,7 @@ async function dispatchTool(manager, name, args2, piOperators = false, piExtraOp
     case "read":
     case "write":
     case "edit":
-    case "bash":
+    case "shell":
       if (!piOperators) throw new Error(`Unknown tool: ${name}`);
       return await handleOperatorTool(name, args2, manager.getConfiguredShell(), signal);
     case "type":
@@ -48433,7 +48433,8 @@ Prefer this server over plain non-interactive shell tools whenever the command:
 - prompts the user for input mid-execution (ssh login, git push over HTTPS, npm login, etc.)
 - runs a TUI program (vim, nano, less, more, htop, top, man, kubectl edit, gh pr create)
 - requires line-buffered TTY behavior (color output, progress bars, fzf, watch)
-- needs to be observed while still running (long-running build, server, REPL)
+- performs a long-running compile, build, or test run: prefer a PTY even when non-interactive, so progress, failures, and partial output can be inspected without blocking on completion
+- needs to be observed while still running (server, REPL, or any command with live progress)
 
 First call getContent() without sessionId to inspect the default terminal. Reuse it
 only when clearly idle and available. If someone is using it, a command/TUI is
@@ -48453,12 +48454,14 @@ Pi operators are enabled. Prefer read, write, and edit for direct text-file oper
 constructing shell commands for them. edit performs exact, unique, non-overlapping string
 replacements against the original file; it is not an append/prepend primitive.
 
-For ordinary one-shot, non-interactive shell commands, prefer bash. It runs a fresh stateless
+For short, one-shot, non-interactive shell commands, prefer shell. It runs a fresh stateless
 subprocess using Terminal MCP's configured shell (the --shell option, TERMINAL_MCP_SHELL,
 then the platform shell default) in terminal-mcp's startup working directory and returns stdout/stderr when the
 command finishes, so it does not require the PTY type/sendKey/getContent workflow. Use the PTY
 tools instead when you need the user's existing cwd/environment/aliases/tmux state, persistent
-shell state across calls, interactive input, TTY behavior, or live observability.`;
+shell state across calls, interactive input, TTY behavior, or live observability. In particular,
+prefer PTY for lengthy compilation, builds, or test suites even if no interaction is expected;
+use shell for short checks and quick tests that finish promptly.`;
 var PI_EXTRA_OPERATOR_INSTRUCTIONS = `
 
 Pi extra operators are enabled: ls lists directory entries, grep searches file contents using installed rg, and find searches paths using installed fd/fdfind. These tools do not install dependencies. If a required executable is missing, ask the user to install it.`;
@@ -48852,7 +48855,7 @@ async function handleToolRequest(manager, request, onClientConnected, piOperator
       case "read":
       case "write":
       case "edit":
-      case "bash":
+      case "shell":
         if (!piOperators) throw new Error(`Unknown tool: ${method}`);
         result2 = await handleOperatorTool(method, params, manager.getConfiguredShell(), signal);
         break;
@@ -53454,7 +53457,7 @@ Options:
   --socket <path>        IPC socket/pipe path for MCP (default: ${DEFAULT_SOCKET_PATH})
   --mcp                  Use direct MCP mode (no socket, standard MCP mode)
   --codemode             Expose a single QuickJS codemode tool (Node >=22.19)
-  --pi-operators         Expose Pi-style read, write, edit, and bash tools (19 total)
+  --pi-operators         Expose Pi-style read, write, edit, and shell tools (19 total)
   --pi-extra-operators   Expose ls, grep, and find independently (18 total; 22 with both)
   --title <label>        Set the interactive terminal title when connecting as a client
   --headless             Run in headless mode (MCP server with embedded terminal, no TTY needed)

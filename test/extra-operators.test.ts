@@ -10,7 +10,7 @@ test("extra operators are independent of original pi operators", () => {
   for (const [base, extra, expected] of [[false, false, 15], [true, false, 19], [false, true, 18], [true, true, 22]] as const) {
     const names = getToolDefinitions(base, extra).map((tool) => tool.name);
     assert.equal(names.length, expected);
-    assert.equal(names.includes("bash"), base);
+    assert.equal(names.includes("shell"), base);
     assert.equal(names.includes("find"), extra);
   }
 });
