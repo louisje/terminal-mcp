@@ -14,9 +14,10 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "terminal-mcp": "dist/index.js"
+    "terminal-mcp": "bootstrap.cjs"
   },
   "files": [
+    "bootstrap.cjs",
     "dist",
     "README.md",
     "LICENSE",
