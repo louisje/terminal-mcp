@@ -17,6 +17,7 @@ test('Claude plugin bootstrap runs the bundled codemode without project node_mod
       cpSync(join(root, 'dist', file), join(dir, 'dist', file));
     }
     cpSync(join(root, 'bootstrap.cjs'), join(dir, 'bootstrap.cjs'));
+    cpSync(join(root, 'skills'), join(dir, 'skills'), { recursive: true });
     const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
     // Exercise the required native dependency without an external npm download.
     // Keep optional resvg declared: bootstrap must start without a network install.
@@ -26,8 +27,9 @@ test('Claude plugin bootstrap runs the bundled codemode without project node_mod
     try {
       await client.connect(new StdioClientTransport({
         command: process.execPath,
-        args: [join(dir, 'bootstrap.cjs'), '--codemode', '--pi-operators'],
+        args: [join(dir, 'bootstrap.cjs'), '--headless', '--codemode', '--pi-operators'],
         cwd: dir,
+        env: Object.fromEntries(Object.entries(process.env).filter(([key]) => key !== 'TERMINAL_MCP')),
         stderr: 'pipe',
       }));
       assert.deepEqual((await client.listTools()).tools.map(x => x.name), ['codemode']);

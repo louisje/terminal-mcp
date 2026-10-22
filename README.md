@@ -10,6 +10,41 @@
   Terminal MCP gives LLMs a shared view of your terminal session. Perfect for debugging CLIs and TUI applications in real-time, or letting AI drive terminal-based tools autonomously.
 </p>
 
+## MCP Skills Extension (SEP-2640)
+
+Terminal MCP serves its existing `skills/` directory through the MCP protocol
+automatically; no separate skill upload or opt-in flag is required.
+
+- `skills/list` enumerates skills and includes the full YAML frontmatter plus a
+  complete SHA-256 manifest (`uri`, `digest`, `size`).
+- `skills/get` accepts the **SKILL.md URI**, e.g.
+  `skill://terminal-mcp/SKILL.md`, and returns the same skill entry.
+- `resources/read` serves SKILL.md and supporting files under `skill://`
+  URIs. `resources/list` also advertises the skill entry points.
+- The server declares `resources` and
+  `extensions["io.modelcontextprotocol/skills"] = {}` during MCP
+  initialization. The optional `resources/directory/read` operation is **not**
+  declared.
+- Invalid URIs, unknown skills and path traversal are rejected. Files are
+  hashed directly from raw bytes each time they are listed.
+- This protocol capability is independent of `--codemode`,
+  `--pi-operators`, `--pi-extra-operators`, and terminal transport mode.
+  Existing MCP tools and instructions are unaffected.
+
+The server's participation in SEP-2640 does **not** imply a particular host
+currently imports or activates the skill. The client must support MCP Skills
+Extension discovery and loading. A host that does not implement it can still
+see the advertised skill as a regular MCP resource.
+
+For ChatGPT plugin submission, OpenAI supports importing a static snapshot through
+**Scan Tools**: it validates each resource against the manifest and places the
+imported Skill into the plugin draft. Changes to `skills/` require scanning
+again. This is not live runtime Skill activation, and requires a plugin/client
+that supports this import flow. OpenAI currently limits imports to five skills
+(100 files per skill, 5 MiB per skill); Terminal MCP currently ships one.
+
+Specification: https://skills.extensions.modelcontextprotocol.io/specification/stable/skills
+
 ## ChatGPT / Codex Plugin (local stdio)
 
 This repository includes a portable Agent Plugins `plugin.json`, a local

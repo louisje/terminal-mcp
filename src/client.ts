@@ -3,6 +3,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { VERSION } from "./utils/version.js";
 import { getServerInstructions } from "./server.js";
+import { registerSkills } from "./skills.js";
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
@@ -75,6 +76,8 @@ export async function startMcpClientMode(
     {
       capabilities: {
         tools: {},
+        resources: {},
+        extensions: { "io.modelcontextprotocol/skills": {} },
       },
       instructions: getServerInstructions(options),
     }
@@ -167,6 +170,8 @@ export async function startMcpClientMode(
       });
     });
   }
+
+  registerSkills(server);
 
   // Register list tools handler
   server.setRequestHandler(ListToolsRequestSchema, async () => ({

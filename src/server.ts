@@ -6,6 +6,7 @@ import { TerminalManager } from "./terminal/index.js";
 import { VERSION } from "./utils/version.js";
 import { registerTools } from "./tools/index.js";
 import { registerPrompts } from "./prompts/index.js";
+import { registerSkills } from "./skills.js";
 import { installStdioShutdownHandlers } from "./utils/shutdown.js";
 
 export interface ServerOptions {
@@ -99,6 +100,8 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
       capabilities: {
         tools: {},
         prompts: {},
+        resources: {},
+        extensions: { "io.modelcontextprotocol/skills": {} },
       },
       instructions: getServerInstructions({ codemode, piOperators, piExtraOperators }),
     }
@@ -106,6 +109,7 @@ export function createServerWithManager(manager: TerminalManager, piOperators = 
 
   registerTools(server, manager, piOperators, piExtraOperators, codemode);
   registerPrompts(server);
+  registerSkills(server);
 
   return server;
 }
