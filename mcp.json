@@ -5,8 +5,7 @@
       "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/dist/index.js",
-        "--mcp",
+        "${PLUGIN_ROOT}/bootstrap.cjs",
         "--codemode",
         "--pi-operators"
       ]
