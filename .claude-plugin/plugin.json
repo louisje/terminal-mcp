@@ -22,7 +22,8 @@
     "terminal-mcp": {
       "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/bootstrap.cjs"
+        "${CLAUDE_PLUGIN_ROOT}/bootstrap.cjs",
+        "--mcp"
       ]
     }
   },
