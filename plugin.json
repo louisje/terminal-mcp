@@ -1,0 +1,19 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "terminal-mcp",
+  "version": "0.5.1",
+  "description": "Control persistent terminal sessions, run commands, and work with local files through an MCP server.",
+  "author": {
+    "name": "Louis Jeng"
+  },
+  "homepage": "https://github.com/louisje/terminal-mcp",
+  "repository": "https://github.com/louisje/terminal-mcp",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "terminal",
+    "pty",
+    "shell",
+    "coding-agent"
+  ]
+}
