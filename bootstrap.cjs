@@ -21,13 +21,13 @@ const localRequire = createRequire(entry);
 function ready(name, spec) {
   if (!spec) return false;
   try {
-    const installed = localRequire(name + "/package.json").version;
-    if (installed !== spec.replace(/^[~^]/, "")) return false;
+    // npm handles the declared version range; validate that the native API loads.
     const loaded = localRequire(name);
     return name === "node-pty"
       ? typeof loaded.spawn === "function"
       : typeof loaded.Resvg === "function";
-  } catch {
+  } catch (error) {
+    console.error(`terminal-mcp: ${name} could not be loaded: ${error.message}`);
     return false;
   }
 }
@@ -40,7 +40,9 @@ function install(name, spec) {
     "install", "--prefix", dist, "--no-save", "--no-package-lock",
     "--omit=dev", "--no-audit", "--no-fund", "--ignore-scripts=false",
     `${name}@${spec}`
-  ], { stdio: ["ignore", "ignore", "inherit"], shell: process.platform === "win32" });
+  ], { stdio: "inherit", shell: process.platform === "win32" });
+  if (result.error) console.error(`terminal-mcp: npm failed to start: ${result.error.message}`);
+  else if (result.status !== 0) console.error(`terminal-mcp: npm exited with status ${result.status}`);
   return !result.error && result.status === 0 && ready(name, spec);
 }
 
